@@ -11,6 +11,64 @@
 
 <body>
 
+<!-- ═══ ÉCRAN DE CONNEXION ═══ -->
+<div id="loginOverlay" style="
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg, #f5f5f5);
+  display:flex; align-items:center; justify-content:center;
+">
+  <div style="
+    background:var(--card, #fff);
+    border:1px solid var(--border, #ddd);
+    border-radius:16px;
+    padding:40px 48px;
+    text-align:center;
+    box-shadow:0 8px 32px rgba(0,0,0,.12);
+    max-width:360px; width:90%;
+  ">
+    <div style="font-size:2.2rem; margin-bottom:8px;">🔒</div>
+    <div style="font-size:1.25rem; font-weight:700; margin-bottom:4px;">Administration</div>
+    <div style="font-size:.9rem; color:#888; margin-bottom:24px;">Challenge Connecté 2026</div>
+    <input type="password" id="loginInput" placeholder="Mot de passe" style="
+      width:100%; box-sizing:border-box;
+      padding:10px 14px; border-radius:8px;
+      border:1px solid var(--border, #ccc);
+      font-size:1rem; margin-bottom:12px;
+      background:var(--bg, #f9f9f9);
+      color:var(--text, #333);
+    " onkeydown="if(event.key==='Enter') checkLogin()">
+    <button onclick="checkLogin()" style="
+      width:100%; padding:11px;
+      background:#0057b8; color:#fff;
+      border:none; border-radius:8px;
+      font-size:1rem; font-weight:600; cursor:pointer;
+    ">Entrer</button>
+    <div id="loginError" style="color:#e53935; font-size:.85rem; margin-top:10px; display:none;">
+      Mot de passe incorrect.
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const MDP = 'cc2026admin';
+    if (sessionStorage.getItem('admin_ok') === '1') {
+      document.getElementById('loginOverlay').style.display = 'none';
+    }
+    window.checkLogin = function() {
+      const val = document.getElementById('loginInput').value;
+      if (val === MDP) {
+        sessionStorage.setItem('admin_ok', '1');
+        document.getElementById('loginOverlay').style.display = 'none';
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('loginInput').value = '';
+        document.getElementById('loginInput').focus();
+      }
+    };
+  })();
+</script>
+
 <!-- ═══ HEADER ═══ -->
 <header>
   <div class="logo">

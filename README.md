@@ -32,7 +32,7 @@ Accessible à tous les participants. Permet de confirmer son inscription en sais
    - Nom anonymisé (ex. `D*****`)
    - Prénom anonymisé (ex. `M*****`)
    - Email masqué (ex. `m***.d****@sncf.fr`)
-   - Dossard(s) attribué(s) par catégorie
+   - Épreuve(s) inscrite(s) (sans numéro de dossard — attribués ultérieurement)
    - Date de dernière mise à jour des données
 
 ### Format du CSV attendu
@@ -57,7 +57,7 @@ Le fichier `data/participants_anonymises.csv` est généré depuis l'outil admin
 
 ## Outil admin (`admin.html`)
 
-Réservé aux organisateurs. Nécessite de charger le fichier Excel des inscriptions (export Forms).
+Réservé aux organisateurs. L'accès est protégé par un mot de passe demandé au chargement de la page. Nécessite de charger le fichier Excel des inscriptions (export Forms).
 
 ### Onglets
 
@@ -100,4 +100,4 @@ Le site est servi directement depuis la branche `main`. Aucune étape de build r
 
 URL publique : `https://n58s29.github.io/SoRunning-inscriptions-2026/`
 
-> Le lien "Administration" en bas de la page de vérification (`index.html`) pointe vers `admin.html`. Il est volontairement discret mais accessible à tous — l'outil admin ne contient pas de données personnelles tant qu'aucun fichier Excel n'est chargé.
+> Le lien "Administration" en bas de la page de vérification (`index.html`) pointe vers `admin.html`. Il est volontairement discret. La page est protégée par mot de passe à l'ouverture.

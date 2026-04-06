@@ -180,14 +180,13 @@ async function doVerify() {
     return;
   }
 
-  // Colonnes catégories = tout ce qui est après EMAIL (index 3+)
+  // Colonnes catégories = tout ce qui est après EMAIL (index 4+)
   const catCols = csvHeaders.slice(4);
-  const dossardsBadges = catCols
+  const categoriesBadges = catCols
     .filter(cat => participant[cat])
     .map(cat => `
       <div class="vs-dossard">
         <span class="vs-doss-cat">${escapeHtml(cat)}</span>
-        <span class="vs-doss-num">#${escapeHtml(participant[cat])}</span>
       </div>`)
     .join('');
 
@@ -219,10 +218,10 @@ async function doVerify() {
       </div>
     </div>
 
-    ${dossardsBadges
-      ? `<div class="vs-dossards-title">Dossard(s) attribué(s)</div>
-         <div class="vs-dossards">${dossardsBadges}</div>`
-      : `<div class="vs-no-dossard">Aucun dossard attribué pour le moment.</div>`
+    ${categoriesBadges
+      ? `<div class="vs-dossards-title">Épreuve(s) inscrite(s)</div>
+         <div class="vs-dossards">${categoriesBadges}</div>`
+      : `<div class="vs-no-dossard">Aucune épreuve trouvée pour le moment.</div>`
     }
     ${freshnessHtml}
   `);

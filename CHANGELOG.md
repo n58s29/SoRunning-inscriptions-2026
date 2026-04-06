@@ -5,6 +5,16 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.2.0] — 2026-04-06
+
+### Ajouté
+- **Protection par mot de passe** de `admin.html` : un écran de connexion bloque l'accès à la page d'administration au chargement. La session est mémorisée le temps de l'onglet navigateur ouvert.
+
+### Modifié
+- **Page de vérification** (`index.html` / `verify.js`) : l'affichage du résultat montre désormais l'épreuve inscrite (ex. « Course 10 km ») sans le numéro de dossard, les numéros n'étant pas encore attribués définitivement.
+
+---
+
 ## [1.1.0] — 2026-04-06
 
 ### Ajouté
