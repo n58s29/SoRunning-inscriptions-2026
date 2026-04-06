@@ -1823,16 +1823,53 @@ updateStats = function() {
   // Mise à jour badge doublons
   const dupes = detectDuplicates();
   const totalDupes = dupes.exact.length + dupes.sameName.length + dupes.sameEmail.length;
+  const totalNonPro = detectNonProEmails().length;
+  const totalAnomalies = totalDupes + totalNonPro;
   const elD = document.getElementById('tabCountDoublons');
   if (elD) {
-    elD.textContent = totalDupes;
-    elD.classList.toggle('has-warn', totalDupes > 0);
+    elD.textContent = totalAnomalies;
+    elD.classList.toggle('has-warn', totalAnomalies > 0);
   }
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// SECTION 11 — DÉTECTION DE DOUBLONS
+// SECTION 11 — DÉTECTION DE DOUBLONS ET ANOMALIES EMAIL
 // ═══════════════════════════════════════════════════════════════════
+
+const PERSONAL_EMAIL_DOMAINS = new Set([
+  'gmail.com','googlemail.com',
+  'yahoo.fr','yahoo.com','yahoo.co.uk','ymail.com',
+  'hotmail.com','hotmail.fr','hotmail.be','hotmail.co.uk',
+  'outlook.com','outlook.fr','outlook.be',
+  'live.fr','live.com','live.be','live.co.uk',
+  'msn.com',
+  'free.fr','libertysurf.fr',
+  'orange.fr','wanadoo.fr',
+  'sfr.fr','sfr.com','neuf.fr','club-internet.fr',
+  'laposte.net','laposte.fr',
+  'bbox.fr','numericable.fr','numericable.com',
+  'icloud.com','me.com','mac.com',
+  'aol.com','aol.fr',
+  'protonmail.com','protonmail.ch','proton.me',
+  'tutanota.com','tutamail.com',
+  'yopmail.com','mailinator.com','guerrillamail.com','temp-mail.org',
+  'gmx.fr','gmx.com','gmx.de',
+  'alice.fr','cegetel.net',
+  'tele2.fr','9online.fr','noos.fr',
+  'caramail.com','voila.fr','ifrance.com',
+]);
+
+function detectNonProEmails() {
+  const byIdUnique = new Map();
+  allDossards.forEach(d => { if (!byIdUnique.has(d.id)) byIdUnique.set(d.id, d); });
+
+  return Array.from(byIdUnique.values()).filter(d => {
+    const email = (d.email || '').toLowerCase().trim();
+    if (!email) return false;
+    const domain = email.split('@')[1] || '';
+    return PERSONAL_EMAIL_DOMAINS.has(domain);
+  });
+}
 
 function detectDuplicates() {
   // Regroupe par différents critères
@@ -1921,14 +1958,16 @@ function renderDoublons() {
   }
 
   const dupes = detectDuplicates();
+  const nonProList = detectNonProEmails();
   const totalDupes = dupes.exact.length + dupes.sameName.length + dupes.sameEmail.length;
+  const totalAnomalies = totalDupes + nonProList.length;
 
-  if (totalDupes === 0) {
+  if (totalAnomalies === 0) {
     container.innerHTML = `
       <div class="doublons-clean">
         <div class="doublons-clean-icon">✅</div>
-        <div class="doublons-clean-title">Aucun doublon détecté</div>
-        <div class="doublons-clean-sub">Les ${new Set(allDossards.map(d => d.id)).size} inscriptions sont toutes uniques.</div>
+        <div class="doublons-clean-title">Aucune anomalie détectée</div>
+        <div class="doublons-clean-sub">Les ${new Set(allDossards.map(d => d.id)).size} inscriptions sont toutes uniques et avec des emails professionnels.</div>
       </div>`;
     return;
   }
@@ -1968,13 +2007,14 @@ function renderDoublons() {
       </div>`;
   }
 
+  const totalParticipants = new Set(allDossards.map(d => d.id)).size;
   let html = `
     <div class="doublons-summary">
       <div class="doublons-summary-icon">⚠️</div>
       <div class="doublons-summary-text">
-        <strong>${totalDupes} groupe${totalDupes > 1 ? 's' : ''} de doublons potentiels</strong> détecté${totalDupes > 1 ? 's' : ''}
-        parmi ${new Set(allDossards.map(d => d.id)).size} inscriptions.
-        <br>Vérifie ces entrées dans ton Forms et supprime les doublons si nécessaire.
+        <strong>${totalAnomalies} anomalie${totalAnomalies > 1 ? 's' : ''}</strong> détectée${totalAnomalies > 1 ? 's' : ''}
+        parmi ${totalParticipants} inscriptions.
+        <br>Vérifie ces entrées dans le Forms et corrige si nécessaire.
       </div>
     </div>`;
 
@@ -2002,6 +2042,36 @@ function renderDoublons() {
       <div class="dupe-section-title">🔵 Même email, noms différents <span class="dupe-section-count">${dupes.sameEmail.length}</span></div>
       <div class="dupe-section-desc">Même adresse email mais identités différentes — compte partagé ?</div>
       ${dupes.sameEmail.map(g => renderGroup(g, 'low')).join('')}
+    </div>`;
+  }
+
+  // Emails non professionnels
+  if (nonProList.length > 0) {
+    const rows = nonProList.map(d => {
+      const challenges = allDossards.filter(dd => dd.id === d.id).map(dd => dd.cat).join(', ');
+      return `
+        <div class="dupe-row">
+          <div class="dupe-cell dupe-id">ID ${d.id}</div>
+          <div class="dupe-cell dupe-name">${d.prenom} ${d.nom}</div>
+          <div class="dupe-cell dupe-email">${d.email || '—'}</div>
+          <div class="dupe-cell dupe-challenges">${challenges || '—'}</div>
+        </div>`;
+    }).join('');
+
+    html += `<div class="dupe-section">
+      <div class="dupe-section-title">📧 Emails non professionnels <span class="dupe-section-count">${nonProList.length}</span></div>
+      <div class="dupe-section-desc">Ces participants ont utilisé une adresse personnelle (Gmail, Yahoo, Hotmail…) au lieu d'un email professionnel.</div>
+      <div class="dupe-group dupe-medium">
+        <div class="dupe-table">
+          <div class="dupe-row dupe-row-head">
+            <div class="dupe-cell dupe-id">ID Forms</div>
+            <div class="dupe-cell dupe-name">Participant</div>
+            <div class="dupe-cell dupe-email">Email</div>
+            <div class="dupe-cell dupe-challenges">Challenge(s)</div>
+          </div>
+          ${rows}
+        </div>
+      </div>
     </div>`;
   }
 
