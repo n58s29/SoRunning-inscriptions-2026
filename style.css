@@ -1270,7 +1270,7 @@ header {
 }
 .dupe-row {
   display: grid;
-  grid-template-columns: 80px 1fr 1.2fr 1fr;
+  grid-template-columns: 80px 1fr 1.2fr 1fr 110px;
   gap: 8px;
   padding: 8px 16px;
   font-size: 13px;
@@ -1304,13 +1304,30 @@ header {
   font-size: 12px;
   color: var(--accent);
 }
+.dupe-action {
+  text-align: right;
+}
+.btn-mailto {
+  display: inline-block;
+  padding: 5px 10px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity .15s;
+}
+.btn-mailto:hover { opacity: .82; }
 
 @media (max-width: 700px) {
   .dupe-row {
     grid-template-columns: 60px 1fr;
     gap: 4px;
   }
-  .dupe-email, .dupe-challenges { grid-column: 1 / -1; }
+  .dupe-email, .dupe-challenges, .dupe-action { grid-column: 1 / -1; }
+  .dupe-action { text-align: left; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════

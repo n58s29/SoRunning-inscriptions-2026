@@ -1836,6 +1836,44 @@ updateStats = function() {
 // SECTION 11 — DÉTECTION DE DOUBLONS ET ANOMALIES EMAIL
 // ═══════════════════════════════════════════════════════════════════
 
+const ANOMALIE_BCC = 'sorunningsncf@sncf.fr';
+
+function buildMailtoAnomalie(type, d) {
+  const to      = (d.email || '').trim();
+  const prenom  = (d.prenom || '').trim();
+  const emailAffiche = to;
+
+  let subject, body;
+
+  if (type === 'nonpro') {
+    subject = 'Challenge Connecté 2026 — Validation de votre inscription';
+    body =
+      `Bonjour ${prenom},\n\n` +
+      `Nous sommes vraiment ravis de vous compter parmi les participants au Challenge Connecté 2026 !\n\n` +
+      `Cependant, nous avons constaté que votre inscription a été réalisée avec une adresse email personnelle (${emailAffiche}), ` +
+      `alors que l'événement est ouvert aux collaborateurs SNCF et de ses filiales, avec une adresse email professionnelle.\n\n` +
+      `Pour valider définitivement votre participation, nous vous invitons à refaire votre inscription en utilisant votre adresse email professionnelle.\n\n` +
+      `Toutes nos excuses pour ce désagrément — et encore un immense merci pour votre enthousiasme !\n\n` +
+      `À très bientôt,\n` +
+      `L'équipe SoRunning SNCF`;
+  } else {
+    subject = 'Challenge Connecté 2026 — Vérification de votre inscription';
+    body =
+      `Bonjour ${prenom},\n\n` +
+      `Nous sommes vraiment ravis de vous compter parmi les participants au Challenge Connecté 2026 !\n\n` +
+      `Cependant, nous avons détecté plusieurs inscriptions à votre nom dans notre système. ` +
+      `Pour éviter tout problème lors de l'attribution des dossards, votre participation va nécessiter de refaire l'inscription afin de la valider correctement.\n\n` +
+      `Pas d'inquiétude, ça prend deux minutes ! ` +
+      `N'hésitez pas à répondre à ce message si vous avez la moindre question.\n\n` +
+      `Toutes nos excuses pour ce désagrément — et encore un immense merci pour votre enthousiasme !\n\n` +
+      `À très bientôt,\n` +
+      `L'équipe SoRunning SNCF`;
+  }
+
+  const encode = s => encodeURIComponent(s).replace(/%0A/g, '%0D%0A');
+  return `mailto:${encodeURIComponent(to)}?subject=${encode(subject)}&bcc=${encodeURIComponent(ANOMALIE_BCC)}&body=${encode(body)}`;
+}
+
 const PERSONAL_EMAIL_DOMAINS = new Set([
   'gmail.com','googlemail.com',
   'yahoo.fr','yahoo.com','yahoo.co.uk','ymail.com',
@@ -1979,12 +2017,14 @@ function renderDoublons() {
 
     const rows = group.entries.map(d => {
       const challenges = allDossards.filter(dd => dd.id === d.id).map(dd => dd.cat).join(', ');
+      const mailto = d.email ? buildMailtoAnomalie('doublon', d) : '';
       return `
         <div class="dupe-row">
           <div class="dupe-cell dupe-id">ID ${d.id}</div>
           <div class="dupe-cell dupe-name">${d.prenom} ${d.nom}</div>
           <div class="dupe-cell dupe-email">${d.email || '—'}</div>
           <div class="dupe-cell dupe-challenges">${challenges || '—'}</div>
+          <div class="dupe-cell dupe-action">${mailto ? `<a class="btn-mailto" href="${mailto}">✉️ Envoyer</a>` : ''}</div>
         </div>`;
     }).join('');
 
@@ -2001,6 +2041,7 @@ function renderDoublons() {
             <div class="dupe-cell dupe-name">Participant</div>
             <div class="dupe-cell dupe-email">Email</div>
             <div class="dupe-cell dupe-challenges">Challenge(s)</div>
+            <div class="dupe-cell dupe-action"></div>
           </div>
           ${rows}
         </div>
@@ -2049,12 +2090,14 @@ function renderDoublons() {
   if (nonProList.length > 0) {
     const rows = nonProList.map(d => {
       const challenges = allDossards.filter(dd => dd.id === d.id).map(dd => dd.cat).join(', ');
+      const mailto = buildMailtoAnomalie('nonpro', d);
       return `
         <div class="dupe-row">
           <div class="dupe-cell dupe-id">ID ${d.id}</div>
           <div class="dupe-cell dupe-name">${d.prenom} ${d.nom}</div>
           <div class="dupe-cell dupe-email">${d.email || '—'}</div>
           <div class="dupe-cell dupe-challenges">${challenges || '—'}</div>
+          <div class="dupe-cell dupe-action"><a class="btn-mailto" href="${mailto}">✉️ Envoyer</a></div>
         </div>`;
     }).join('');
 
@@ -2068,6 +2111,7 @@ function renderDoublons() {
             <div class="dupe-cell dupe-name">Participant</div>
             <div class="dupe-cell dupe-email">Email</div>
             <div class="dupe-cell dupe-challenges">Challenge(s)</div>
+            <div class="dupe-cell dupe-action"></div>
           </div>
           ${rows}
         </div>
