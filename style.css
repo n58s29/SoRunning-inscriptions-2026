@@ -1869,6 +1869,54 @@ header {
   color: var(--muted);
 }
 
+/* Community links */
+.vs-community {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(50, 180, 100, 0.15);
+  text-align: center;
+}
+.vs-community-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+.vs-community-links {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.vs-community-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity .15s, transform .15s;
+}
+.vs-community-btn:hover { opacity: .85; transform: translateY(-1px); }
+.vs-community-btn--strava {
+  background: #FC4C02;
+  color: #fff;
+}
+.vs-community-btn--engage {
+  background: #7719AA;
+  color: #fff;
+}
+.vs-community-logo {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
 /* Contact block */
 .verify-contact {
   max-width: 540px;
