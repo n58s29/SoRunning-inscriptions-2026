@@ -1838,40 +1838,50 @@ updateStats = function() {
 
 const ANOMALIE_BCC = 'sorunningsncf@sncf.fr';
 
+// type 'nonpro' : d = un seul participant
+// type 'doublon' : d = tableau de participants du groupe
 function buildMailtoAnomalie(type, d) {
-  const to      = (d.email || '').trim();
-  const prenom  = (d.prenom || '').trim();
-  const emailAffiche = to;
+  const encode = s => encodeURIComponent(s).replace(/%0A/g, '%0D%0A');
+  const FORM_URL = 'https://forms.office.com/e/kS7ijtKDZR';
 
-  let subject, body;
+  let to, subject, body;
 
   if (type === 'nonpro') {
-    subject = 'Challenge Connecté 2026 — Validation de votre inscription';
+    const participant = d;
+    to      = (participant.email || '').trim();
+    const prenom = (participant.prenom || '').trim();
+    subject = 'Challenge Connecté 2026 — Validation de ton inscription';
     body =
       `Bonjour ${prenom},\n\n` +
-      `Nous sommes vraiment ravis de vous compter parmi les participants au Challenge Connecté 2026 !\n\n` +
-      `Cependant, nous avons constaté que votre inscription a été réalisée avec une adresse email personnelle (${emailAffiche}), ` +
-      `alors que l'événement est ouvert aux collaborateurs SNCF et de ses filiales, avec une adresse email professionnelle.\n\n` +
-      `Pour valider définitivement votre participation, nous vous invitons à refaire votre inscription en utilisant votre adresse email professionnelle.\n\n` +
-      `Toutes nos excuses pour ce désagrément — et encore un immense merci pour votre enthousiasme !\n\n` +
-      `À très bientôt,\n` +
+      `On est vraiment ravis de te compter parmi les participants au Challenge Connecté 2026 !\n\n` +
+      `On a constaté que ton inscription a été réalisée avec une adresse email personnelle (${to}), ` +
+      `alors que l'événement est ouvert aux collaborateurs SNCF et de ses filiales avec une adresse email professionnelle.\n\n` +
+      `Pour valider définitivement ta participation, il te suffit de refaire ton inscription avec ton adresse email professionnelle :\n` +
+      `${FORM_URL}\n\n` +
+      `Toutes nos excuses pour ce désagrément — et encore un immense merci pour ton enthousiasme !\n\n` +
+      `Have Fun Have Run !\n` +
       `L'équipe SoRunning SNCF`;
   } else {
-    subject = 'Challenge Connecté 2026 — Vérification de votre inscription';
+    const entries = d;
+    const emails  = [...new Set(entries.map(e => (e.email || '').trim()).filter(Boolean))];
+    const prenoms = [...new Set(entries.map(e => (e.prenom || '').trim()).filter(Boolean))];
+    to      = emails.join(',');
+    const salutation = prenoms.length ? prenoms.join(' et ') : 'toi';
+    subject = 'Challenge Connecté 2026 — Vérification de ton inscription';
     body =
-      `Bonjour ${prenom},\n\n` +
-      `Nous sommes vraiment ravis de vous compter parmi les participants au Challenge Connecté 2026 !\n\n` +
-      `Cependant, nous avons détecté plusieurs inscriptions à votre nom dans notre système. ` +
-      `Pour éviter tout problème lors de l'attribution des dossards, votre participation va nécessiter de refaire l'inscription afin de la valider correctement.\n\n` +
-      `Pas d'inquiétude, ça prend deux minutes ! ` +
-      `N'hésitez pas à répondre à ce message si vous avez la moindre question.\n\n` +
-      `Toutes nos excuses pour ce désagrément — et encore un immense merci pour votre enthousiasme !\n\n` +
-      `À très bientôt,\n` +
+      `Bonjour ${salutation},\n\n` +
+      `On est vraiment ravis de te compter parmi les participants au Challenge Connecté 2026 !\n\n` +
+      `On a détecté plusieurs inscriptions à ton nom dans notre système. ` +
+      `Pour valider définitivement ta participation, il te suffit de refaire ton inscription en une seule fois — ` +
+      `rappelle-toi qu'une seule inscription peut contenir plusieurs courses ou marches !\n\n` +
+      `Lien d'inscription :\n` +
+      `${FORM_URL}\n\n` +
+      `Pas d'inquiétude, ça prend deux minutes. N'hésite pas à répondre à ce message si tu as la moindre question.\n\n` +
+      `Have Fun Have Run !\n` +
       `L'équipe SoRunning SNCF`;
   }
 
-  const encode = s => encodeURIComponent(s).replace(/%0A/g, '%0D%0A');
-  return `mailto:${encodeURIComponent(to)}?subject=${encode(subject)}&bcc=${encodeURIComponent(ANOMALIE_BCC)}&body=${encode(body)}`;
+  return `mailto:${to}?subject=${encode(subject)}&bcc=${encodeURIComponent(ANOMALIE_BCC)}&body=${encode(body)}`;
 }
 
 const PERSONAL_EMAIL_DOMAINS = new Set([
@@ -2015,16 +2025,15 @@ function renderDoublons() {
     const sevClass = severity === 'high' ? 'dupe-high' : severity === 'medium' ? 'dupe-medium' : 'dupe-low';
     const sevLabel = severity === 'high' ? '🔴 Critique' : severity === 'medium' ? '🟡 Attention' : '🔵 Info';
 
+    const mailto = buildMailtoAnomalie('doublon', group.entries);
     const rows = group.entries.map(d => {
       const challenges = allDossards.filter(dd => dd.id === d.id).map(dd => dd.cat).join(', ');
-      const mailto = d.email ? buildMailtoAnomalie('doublon', d) : '';
       return `
         <div class="dupe-row">
           <div class="dupe-cell dupe-id">ID ${d.id}</div>
           <div class="dupe-cell dupe-name">${d.prenom} ${d.nom}</div>
           <div class="dupe-cell dupe-email">${d.email || '—'}</div>
           <div class="dupe-cell dupe-challenges">${challenges || '—'}</div>
-          <div class="dupe-cell dupe-action">${mailto ? `<a class="btn-mailto" href="${mailto}">✉️ Envoyer</a>` : ''}</div>
         </div>`;
     }).join('');
 
@@ -2034,6 +2043,7 @@ function renderDoublons() {
           <span class="dupe-sev">${sevLabel}</span>
           <span class="dupe-reason">${group.reason}</span>
           <span class="dupe-count">${group.entries.length} inscriptions</span>
+          <a class="btn-mailto" href="${mailto}">✉️ Envoyer un mail</a>
         </div>
         <div class="dupe-table">
           <div class="dupe-row dupe-row-head">
@@ -2041,7 +2051,6 @@ function renderDoublons() {
             <div class="dupe-cell dupe-name">Participant</div>
             <div class="dupe-cell dupe-email">Email</div>
             <div class="dupe-cell dupe-challenges">Challenge(s)</div>
-            <div class="dupe-cell dupe-action"></div>
           </div>
           ${rows}
         </div>
@@ -2092,7 +2101,7 @@ function renderDoublons() {
       const challenges = allDossards.filter(dd => dd.id === d.id).map(dd => dd.cat).join(', ');
       const mailto = buildMailtoAnomalie('nonpro', d);
       return `
-        <div class="dupe-row">
+        <div class="dupe-row dupe-row--with-action">
           <div class="dupe-cell dupe-id">ID ${d.id}</div>
           <div class="dupe-cell dupe-name">${d.prenom} ${d.nom}</div>
           <div class="dupe-cell dupe-email">${d.email || '—'}</div>
@@ -2106,7 +2115,7 @@ function renderDoublons() {
       <div class="dupe-section-desc">Ces participants ont utilisé une adresse personnelle (Gmail, Yahoo, Hotmail…) au lieu d'un email professionnel.</div>
       <div class="dupe-group dupe-medium">
         <div class="dupe-table">
-          <div class="dupe-row dupe-row-head">
+          <div class="dupe-row dupe-row-head dupe-row--with-action">
             <div class="dupe-cell dupe-id">ID Forms</div>
             <div class="dupe-cell dupe-name">Participant</div>
             <div class="dupe-cell dupe-email">Email</div>
