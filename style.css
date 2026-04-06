@@ -1849,6 +1849,21 @@ header {
   color: var(--muted);
 }
 
+/* Contact block */
+.verify-contact {
+  max-width: 540px;
+  margin: 0 auto 8px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.verify-contact a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.verify-contact a:hover { text-decoration: underline; }
+
 /* Footer */
 .verify-footer {
   margin-top: 16px;

@@ -5,7 +5,7 @@
    Séparateur ; — encodage UTF-8 BOM — champs entre guillemets doubles
 ═══════════════════════════════════════════════════════════════════ */
 
-const CSV_PATH  = './data/participants_anonymises.csv';
+const CSV_PATH  = './data/participants_anonymises_Challenge_Connecté_2026.csv';
 const THEME_KEY = 'challenge2026_theme';
 
 // ─────────────────────────────────────────────
