@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administration — Challenge Connecté 2026</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="logo">
+    <img class="logo-img" src="logo.png" alt="CC" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="logo-badge" style="display:none;">CC</div>
+    <div class="logo-text" id="headerEventName">Challenge <span>Connecté</span> 2026</div>
+  </div>
+  <div class="header-right">
+    <div class="stats-bar" id="statsBar"></div>
+    <a href="index.html" class="admin-back-link" title="Retour à la page de vérification">← Accueil</a>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Basculer mode clair / sombre">
+      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- Step 1 : Upload Excel -->
+  <div class="upload-section">
+    <div class="upload-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+      <span class="upload-icon">📋</span>
+      <div class="upload-title">Charger le fichier des inscriptions</div>
+      <div class="upload-sub">Glisse ton fichier Excel ici ou clique pour parcourir</div>
+      <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choisir un fichier</button>
+      <div class="file-loaded" id="fileLoaded" style="display:none">
+        ✅ <span id="fileName"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs nav (visible after Excel loaded) -->
+  <div class="tabs-nav" id="tabsNav">
+    <button class="tab-btn active" onclick="switchTab('dossards', this)">
+      🏅 Dossards <span class="tab-count" id="tabCountDossards">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('liste', this)">
+      📋 Liste des participants <span class="tab-count" id="tabCountListe">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('stats', this)">
+      📊 Statistiques <span class="tab-count" id="tabCountStats">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('doublons', this)">
+      ⚠️ Doublons <span class="tab-count tab-count--warn" id="tabCountDoublons">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('settings', this)">
+      ⚙️ Paramètres
+    </button>
+  </div>
+
+  <!-- ═══ ONGLET DOSSARDS ═══ -->
+  <div class="tab-panel active" id="panel-dossards">
+
+    <!-- Légende couleurs -->
+    <div class="legend" id="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c5)"></div> Course 5 km (0001–0999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c10)"></div> Course 10 km (1001–1999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c21)"></div> Course 21,1 km (2001–2999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--m5)"></div> Marche 5 km (3001–3999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--m10)"></div> Marche 10 km (4001–4999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--m21)"></div> Marche 21,1 km (5001–5999)</div>
+    </div>
+
+    <!-- Barre d'outils -->
+    <div class="controls" id="controls">
+      <div class="filter-group">
+        <button class="filter-btn active" data-cat="all"          onclick="setFilter('all', this)">Tous</button>
+        <button class="filter-btn" data-cat="Course 5 km"         onclick="setFilter('Course 5 km', this)">Course 5 km</button>
+        <button class="filter-btn" data-cat="Course 10 km"        onclick="setFilter('Course 10 km', this)">Course 10 km</button>
+        <button class="filter-btn" data-cat="Course 21,1 km"      onclick="setFilter('Course 21,1 km', this)">Course 21,1 km</button>
+        <button class="filter-btn" data-cat="Marche 5 km"         onclick="setFilter('Marche 5 km', this)">Marche 5 km</button>
+        <button class="filter-btn" data-cat="Marche 10 km"        onclick="setFilter('Marche 10 km', this)">Marche 10 km</button>
+        <button class="filter-btn" data-cat="Marche 21,1 km"      onclick="setFilter('Marche 21,1 km', this)">Marche 21,1 km</button>
+      </div>
+      <div class="spacer"></div>
+
+      <!-- Bouton trame — état visuel dynamique -->
+      <input type="file" id="trameUpload" accept="image/png" style="display:none">
+      <button class="btn-trame" id="btnTrame" onclick="document.getElementById('trameUpload').click()">
+        <span id="btnTrameIcon">🖼️</span>
+        <span id="btnTrameLabel">Charger la trame</span>
+      </button>
+
+      <button class="btn-export" onclick="downloadBlankTemplate()" title="Télécharger une trame vierge annotée">📐 Trame vierge</button>
+      <button class="btn-export" onclick="emailDossards()" title="Préparer l'envoi des dossards par email">📧 Email dossards</button>
+      <button class="btn-reset" onclick="resetNumbers()" title="Réinitialise les numéros (⚠️ irréversible)">🔄 Réinitialiser les n°</button>
+      <button class="btn-print" onclick="saveDossardsPNG()" id="btnExport">💾 Exporter les dossards</button>
+    </div>
+
+    <!-- Grille des dossards -->
+    <div class="dossards-grid" id="grid">
+      <div class="empty-state">
+        <h2>Aucun participant chargé</h2>
+        <p>Importe la liste des inscriptions pour visualiser les dossards.</p>
+      </div>
+    </div>
+
+  </div><!-- /panel-dossards -->
+
+  <!-- ═══ ONGLET LISTE ═══ -->
+  <div class="tab-panel" id="panel-liste">
+    <div class="list-controls">
+      <input class="list-search" type="text" id="listSearch"
+             placeholder="🔍 Rechercher un participant…" oninput="filterList(this.value)">
+      <div class="spacer"></div>
+      <button class="btn-export" onclick="exportCSV()">⬇️ Exporter CSV</button>
+      <button class="btn-export" onclick="exportCSVAnonymized()" title="Export anonymisé RGPD : ID, initiales et email masqué">🔒 Exporter CSV anonymisé</button>
+      <button class="btn-print"  onclick="printList()">🖨️ Imprimer la liste</button>
+    </div>
+    <div id="listContent">
+      <div class="empty-state">
+        <h2>Aucun participant chargé</h2>
+        <p>Importe ton fichier Excel pour voir la liste.</p>
+      </div>
+    </div>
+  </div><!-- /panel-liste -->
+
+  <!-- ═══ ONGLET STATISTIQUES ═══ -->
+  <div class="tab-panel" id="panel-stats">
+
+    <div class="stats-toolbar">
+      <div class="stats-toolbar-title">
+        📊 Tableau de bord — Challenge Connecté 2026
+      </div>
+      <button class="btn-capture" id="btnCapture" onclick="captureStats()">
+        📸 Capturer le tableau de bord
+      </button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="stats-kpis" id="statsKpis"></div>
+
+    <!-- Row 1 : Catégories + Sexe -->
+    <div class="stats-charts-row">
+      <div class="stat-card stat-card--large" id="chartCats">
+        <div class="stat-card-title">Répartition par catégorie</div>
+        <div class="stat-card-body" id="chartCatsBody"></div>
+      </div>
+      <div class="stat-card stat-card--small" id="chartSexe">
+        <div class="stat-card-title">Répartition H / F</div>
+        <div class="stat-card-body" id="chartSexeBody"></div>
+      </div>
+    </div>
+
+    <!-- Row 2 : Âges + Carte régions -->
+    <div class="stats-charts-row">
+      <div class="stat-card stat-card--medium" id="chartAges">
+        <div class="stat-card-title">Distribution par âge</div>
+        <div class="stat-card-body" id="chartAgesBody"></div>
+      </div>
+      <div class="stat-card stat-card--medium" id="chartRegions">
+        <div class="stat-card-title">Carte des régions</div>
+        <div class="stat-card-body" id="chartRegionsBody"></div>
+      </div>
+    </div>
+
+    <!-- Row 3 : Sociétés -->
+    <div class="stats-charts-row">
+      <div class="stat-card stat-card--full" id="chartSocietes">
+        <div class="stat-card-title">Top sociétés participantes</div>
+        <div class="stat-card-body" id="chartSocietesBody"></div>
+      </div>
+    </div>
+
+    <div class="stats-empty-state" id="statsEmpty" style="display:none">
+      <h2>Aucune donnée disponible</h2>
+      <p>Importe ton fichier Excel pour voir les statistiques.</p>
+    </div>
+
+  </div><!-- /panel-stats -->
+
+  <!-- ═══ ONGLET DOUBLONS ═══ -->
+  <div class="tab-panel" id="panel-doublons">
+    <div class="doublons-header">
+      <div class="doublons-header-left">
+        <div class="doublons-title">⚠️ Détection de doublons</div>
+        <div class="doublons-sub">Inscriptions potentiellement dupliquées à vérifier dans le Forms</div>
+      </div>
+    </div>
+    <div id="doublonsContent">
+      <div class="empty-state">
+        <h2>Aucun participant chargé</h2>
+        <p>Importe ton fichier Excel pour lancer la détection.</p>
+      </div>
+    </div>
+  </div><!-- /panel-doublons -->
+
+  <!-- ═══ ONGLET PARAMÈTRES ═══ -->
+  <div class="tab-panel" id="panel-settings">
+    <div class="settings-header">
+      <div class="settings-title">⚙️ Paramètres de l'événement</div>
+      <div class="settings-sub">Configure le nom, les catégories et les plages de numéros pour réutiliser l'outil sur un autre événement.</div>
+    </div>
+
+    <div class="settings-section">
+      <label class="settings-label">Nom de l'événement</label>
+      <input type="text" class="settings-input" id="settingsEventName" placeholder="Challenge Connecté 2026">
+    </div>
+
+    <div class="settings-section">
+      <label class="settings-label">Catégories</label>
+      <div id="settingsCatsList"></div>
+      <button class="btn-add-cat" onclick="addSettingsCategory()">+ Ajouter une catégorie</button>
+    </div>
+
+    <div class="settings-actions">
+      <button class="btn-print" onclick="saveSettings()">💾 Sauvegarder la configuration</button>
+      <button class="btn-reset" onclick="resetSettings()">🔄 Réinitialiser (défaut)</button>
+    </div>
+
+    <div class="settings-warning" id="settingsWarning" style="display:none">
+      ⚠️ <strong>Attention :</strong> modifier les catégories ou les plages de numéros peut invalider les dossards déjà attribués.
+      Pensez à réinitialiser les numéros si vous changez les plages.
+    </div>
+  </div><!-- /panel-settings -->
+
+</div><!-- /main -->
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- Overlay de progression export PNG -->
+<div class="export-overlay hidden" id="exportOverlay">
+  <div class="export-modal">
+    <div class="export-modal-icon">💾</div>
+    <div class="export-modal-title" id="exportModalTitle">Génération des PNG…</div>
+    <div class="export-modal-sub"  id="exportModalSub">Préparation en cours…</div>
+    <div class="export-progress-bg">
+      <div class="export-progress-fill" id="exportProgressFill"></div>
+    </div>
+    <div class="export-progress-label" id="exportProgressLabel">0 / 0</div>
+    <button class="export-btn-cancel" onclick="cancelExport()">✕ Annuler</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
