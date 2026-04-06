@@ -1867,11 +1867,17 @@ function buildMailtoAnomalie(type, d) {
     const prenoms = [...new Set(entries.map(e => (e.prenom || '').trim()).filter(Boolean))];
     to      = emails.join(',');
     const salutation = prenoms.length ? prenoms.join(' et ') : 'toi';
+    const inscriptionsDetail = entries.map(e => {
+      const cats = allDossards.filter(dd => dd.id === e.id).map(dd => dd.cat);
+      const catsStr = cats.length ? cats.join(', ') : 'épreuve inconnue';
+      return `  - Inscription n°${e.id} (${e.email || '?'}) : ${catsStr}`;
+    }).join('\n');
     subject = 'Challenge Connecté 2026 — Vérification de ton inscription';
     body =
       `Bonjour ${salutation},\n\n` +
       `On est vraiment ravis de te compter parmi les participants au Challenge Connecté 2026 !\n\n` +
-      `On a détecté plusieurs inscriptions à ton nom dans notre système. ` +
+      `On a détecté plusieurs inscriptions à ton nom dans notre système :\n` +
+      `${inscriptionsDetail}\n\n` +
       `Pour valider définitivement ta participation, il te suffit de refaire ton inscription en une seule fois — ` +
       `rappelle-toi qu'une seule inscription peut contenir plusieurs courses ou marches !\n\n` +
       `Lien d'inscription :\n` +
