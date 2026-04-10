@@ -72,21 +72,21 @@
     /* Badge coin supérieur droit */
     .home-card-badge {
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 8px;
+      right: 8px;
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 3px 9px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: 0.3px;
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-size: 11px;
+      line-height: 1.4;
     }
     .home-card-badge--admin {
       color: var(--accent);
       border-color: var(--accent);
       background: rgba(247, 115, 180, 0.08);
+      font-size: 10px;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -190,7 +190,7 @@ function toggleTheme() {
     card.classList.add('home-card--locked');
     const badge = document.createElement('div');
     badge.className = 'home-card-badge';
-    badge.textContent = '🔒 Bientôt disponible';
+    badge.textContent = '🔒';
     card.insertBefore(badge, card.firstChild);
   }
 
