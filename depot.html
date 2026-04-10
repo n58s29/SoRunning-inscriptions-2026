@@ -2,104 +2,82 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Déposer votre preuve — Challenge Connecté 2026</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title>🩷 La Vie en Rose - Dépôt de preuve 🩷</title>
   <script async src="https://tally.so/widgets/embed.js"></script>
+  <link rel="stylesheet" href="style.css">
   <style>
-    .depot-form-wrapper {
-      width: 100%;
-      flex: 1;
-      min-height: 600px;
+    /* Pleine page pour l'iframe (activé dynamiquement) */
+    body.tally-fullpage {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
     }
-    .depot-form-wrapper iframe {
+    html.tally-fullpage {
+      height: 100%;
+      overflow: hidden;
+    }
+    #tallyFrame {
+      position: fixed;
+      top: 0; right: 0; bottom: 0; left: 0;
+      border: 0;
       width: 100%;
       height: 100%;
-      min-height: 600px;
-      border: 0;
-      display: block;
     }
   </style>
 </head>
 <body>
 
-<!-- ═══ HEADER ═══ -->
-<header>
-  <div class="logo">
-    <img class="logo-img" src="logo.png" alt="CC"
-         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-    <div class="logo-badge" style="display:none;">CC</div>
-    <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
-  </div>
-  <div class="header-right">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
-            title="Basculer mode clair / sombre">
-      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
-    </button>
-  </div>
-</header>
+<!-- ═══ PAS ENCORE DISPONIBLE (affiché par défaut, masqué si ouvert) ═══ -->
+<div id="lockedView">
 
-<!-- ═══ PAS ENCORE DISPONIBLE (visible si depotOpen = false) ═══ -->
-<div class="verify-page" id="lockedView" style="display:none;">
-  <div class="verify-hero">
-    <div class="verify-hero-icon">🔒</div>
-    <h1 class="verify-hero-title">Pas encore disponible</h1>
-    <p class="verify-hero-sub">
-      Cette section ouvrira après le jour de la course.<br>
-      Revenez ici pour déposer votre preuve de participation.
-    </p>
+  <header>
+    <div class="logo">
+      <img class="logo-img" src="logo.png" alt="CC"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="logo-badge" style="display:none;">CC</div>
+      <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
+              title="Basculer mode clair / sombre">
+        <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="verify-page">
+    <div class="verify-hero">
+      <div class="verify-hero-icon">🔒</div>
+      <h1 class="verify-hero-title">Pas encore disponible</h1>
+      <p class="verify-hero-sub">
+        Cette section ouvrira après le jour de la course.<br>
+        Revenez ici pour déposer votre preuve de participation.
+      </p>
+    </div>
+    <div class="verify-contact">
+      <p><a href="index.html">← Retour à l'accueil</a></p>
+    </div>
   </div>
-  <div class="verify-contact">
-    <p><a href="index.html">← Retour à l'accueil</a></p>
-  </div>
+
 </div>
 
-<!-- ═══ CONTENU (visible si depotOpen = true) ═══ -->
-<div class="verify-page" id="openView" style="display:none;">
-  <div class="verify-hero">
-    <div class="verify-hero-icon">📤</div>
-    <h1 class="verify-hero-title">Déposer votre preuve</h1>
-    <p class="verify-hero-sub">
-      Remplissez le formulaire ci-dessous pour soumettre votre temps
-      et votre preuve de participation au <strong>Challenge Connecté 2026</strong>.
-    </p>
-  </div>
-  <div class="verify-card" style="width:100%; font-size:14px; line-height:1.7;">
-    <p style="margin-bottom:12px;">Bravo pour ta participation au Challenge Connecté SoRunning SNCF 2026 "La Vie en Rose" ! 🩷<br>
-    Dépose ici ton résultat pour chaque épreuve réalisée entre le 8 et le 11 mai 2026.</p>
-
-    <p style="margin-bottom:8px; font-weight:600;">📌 Rappels :</p>
-    <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px; color:var(--muted);">
-      <li>→ <strong style="color:var(--text);">1 formulaire = 1 épreuve.</strong> Si tu as fait plusieurs épreuves (ex : Course 5K + Marche 10K), soumets un formulaire par épreuve.</li>
-      <li>→ Utilise la même <strong style="color:var(--text);">adresse e-mail</strong> que celle de ton inscription.</li>
-      <li>→ Ton temps au format <strong style="color:var(--text);">HH:MM:SS</strong> (ex : 01:45:23) — obligatoire pour les courses, facultatif pour les marches.</li>
-      <li>→ La <strong style="color:var(--text);">capture d'écran</strong> de ton appli (Strava, Garmin, Nike Run…) est obligatoire : elle doit montrer la distance et le temps.</li>
-      <li>→ Courses : classement au temps (général + Hommes/Femmes) / Marches : tirage au sort, pas de classement.</li>
-    </ul>
-
-    <p style="margin-top:14px; color:var(--accent); font-weight:600;">Have fun, have run ! 🩷</p>
-  </div>
-
-  <div class="depot-form-wrapper">
-    <iframe
-      data-tally-src="https://tally.so/r/KYJJOM"
-      width="100%"
-      height="100%"
-      frameborder="0"
-      marginheight="0"
-      marginwidth="0"
-      title="🩷 La Vie en Rose - Dépôt de preuve"
-    ></iframe>
-  </div>
-  <div class="verify-contact">
-    <p><a href="index.html">← Retour à l'accueil</a></p>
-  </div>
-</div>
+<!-- ═══ FORMULAIRE TALLY pleine page (injecté si ouvert) ═══ -->
+<iframe
+  id="tallyFrame"
+  data-tally-src="https://tally.so/r/KYJJOM"
+  width="100%"
+  height="100%"
+  frameborder="0"
+  marginheight="0"
+  marginwidth="0"
+  title="🩷 La Vie en Rose - Dépôt de preuve 🩷"
+  style="display:none;"
+></iframe>
 
 <script>
 /* ─── THÈME ─── */
 const THEME_KEY = 'challenge2026_theme';
-
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   const icon = document.getElementById('themeIcon');
@@ -107,8 +85,7 @@ function applyTheme(t) {
   localStorage.setItem(THEME_KEY, t);
 }
 function toggleTheme() {
-  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  applyTheme(cur === 'dark' ? 'light' : 'dark');
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
 }
 (function initTheme() {
   const saved = localStorage.getItem(THEME_KEY);
@@ -122,13 +99,15 @@ function toggleTheme() {
   let open = false;
   try {
     const res = await fetch('./config.json?t=' + Date.now());
-    if (res.ok) {
-      const cfg = await res.json();
-      open = !!cfg.depotOpen;
-    }
+    if (res.ok) open = !!(await res.json()).depotOpen;
   } catch {}
 
-  document.getElementById(open ? 'openView' : 'lockedView').style.display = 'flex';
+  if (open) {
+    document.getElementById('lockedView').style.display = 'none';
+    document.getElementById('tallyFrame').style.display = 'block';
+    document.documentElement.classList.add('tally-fullpage');
+    document.body.classList.add('tally-fullpage');
+  }
 })();
 </script>
 
