@@ -1933,6 +1933,37 @@ header {
 .verify-contact a:hover { text-decoration: underline; }
 
 /* Footer */
+/* ═══════════════════════════════════════════
+   BOUTON RETOUR ACCUEIL
+═══════════════════════════════════════════ */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.btn-back:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+/* Variante overlay (pleine page sans header) */
+.btn-back--fixed {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 999;
+}
+
 .verify-footer {
   margin-top: 16px;
   text-align: center;

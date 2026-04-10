@@ -5,31 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vérification d'inscription — Challenge Connecté 2026</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    #backBtn {
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      z-index: 999;
-      background: rgba(15,17,23,0.75);
-      color: #f0f2f8;
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 8px;
-      padding: 7px 14px;
-      font-family: 'Barlow', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      backdrop-filter: blur(6px);
-      transition: background 0.2s;
-    }
-    #backBtn:hover { background: rgba(15,17,23,0.95); }
-  </style>
 </head>
 
 <body>
-
-<a id="backBtn" href="index.html">← Accueil</a>
 
 <!-- ═══ HEADER ═══ -->
 <header>
@@ -39,6 +17,7 @@
     <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
   </div>
   <div class="header-right">
+    <a href="index.html" class="btn-back">← Accueil</a>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Basculer mode clair / sombre">
       <span class="theme-toggle-icon" id="themeIcon">🌙</span>
     </button>
