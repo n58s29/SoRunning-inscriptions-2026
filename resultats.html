@@ -289,13 +289,13 @@
 <script>
 (function() {
   const MDP = 'cc2026admin';
-  if (sessionStorage.getItem('admin_ok') === '1') {
+  if (sessionStorage.getItem('resultats_ok') === '1') {
     document.getElementById('loginOverlay').style.display = 'none';
   }
   window.checkLogin = function() {
     const val = document.getElementById('loginInput').value;
     if (val === MDP) {
-      sessionStorage.setItem('admin_ok', '1');
+      sessionStorage.setItem('resultats_ok', '1');
       document.getElementById('loginOverlay').style.display = 'none';
     } else {
       document.getElementById('loginError').style.display = 'block';
