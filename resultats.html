@@ -5,6 +5,246 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Résultats — Challenge Connecté 2026</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ─── Layout ─── */
+    .results-main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    /* ─── Zone chargement fichiers ─── */
+    .file-zone {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .file-box {
+      flex: 1;
+      min-width: 240px;
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .file-box:hover,
+    .file-box.active {
+      border-color: var(--accent);
+      background: rgba(247, 115, 180, 0.05);
+    }
+    .file-box input { display: none; }
+    .file-box .fb-icon { font-size: 28px; margin-bottom: 8px; }
+    .file-box .fb-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .file-box .fb-status { font-size: 12px; color: var(--muted); }
+
+    /* ─── Stats chips ─── */
+    .stats-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .stat-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 5px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .stat-chip span { color: var(--accent); }
+
+    /* ─── Onglets ─── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .tab {
+      padding: 7px 18px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .tab:hover { border-color: var(--accent); color: var(--text); }
+    .tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ─── Table ─── */
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    thead { background: var(--surface2); }
+    th {
+      padding: 10px 12px;
+      text-align: left;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    td {
+      padding: 9px 12px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody tr.row-alert { background: rgba(247, 115, 180, 0.06); }
+
+    .rank {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      color: var(--accent);
+    }
+    .rank-1 { color: #f9ca24; }
+    .rank-2 { color: #aaaaaa; }
+    .rank-3 { color: #cd7f32; }
+
+    .gender-tag {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+    .gender-H { background: rgba(46,134,222,.15); color: #2e86de; }
+    .gender-F { background: rgba(247,115,180,.15); color: var(--accent); }
+
+    .empty {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--muted);
+      font-size: 15px;
+      background: var(--surface);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    /* ─── Tirage au sort ─── */
+    #tirage-panel {
+      display: none;
+      text-align: center;
+      padding: 32px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    #tirage-panel h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    #tirage-panel p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+    .tirage-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px 36px;
+      border-radius: 99px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      box-shadow: 0 4px 20px rgba(247, 115, 180, 0.3);
+    }
+    .tirage-btn:hover { transform: scale(1.05); background: var(--pink-dark); }
+
+    .tirage-result { margin-top: 24px; min-height: 60px; }
+    .tirage-slot {
+      display: inline-block;
+      min-width: 280px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 32px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text);
+      overflow: hidden;
+    }
+    .tirage-slot.spinning .slot-name {
+      animation: slotSpin 0.08s steps(1) infinite;
+    }
+    @keyframes slotSpin {
+      0%   { transform: translateY(0); }
+      50%  { transform: translateY(-100%); }
+      100% { transform: translateY(0); }
+    }
+
+    .history-list {
+      list-style: none;
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .history-list li {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ─── Confettis ─── */
+    .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+    .confetti {
+      position: absolute;
+      width: 8px; height: 8px;
+      border-radius: 2px;
+      animation: confettiFall 2.5s ease-out forwards;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    @media (max-width: 600px) {
+      .file-zone { flex-direction: column; }
+      th, td { padding: 7px 8px; font-size: 12px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -39,25 +279,71 @@
   </div>
 </div>
 
-<!-- ═══ CONTENU (visible si resultatsOpen = true) ═══ -->
-<div class="verify-page" id="openView" style="display:none;">
-  <div class="verify-hero">
-    <div class="verify-hero-icon">🏆</div>
-    <h1 class="verify-hero-title">Résultats</h1>
-    <p class="verify-hero-sub">
-      Cette page est <strong>en construction</strong>.<br>
-      Le classement officiel sera bientôt disponible ici.
-    </p>
-  </div>
-  <div class="verify-contact">
-    <p><a href="index.html">← Retour à l'accueil</a></p>
+<!-- ═══ CLASSEMENTS (visible si resultatsOpen = true) ═══ -->
+<div id="openView" style="display:none;">
+  <div class="results-main">
+
+    <!-- Hero -->
+    <div style="margin-bottom:28px;">
+      <h1 style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;margin-bottom:6px;">
+        🏆 Classements <span style="color:var(--accent);">La Vie en Rose</span>
+      </h1>
+      <p style="color:var(--muted);font-size:14px;">
+        Chargez les deux fichiers CSV pour afficher les classements et le tirage au sort des marcheurs.
+      </p>
+    </div>
+
+    <!-- Chargement fichiers -->
+    <div class="file-zone">
+      <label class="file-box" id="box-results">
+        <input type="file" accept=".csv" onchange="loadResults(this.files[0])">
+        <div class="fb-icon">📊</div>
+        <div class="fb-label">Résultats (CSV Tally — virgule)</div>
+        <div class="fb-status" id="status-results">Cliquer ou glisser le fichier</div>
+      </label>
+      <label class="file-box" id="box-participants">
+        <input type="file" accept=".csv" onchange="loadParticipants(this.files[0])">
+        <div class="fb-icon">👥</div>
+        <div class="fb-label">Participants (CSV — point-virgule)</div>
+        <div class="fb-status" id="status-participants">Cliquer ou glisser le fichier</div>
+      </label>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar" id="stats-bar"></div>
+
+    <!-- Onglets -->
+    <div class="tabs" id="tabs"></div>
+
+    <!-- Table -->
+    <div class="table-wrap" id="table-container">
+      <div class="empty">Chargez les deux fichiers pour voir les classements 🩷</div>
+    </div>
+
+    <!-- Tirage au sort -->
+    <div id="tirage-panel">
+      <h2>🎲 Tirage au sort — Marcheurs</h2>
+      <p>Parmi tous les participants inscrits aux épreuves de marche</p>
+      <button class="tirage-btn" onclick="lancerTirage()">Tirer au sort !</button>
+      <div class="tirage-result">
+        <div class="tirage-slot" id="slot">
+          <span class="slot-name" id="slot-name">—</span>
+        </div>
+      </div>
+      <ul class="history-list" id="tirage-history"></ul>
+      <div class="confetti-container" id="confetti"></div>
+    </div>
+
+    <div style="margin-top:32px;text-align:center;">
+      <a href="index.html" style="color:var(--muted);font-size:13px;text-decoration:none;">← Retour à l'accueil</a>
+    </div>
+
   </div>
 </div>
 
 <script>
 /* ─── THÈME ─── */
 const THEME_KEY = 'challenge2026_theme';
-
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   const icon = document.getElementById('themeIcon');
@@ -65,8 +351,7 @@ function applyTheme(t) {
   localStorage.setItem(THEME_KEY, t);
 }
 function toggleTheme() {
-  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  applyTheme(cur === 'dark' ? 'light' : 'dark');
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
 }
 (function initTheme() {
   const saved = localStorage.getItem(THEME_KEY);
@@ -80,14 +365,298 @@ function toggleTheme() {
   let open = false;
   try {
     const res = await fetch('./config.json?t=' + Date.now());
-    if (res.ok) {
-      const cfg = await res.json();
-      open = !!cfg.resultatsOpen;
-    }
+    if (res.ok) open = !!(await res.json()).resultatsOpen;
   } catch {}
-
-  document.getElementById(open ? 'openView' : 'lockedView').style.display = 'flex';
+  document.getElementById(open ? 'openView' : 'lockedView').style.display = open ? 'block' : 'flex';
 })();
+
+/* ═══════════════════════════════════════════
+   LOGIQUE CLASSEMENTS
+═══════════════════════════════════════════ */
+let resultsData = [], participantsData = [];
+
+const EPREUVE_COLS = ['Course 5 km','Course 10 km','Course 21,1 km','Marche 5 km','Marche 10 km','Marche 21,1 km'];
+const COURSES     = ['Course 5 km','Course 10 km','Course 21,1 km'];
+const MARCHES     = ['Marche 5 km','Marche 10 km','Marche 21,1 km'];
+
+const DOSSARD_RANGES = {
+  'Course 5 km'   : [1,    999 ],
+  'Course 10 km'  : [1001, 1999],
+  'Course 21,1 km': [2001, 2999],
+  'Marche 5 km'   : [3001, 3999],
+  'Marche 10 km'  : [4001, 4999],
+  'Marche 21,1 km': [5001, 5999],
+};
+
+function parseCSV(text, delimiter) {
+  const lines = []; let cur = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"') { inQ = !inQ; }
+    else if ((c === '\n' || (c === '\r' && text[i+1] === '\n')) && !inQ) { if (c === '\r') i++; lines.push(cur); cur = ''; }
+    else if (c === '\r' && !inQ) { lines.push(cur); cur = ''; }
+    else { cur += c; }
+  }
+  if (cur.trim()) lines.push(cur);
+  return lines.map(l => {
+    const cells = []; let cell = '', q = false;
+    for (let i = 0; i < l.length; i++) {
+      const c = l[i];
+      if (c === '"') { q = !q; }
+      else if (c === delimiter && !q) { cells.push(cell.trim()); cell = ''; }
+      else { cell += c; }
+    }
+    cells.push(cell.trim());
+    return cells;
+  });
+}
+
+function normDossard(v) { return (v || '').replace(/\s/g, '').replace(/^0+/, '') || '0'; }
+function tempsToSec(t) { const p = t.split(':').map(Number); return (p[0]||0)*3600 + (p[1]||0)*60 + (p[2]||0); }
+function findParticipant(dossard, epreuve) { return participantsData.find(p => p.dossards[epreuve] === dossard); }
+
+function getCategorie(age, sexe) {
+  const s = sexe === 'Homme' ? 'H' : 'F';
+  if (age < 20) return 'ESP ' + s; if (age < 30) return 'SEN ' + s;
+  if (age < 40) return 'M0 '  + s; if (age < 50) return 'M1 '  + s;
+  if (age < 60) return 'M2 '  + s; if (age < 70) return 'M3 '  + s;
+  return 'M4+ ' + s;
+}
+
+function checkAlerts(r, p) {
+  const alerts = [];
+  if (!p) alerts.push('Dossard inconnu');
+  const range = DOSSARD_RANGES[r.epreuve];
+  const num = parseInt(r.dossard) || 0;
+  if (range && (num < range[0] || num > range[1])) {
+    const actual = Object.entries(DOSSARD_RANGES).find(([, rng]) => num >= rng[0] && num <= rng[1]);
+    alerts.push('Dossard hors plage' + (actual ? ' (→ ' + actual[0] + ' ?)' : ''));
+  }
+  if (p && r.initiales) {
+    const expected = (p.prenom[0] + p.nom[0]).toLowerCase();
+    const given    = r.initiales.toLowerCase().replace(/[\s.]/g, '');
+    if (given !== expected) alerts.push('Initiales "' + r.initiales + '" ≠ ' + p.prenom[0] + p.nom[0]);
+  }
+  return alerts;
+}
+
+function loadResults(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const rows = parseCSV(e.target.result, ',');
+    const hdr = rows[0];
+    const iEp   = hdr.findIndex(h => h.toLowerCase().includes('preuve') || h.toLowerCase().includes('épreuve'));
+    const iDos  = hdr.findIndex(h => h.toLowerCase().includes('dossard'));
+    const iTps  = hdr.findIndex(h => h.toLowerCase().includes('temps'));
+    const iInit = hdr.findIndex(h => h.toLowerCase().includes('initiales'));
+    resultsData = rows.slice(1)
+      .filter(r => r.length > Math.max(iEp, iDos, iTps))
+      .map(r => ({
+        epreuve  : r[iEp],
+        dossard  : normDossard(r[iDos]),
+        temps    : r[iTps].replace(/\s/g, ''),
+        initiales: r[iInit] || '',
+      }))
+      .filter(r => r.epreuve && r.dossard && r.temps);
+    document.getElementById('box-results').classList.add('active');
+    document.getElementById('status-results').textContent = '✓ ' + resultsData.length + ' résultats';
+    render();
+  };
+  r.readAsText(file);
+}
+
+function loadParticipants(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const rows = parseCSV(e.target.result, ';');
+    const hdr = rows[0].map(h => h.replace(/^\uFEFF/, '').replace(/^"|"$/g, ''));
+    const colIdx = {};
+    EPREUVE_COLS.forEach(ep => { const i = hdr.findIndex(h => h === ep); if (i >= 0) colIdx[ep] = i; });
+    const iSexe    = hdr.findIndex(h => h === 'Sexe');
+    const iAge     = hdr.findIndex(h => /ge$/i.test(h) || h === 'Âge' || h === 'Age');
+    const iRegion  = hdr.findIndex(h => h.includes('gion'));
+    const iSociete = hdr.findIndex(h => h.includes('Soci'));
+    participantsData = rows.slice(1)
+      .filter(r => r.length > 3 && r[0])
+      .map(r => {
+        const dossards = {};
+        EPREUVE_COLS.forEach(ep => {
+          if (colIdx[ep] !== undefined) {
+            const v = (r[colIdx[ep]] || '').trim();
+            if (v) dossards[ep] = normDossard(v);
+          }
+        });
+        return {
+          nom     : r[0] || '',
+          prenom  : r[1] || '',
+          sexe    : (r[iSexe] || '').trim(),
+          age     : parseInt(r[iAge]) || 0,
+          region  : r[iRegion]  || '',
+          societe : r[iSociete] || '',
+          dossards,
+        };
+      })
+      .filter(p => p.nom);
+    document.getElementById('box-participants').classList.add('active');
+    document.getElementById('status-participants').textContent = '✓ ' + participantsData.length + ' participants';
+    render();
+  };
+  r.readAsText(file);
+}
+
+function buildClassement(epreuve) {
+  return resultsData
+    .filter(r => r.epreuve === epreuve)
+    .map(r => {
+      const p      = findParticipant(r.dossard, epreuve);
+      const alerts = checkAlerts(r, p);
+      return {
+        dossard  : r.dossard,
+        temps    : r.temps,
+        sec      : tempsToSec(r.temps),
+        initiales: r.initiales,
+        nom      : p ? p.nom     : '—',
+        prenom   : p ? p.prenom  : '—',
+        sexe     : p ? p.sexe    : '',
+        age      : p ? p.age     : 0,
+        societe  : p ? p.societe : '',
+        categorie: p ? getCategorie(p.age, p.sexe) : '—',
+        alerts,
+      };
+    })
+    .sort((a, b) => a.sec - b.sec);
+}
+
+function getMarcheurs() { return participantsData.filter(p => MARCHES.some(m => p.dossards[m])); }
+
+let currentTab = null;
+
+function render() {
+  const epreuves  = [...new Set(resultsData.map(r => r.epreuve))];
+  const marcheurs = getMarcheurs();
+
+  // Stats
+  const sb = document.getElementById('stats-bar'); sb.innerHTML = '';
+  if (participantsData.length) sb.innerHTML += `<div class="stat-chip">👥 <span>${participantsData.length}</span> participants</div>`;
+  if (resultsData.length)      sb.innerHTML += `<div class="stat-chip">🏁 <span>${resultsData.length}</span> résultats</div>`;
+  if (marcheurs.length)        sb.innerHTML += `<div class="stat-chip">🚶 <span>${marcheurs.length}</span> marcheurs</div>`;
+
+  // Onglets
+  const tabs    = document.getElementById('tabs'); tabs.innerHTML = '';
+  const allTabs = [...COURSES.filter(c => epreuves.includes(c))];
+  if (marcheurs.length) allTabs.push('🎲 Tirage Marcheurs');
+  if (!currentTab && allTabs.length) currentTab = allTabs[0];
+  allTabs.forEach(t => {
+    const btn = document.createElement('div');
+    btn.className = 'tab' + (currentTab === t ? ' active' : '');
+    btn.textContent = t;
+    btn.onclick = () => { currentTab = t; render(); };
+    tabs.appendChild(btn);
+  });
+
+  const tc = document.getElementById('table-container');
+  const tp = document.getElementById('tirage-panel');
+
+  if (currentTab === '🎲 Tirage Marcheurs') {
+    tc.innerHTML = '';
+    tp.style.display = 'block';
+    return;
+  }
+  tp.style.display = 'none';
+
+  if (!currentTab || !epreuves.includes(currentTab)) {
+    tc.innerHTML = '<div class="empty">Chargez les fichiers pour afficher les classements</div>';
+    return;
+  }
+
+  const data = buildClassement(currentTab);
+  if (!data.length) {
+    tc.innerHTML = '<div class="empty">Aucun résultat pour cette épreuve</div>';
+    return;
+  }
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Doss.</th>
+        <th>Nom</th>
+        <th>Temps</th>
+        <th>Cat.</th>
+        <th>Société</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  data.forEach((d, i) => {
+    const rankClass = i < 3 ? ` rank-${i+1}` : '';
+    const genderTag = d.sexe ? `<span class="gender-tag gender-${d.sexe[0]}">${d.sexe[0]}</span>` : '';
+    const warn      = d.alerts.length ? `<span title="${d.alerts.join('\n')}" style="cursor:help">⚠️</span>` : '';
+    html += `<tr${d.alerts.length ? ' class="row-alert"' : ''}>
+      <td class="rank${rankClass}">${i + 1}</td>
+      <td>${d.dossard}</td>
+      <td>${genderTag}${d.prenom} ${d.nom}</td>
+      <td><strong>${d.temps}</strong></td>
+      <td>${d.categorie}</td>
+      <td style="color:var(--muted);font-size:13px;">${d.societe}</td>
+      <td>${warn}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  tc.innerHTML = html;
+}
+
+/* ─── Tirage au sort ─── */
+let tirageRunning = false;
+const tirageWinners = [];
+
+function lancerTirage() {
+  if (tirageRunning) return;
+  const marcheurs = getMarcheurs();
+  if (!marcheurs.length) { document.getElementById('slot-name').textContent = 'Aucun marcheur'; return; }
+  tirageRunning = true;
+  const slot   = document.getElementById('slot');
+  const nameEl = document.getElementById('slot-name');
+  slot.classList.add('spinning');
+  let count = 0;
+  const iv = setInterval(() => {
+    const rand = marcheurs[Math.floor(Math.random() * marcheurs.length)];
+    nameEl.textContent = `${rand.prenom} ${rand.nom}`;
+    count++;
+    if (count >= 30) {
+      clearInterval(iv);
+      slot.classList.remove('spinning');
+      const winner = marcheurs[Math.floor(Math.random() * marcheurs.length)];
+      nameEl.textContent = `🩷 ${winner.prenom} ${winner.nom} 🩷`;
+      tirageWinners.push(`${winner.prenom} ${winner.nom}`);
+      document.getElementById('tirage-history').innerHTML =
+        tirageWinners.map((w, i) => `<li>#${i+1} ${w}</li>`).join('');
+      tirageRunning = false;
+      launchConfetti();
+    }
+  }, 80);
+}
+
+function launchConfetti() {
+  const c = document.getElementById('confetti'); c.innerHTML = '';
+  const colors = ['#f773b4', '#f7bfd9', '#f9ca24', '#ffffff', '#e0559a', '#ff6b81'];
+  for (let i = 0; i < 60; i++) {
+    const d = document.createElement('div');
+    d.className = 'confetti';
+    d.style.left             = Math.random() * 100 + '%';
+    d.style.top              = '-10px';
+    d.style.background       = colors[Math.floor(Math.random() * colors.length)];
+    d.style.animationDelay   = Math.random() + 's';
+    d.style.width            = (4 + Math.random() * 8) + 'px';
+    d.style.height           = (4 + Math.random() * 8) + 'px';
+    c.appendChild(d);
+  }
+  setTimeout(() => c.innerHTML = '', 3000);
+}
 </script>
 
 </body>
