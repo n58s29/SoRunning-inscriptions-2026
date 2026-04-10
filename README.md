@@ -39,6 +39,23 @@ Les boutons "Déposer votre preuve" et "Résultats" affichent un badge **🔒 Bi
 
 ---
 
+## Page résultats (`resultats.html`)
+
+Activée via `config.json` (`resultatsOpen: true`). Chargement de deux fichiers CSV :
+
+| Fichier | Format | Source |
+|---|---|---|
+| Résultats | CSV virgule | Export Tally |
+| Participants | CSV point-virgule | Export admin |
+
+Fonctionnalités :
+- Classements par épreuve (Course 5/10/21,1 km) triés au temps
+- Catégories d'âge et genre (ESP/SEN/M0…M4+, H/F)
+- Détection d'alertes : dossard inconnu, hors plage, initiales incorrectes
+- Tirage au sort animé pour les marcheurs (avec confettis)
+
+---
+
 ## Activation des pages (`config.json`)
 
 ```json

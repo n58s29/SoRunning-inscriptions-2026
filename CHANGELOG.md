@@ -5,6 +5,20 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.4.0] — 2026-04-10
+
+### Ajouté
+- **Page résultats** (`resultats.html`) : classements complets avec chargement de deux CSV (Tally + participants), onglets par épreuve, détection d'alertes (dossard inconnu, hors plage, initiales incorrectes), tirage au sort animé pour les marcheurs avec confettis. Design system du repo (dark/light mode).
+- **Formulaire Tally** embarqué en pleine page dans `depot.html` (flag `depotOpen: true`).
+- **Classe `.btn-back`** dans `style.css` : bouton retour accueil unifié (haut droite du header, même style sur toutes les pages).
+
+### Modifié
+- Page d'accueil : suppression du hero (icône, titre, sous-titre) et réduction de la taille des cartes.
+- Badge "bientôt disponible" réduit à un simple 🔒 pour ne pas masquer les icônes des cartes.
+- Bouton "← Accueil" déplacé dans le header (haut droite) sur `verify.html`, `depot.html` et `resultats.html`, en remplacement des liens disparates dans les footers.
+
+---
+
 ## [1.3.0] — 2026-04-10
 
 ### Ajouté
