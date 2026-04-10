@@ -7,86 +7,118 @@
   <link rel="stylesheet" href="style.css">
   <style>
     .home-page {
-      max-width: 600px;
+      max-width: 640px;
       margin: 0 auto;
-      padding: 40px 24px 60px;
+      padding: 48px 24px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
     }
 
-    /* ─── Grille ─── */
-    .home-grid {
+    /* ─── Cartes utilisateur ─── */
+    .user-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 16px;
     }
-    @media (max-width: 480px) {
-      .home-grid { grid-template-columns: 1fr; }
-    }
-
-    /* ─── Card ─── */
-    .home-card {
+    .user-card {
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 20px 16px 18px;
+      padding: 32px 20px 28px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 16px;
       text-decoration: none;
       color: var(--text);
       cursor: pointer;
       transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
       overflow: hidden;
     }
-    .home-card:hover {
+    .user-card:hover {
       border-color: var(--accent);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(247, 115, 180, 0.12);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 36px rgba(247, 115, 180, 0.15);
     }
-
-    /* Carte verrouillée (générée dynamiquement via JS) */
-    .home-card--locked {
-      opacity: 0.5;
+    .user-card--locked {
+      opacity: 0.45;
       cursor: not-allowed;
       pointer-events: none;
     }
-
-    .home-card-icon {
-      font-size: 28px;
+    .user-card-icon {
+      font-size: 40px;
       line-height: 1;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
     }
-    .home-card-title {
+    .user-card-title {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 17px;
+      font-size: 20px;
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .home-card-desc {
-      font-size: 12px;
+    .user-card-desc {
+      font-size: 13px;
       color: var(--muted);
       line-height: 1.5;
     }
-
-    /* Badge coin supérieur droit */
-    .home-card-badge {
+    .user-card-badge {
       position: absolute;
-      top: 8px;
-      right: 8px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      padding: 2px 5px;
-      font-size: 11px;
-      line-height: 1.4;
+      top: 10px;
+      right: 10px;
+      font-size: 13px;
+      line-height: 1;
     }
-    .home-card-badge--admin {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: rgba(247, 115, 180, 0.08);
-      font-size: 10px;
+
+    /* ─── Séparateur organisateurs ─── */
+    .admin-separator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
       font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .admin-separator::before,
+    .admin-separator::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── Cartes admin ─── */
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .admin-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .admin-card:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+    .admin-card-icon { font-size: 18px; flex-shrink: 0; }
+
+    @media (max-width: 480px) {
+      .user-grid  { grid-template-columns: 1fr; }
+      .admin-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -111,52 +143,46 @@
 <!-- ═══ CONTENU ═══ -->
 <div class="home-page">
 
-  <div class="home-grid">
+  <!-- Cartes participants -->
+  <div class="user-grid">
 
-    <!-- Vérification inscription -->
-    <a href="verify.html" class="home-card">
-      <div class="home-card-icon">🔍</div>
-      <div class="home-card-title">Vérifier mon inscription</div>
-      <div class="home-card-desc">
-        Confirmez votre participation et retrouvez vos informations d'inscription
-      </div>
+    <a href="verify.html" class="user-card">
+      <div class="user-card-icon">🔍</div>
+      <div class="user-card-title">Vérifier mon inscription</div>
+      <div class="user-card-desc">Confirmez votre participation et retrouvez vos informations</div>
     </a>
 
-    <!-- Administration -->
-    <a href="admin.html" class="home-card">
-      <div class="home-card-badge home-card-badge--admin">🔒 Organisateurs</div>
-      <div class="home-card-icon">⚙️</div>
-      <div class="home-card-title">Administration</div>
-      <div class="home-card-desc">
-        Gestion des dossards, exports et suivi des inscriptions
-      </div>
-    </a>
-
-    <!-- Déposer preuve — état contrôlé par config.json -->
-    <a href="depot.html" class="home-card" id="card-depot">
-      <div class="home-card-icon">📤</div>
-      <div class="home-card-title">Déposer votre preuve</div>
-      <div class="home-card-desc">
-        Soumettez votre temps, photo ou lien Strava après la course
-      </div>
-    </a>
-
-    <!-- Résultats — état contrôlé par config.json -->
-    <a href="resultats.html" class="home-card" id="card-resultats">
-      <div class="home-card-icon">🏆</div>
-      <div class="home-card-title">Résultats</div>
-      <div class="home-card-desc">
-        Consultez le classement officiel du Challenge Connecté 2026
-      </div>
+    <a href="depot.html" class="user-card" id="card-depot">
+      <div class="user-card-icon">📤</div>
+      <div class="user-card-title">Déposer ma preuve</div>
+      <div class="user-card-desc">Soumettez votre temps et votre preuve après la course</div>
     </a>
 
   </div>
+
+  <!-- Séparateur -->
+  <div class="admin-separator">🔒 Espace organisateurs</div>
+
+  <!-- Cartes admin -->
+  <div class="admin-grid">
+
+    <a href="admin.html" class="admin-card">
+      <span class="admin-card-icon">⚙️</span>
+      <span>Administration</span>
+    </a>
+
+    <a href="resultats.html" class="admin-card" id="card-resultats">
+      <span class="admin-card-icon">🏆</span>
+      <span>Résultats</span>
+    </a>
+
+  </div>
+
 </div>
 
 <script>
 /* ─── THÈME ─── */
 const THEME_KEY = 'challenge2026_theme';
-
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   const icon = document.getElementById('themeIcon');
@@ -164,8 +190,7 @@ function applyTheme(t) {
   localStorage.setItem(THEME_KEY, t);
 }
 function toggleTheme() {
-  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  applyTheme(cur === 'dark' ? 'light' : 'dark');
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
 }
 (function initTheme() {
   const saved = localStorage.getItem(THEME_KEY);
@@ -175,7 +200,7 @@ function toggleTheme() {
 })();
 
 /* ─── CONFIG ─── */
-(async function applyConfig() {
+(async function() {
   let cfg;
   try {
     const res = await fetch('./config.json?t=' + Date.now());
@@ -183,19 +208,23 @@ function toggleTheme() {
     cfg = await res.json();
   } catch { return; }
 
-  function lockCard(cardId) {
-    const card = document.getElementById(cardId);
-    if (!card) return;
+  if (!cfg.depotOpen) {
+    const card = document.getElementById('card-depot');
     card.removeAttribute('href');
-    card.classList.add('home-card--locked');
+    card.classList.add('user-card--locked');
     const badge = document.createElement('div');
-    badge.className = 'home-card-badge';
+    badge.className = 'user-card-badge';
     badge.textContent = '🔒';
     card.insertBefore(badge, card.firstChild);
   }
 
-  if (!cfg.depotOpen)     lockCard('card-depot');
-  if (!cfg.resultatsOpen) lockCard('card-resultats');
+  if (!cfg.resultatsOpen) {
+    const card = document.getElementById('card-resultats');
+    card.removeAttribute('href');
+    card.style.opacity = '0.4';
+    card.style.cursor = 'not-allowed';
+    card.style.pointerEvents = 'none';
+  }
 })();
 </script>
 
