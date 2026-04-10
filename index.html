@@ -3,78 +3,231 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vérification d'inscription — Challenge Connecté 2026</title>
+  <title>Challenge Connecté 2026</title>
   <link rel="stylesheet" href="style.css">
-</head>
+  <style>
+    .home-page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
 
+    /* ─── Hero ─── */
+    .home-hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .home-hero-icon {
+      font-size: 60px;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .home-hero-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .home-hero-title span { color: var(--accent); }
+    .home-hero-sub {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    /* ─── Grille ─── */
+    .home-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 560px) {
+      .home-grid { grid-template-columns: 1fr; }
+      .home-hero-title { font-size: 30px; }
+    }
+
+    /* ─── Card ─── */
+    .home-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 36px 24px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      overflow: hidden;
+    }
+    .home-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 36px rgba(247, 115, 180, 0.12);
+    }
+
+    /* Carte verrouillée (générée dynamiquement via JS) */
+    .home-card--locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .home-card-icon {
+      font-size: 48px;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .home-card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .home-card-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* Badge coin supérieur droit */
+    .home-card-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+    }
+    .home-card-badge--admin {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(247, 115, 180, 0.08);
+    }
+  </style>
+</head>
 <body>
 
 <!-- ═══ HEADER ═══ -->
 <header>
   <div class="logo">
-    <img class="logo-img" src="logo.png" alt="CC" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <img class="logo-img" src="logo.png" alt="CC"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
     <div class="logo-badge" style="display:none;">CC</div>
     <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
   </div>
   <div class="header-right">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Basculer mode clair / sombre">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
+            title="Basculer mode clair / sombre">
       <span class="theme-toggle-icon" id="themeIcon">🌙</span>
     </button>
   </div>
 </header>
 
-<!-- ═══ VERIFY PAGE ═══ -->
-<div class="verify-page">
+<!-- ═══ CONTENU ═══ -->
+<div class="home-page">
 
-  <!-- Hero -->
-  <div class="verify-hero">
-    <div class="verify-hero-icon">🏅</div>
-    <h1 class="verify-hero-title">Vérifiez votre inscription</h1>
-    <p class="verify-hero-sub">
-      Entrez votre identifiant d'inscription pour vérifier votre participation
-      au <strong>Challenge Connecté 2026</strong>.
-    </p>
-    <div class="verify-hero-count" id="csvParticipantCount"></div>
+  <div class="home-hero">
+    <div class="home-hero-icon">🏅</div>
+    <h1 class="home-hero-title">Challenge <span>Connecté</span> 2026</h1>
+    <p class="home-hero-sub">Que souhaitez-vous faire ?</p>
   </div>
 
-  <!-- Search card -->
-  <div class="verify-card">
-    <label class="verify-label" for="idInput">Identifiant d'inscription</label>
-    <div class="verify-search-row">
-      <input
-        class="verify-input"
-        type="text"
-        id="idInput"
-        placeholder="Ex : 12345"
-        autocomplete="off"
-        spellcheck="false"
-      >
-      <button class="verify-btn" onclick="doVerify()">Vérifier</button>
-    </div>
-    <p class="verify-hint">
-      Votre identifiant vous a été envoyé par mail — pensez à vérifier vos spams.
-    </p>
-    <p class="verify-hint">
-      Les données sont mises à jour régulièrement. Si votre inscription est récente, comptez <strong>24 à 48h</strong> avant qu'elle apparaisse ici.
-    </p>
+  <div class="home-grid">
+
+    <!-- Vérification inscription -->
+    <a href="verify.html" class="home-card">
+      <div class="home-card-icon">🔍</div>
+      <div class="home-card-title">Vérifier mon inscription</div>
+      <div class="home-card-desc">
+        Confirmez votre participation et retrouvez vos informations d'inscription
+      </div>
+    </a>
+
+    <!-- Administration -->
+    <a href="admin.html" class="home-card">
+      <div class="home-card-badge home-card-badge--admin">🔒 Organisateurs</div>
+      <div class="home-card-icon">⚙️</div>
+      <div class="home-card-title">Administration</div>
+      <div class="home-card-desc">
+        Gestion des dossards, exports et suivi des inscriptions
+      </div>
+    </a>
+
+    <!-- Déposer preuve — état contrôlé par config.json -->
+    <a href="depot.html" class="home-card" id="card-depot">
+      <div class="home-card-icon">📤</div>
+      <div class="home-card-title">Déposer votre preuve</div>
+      <div class="home-card-desc">
+        Soumettez votre temps, photo ou lien Strava après la course
+      </div>
+    </a>
+
+    <!-- Résultats — état contrôlé par config.json -->
+    <a href="resultats.html" class="home-card" id="card-resultats">
+      <div class="home-card-icon">🏆</div>
+      <div class="home-card-title">Résultats</div>
+      <div class="home-card-desc">
+        Consultez le classement officiel du Challenge Connecté 2026
+      </div>
+    </a>
+
   </div>
+</div>
 
-  <!-- Contact -->
-  <div class="verify-contact">
-    <p>Pour toute question, contactez-nous par mail à <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
-    ou postez un message sur <a href="https://engage.cloud.microsoft/main/groups/eyJfdHlwZSI6Ikdyb3VwIiwiaWQiOiI2Nzg4NTg4In0" target="_blank" rel="noopener noreferrer">Viva Engage</a>.</p>
-  </div>
+<script>
+/* ─── THÈME ─── */
+const THEME_KEY = 'challenge2026_theme';
 
-  <!-- Result area -->
-  <div class="verify-status" id="verifyStatus" style="display:none"></div>
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem(THEME_KEY, t);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
+})();
 
-  <!-- Footer discreet admin link -->
-  <footer class="verify-footer">
-    <a href="admin.html" class="verify-admin-link">Administration</a>
-  </footer>
+/* ─── CONFIG ─── */
+(async function applyConfig() {
+  let cfg;
+  try {
+    const res = await fetch('./config.json?t=' + Date.now());
+    if (!res.ok) return;
+    cfg = await res.json();
+  } catch { return; }
 
-</div><!-- /verify-page -->
+  function lockCard(cardId) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    card.removeAttribute('href');
+    card.classList.add('home-card--locked');
+    const badge = document.createElement('div');
+    badge.className = 'home-card-badge';
+    badge.textContent = '🔒 Bientôt disponible';
+    card.insertBefore(badge, card.firstChild);
+  }
 
-<script src="verify.js"></script>
+  if (!cfg.depotOpen)     lockCard('card-depot');
+  if (!cfg.resultatsOpen) lockCard('card-resultats');
+})();
+</script>
+
 </body>
 </html>

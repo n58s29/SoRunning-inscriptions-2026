@@ -5,6 +5,21 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.3.0] — 2026-04-10
+
+### Ajouté
+- **Page d'accueil** (`index.html`) : portail principal avec quatre boutons vers les différentes sections du site.
+- **Page "Déposer votre preuve"** (`depot.html`) : page contrôlée par `config.json`, affiche "Pas encore disponible" ou le contenu selon le flag `depotOpen`.
+- **Page "Résultats"** (`resultats.html`) : page contrôlée par `config.json`, affiche "Pas encore disponible" ou le contenu selon le flag `resultatsOpen`.
+- **`config.json`** : fichier de configuration permettant d'activer/désactiver `depot.html` et `resultats.html` depuis GitHub sans modifier le code.
+- Lien **"← Accueil"** dans le footer de `verify.html`.
+
+### Modifié
+- L'ancienne `index.html` (vérification d'inscription) est renommée `verify.html`.
+- `home.html` redirige automatiquement vers `index.html` pour compatibilité des anciens liens.
+
+---
+
 ## [1.2.0] — 2026-04-06
 
 ### Ajouté

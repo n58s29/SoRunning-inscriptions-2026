@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Résultats — Challenge Connecté 2026</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="logo">
+    <img class="logo-img" src="logo.png" alt="CC"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="logo-badge" style="display:none;">CC</div>
+    <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
+  </div>
+  <div class="header-right">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
+            title="Basculer mode clair / sombre">
+      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══ PAS ENCORE DISPONIBLE (visible si resultatsOpen = false) ═══ -->
+<div class="verify-page" id="lockedView" style="display:none;">
+  <div class="verify-hero">
+    <div class="verify-hero-icon">🔒</div>
+    <h1 class="verify-hero-title">Pas encore disponible</h1>
+    <p class="verify-hero-sub">
+      Les résultats seront publiés après la clôture des dépôts de preuves.<br>
+      Revenez ici pour découvrir le classement officiel.
+    </p>
+  </div>
+  <div class="verify-contact">
+    <p><a href="index.html">← Retour à l'accueil</a></p>
+  </div>
+</div>
+
+<!-- ═══ CONTENU (visible si resultatsOpen = true) ═══ -->
+<div class="verify-page" id="openView" style="display:none;">
+  <div class="verify-hero">
+    <div class="verify-hero-icon">🏆</div>
+    <h1 class="verify-hero-title">Résultats</h1>
+    <p class="verify-hero-sub">
+      Cette page est <strong>en construction</strong>.<br>
+      Le classement officiel sera bientôt disponible ici.
+    </p>
+  </div>
+  <div class="verify-contact">
+    <p><a href="index.html">← Retour à l'accueil</a></p>
+  </div>
+</div>
+
+<script>
+/* ─── THÈME ─── */
+const THEME_KEY = 'challenge2026_theme';
+
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem(THEME_KEY, t);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
+})();
+
+/* ─── CONFIG ─── */
+(async function() {
+  let open = false;
+  try {
+    const res = await fetch('./config.json?t=' + Date.now());
+    if (res.ok) {
+      const cfg = await res.json();
+      open = !!cfg.resultatsOpen;
+    }
+  } catch {}
+
+  document.getElementById(open ? 'openView' : 'lockedView').style.display = 'flex';
+})();
+</script>
+
+</body>
+</html>

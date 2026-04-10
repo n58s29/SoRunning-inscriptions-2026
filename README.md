@@ -1,6 +1,6 @@
 # SoRunning Inscriptions 2026 — Challenge Connecté
 
-Outil de gestion des inscriptions et de génération de dossards pour le **Challenge Connecté 2026**, ainsi qu'une page publique permettant aux participants de vérifier leur inscription.
+Outil de gestion des inscriptions et de génération de dossards pour le **Challenge Connecté 2026**, ainsi qu'un espace public permettant aux participants de vérifier leur inscription, déposer leur preuve de participation et consulter les résultats.
 
 ---
 
@@ -8,8 +8,12 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 
 ```
 /
-├── index.html          # Page publique — vérification d'inscription
+├── index.html          # Page d'accueil — portail principal
+├── verify.html         # Page publique — vérification d'inscription
+├── depot.html          # Page publique — dépôt de preuve (activable)
+├── resultats.html      # Page publique — résultats (activable)
 ├── admin.html          # Outil d'administration (accès restreint)
+├── config.json         # Flags d'activation des pages depot et résultats
 ├── verify.js           # Logique de la page de vérification
 ├── script.js           # Logique de l'outil admin
 ├── style.css           # Design system partagé (dark/light mode)
@@ -20,7 +24,40 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 
 ---
 
-## Page publique — Vérification d'inscription (`index.html`)
+## Page d'accueil (`index.html`)
+
+Portail d'entrée du site. Présente quatre boutons d'accès :
+
+| Bouton | Destination | Accès |
+|---|---|---|
+| Vérifier mon inscription | `verify.html` | Libre |
+| Administration | `admin.html` | Protégé par mot de passe |
+| Déposer votre preuve | `depot.html` | Contrôlé par `config.json` |
+| Résultats | `resultats.html` | Contrôlé par `config.json` |
+
+Les boutons "Déposer votre preuve" et "Résultats" affichent un badge **🔒 Bientôt disponible** et sont désactivés tant que les flags correspondants sont à `false` dans `config.json`.
+
+---
+
+## Activation des pages (`config.json`)
+
+```json
+{
+  "depotOpen": false,
+  "resultatsOpen": false
+}
+```
+
+Pour ouvrir une page, modifier le flag correspondant à `true` directement sur GitHub (interface web) et pousser. La modification est effective dès le déploiement GitHub Pages (quelques secondes).
+
+- `depotOpen: true` → active la page de dépôt de preuve
+- `resultatsOpen: true` → active la page des résultats
+
+Tant qu'un flag est à `false`, la page affiche un écran **"Pas encore disponible"** si on accède directement à son URL.
+
+---
+
+## Page publique — Vérification d'inscription (`verify.html`)
 
 Accessible à tous les participants. Permet de confirmer son inscription en saisissant son **identifiant d'inscription** reçu par email.
 
@@ -100,4 +137,4 @@ Le site est servi directement depuis la branche `main`. Aucune étape de build r
 
 URL publique : `https://n58s29.github.io/SoRunning-inscriptions-2026/`
 
-> Le lien "Administration" en bas de la page de vérification (`index.html`) pointe vers `admin.html`. Il est volontairement discret. La page est protégée par mot de passe à l'ouverture.
+> Le lien "Administration" en bas de la page de vérification pointe vers `admin.html`. Il est volontairement discret. La page est protégée par mot de passe à l'ouverture.
