@@ -5,6 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vérification d'inscription — Challenge Connecté 2026</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ─── Hero compact ─── */
+    .verify-hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 4px 0 0;
+      text-align: left;
+    }
+    .verify-hero-icon { font-size: 28px; line-height: 1; flex-shrink: 0; margin-bottom: 0; }
+    .verify-hero-title { font-size: 24px; margin-bottom: 0; }
+    .verify-hero-sub { display: none; }
+    .verify-hero-count {
+      margin-top: 0;
+      margin-left: auto;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    /* ─── Carte plus aérée sur les hints ─── */
+    .verify-card { padding: 22px 28px; }
+
+    /* ─── Pas de scroll inutile : réduire le gap global ─── */
+    .verify-page { gap: 16px; padding-top: 28px; }
+  </style>
 </head>
 
 <body>
@@ -28,20 +53,16 @@
 <!-- ═══ VERIFY PAGE ═══ -->
 <div class="verify-page">
 
-  <!-- Hero -->
+  <!-- Hero compact -->
   <div class="verify-hero">
     <div class="verify-hero-icon">🏅</div>
-    <h1 class="verify-hero-title">Vérifiez votre inscription</h1>
-    <p class="verify-hero-sub">
-      Entrez votre identifiant d'inscription pour vérifier votre participation
-      au <strong>Challenge Connecté 2026</strong>.
-    </p>
+    <h1 class="verify-hero-title">Vérifier mon inscription</h1>
     <div class="verify-hero-count" id="csvParticipantCount"></div>
   </div>
 
   <!-- Search card -->
   <div class="verify-card">
-    <label class="verify-label" for="idInput">Identifiant d'inscription</label>
+    <label class="verify-label" for="idInput">Numéro d'inscription reçu par mail</label>
     <div class="verify-search-row">
       <input
         class="verify-input"
@@ -54,28 +75,28 @@
       <button class="verify-btn" onclick="doVerify()">Vérifier</button>
     </div>
     <p class="verify-hint">
-      Votre identifiant vous a été envoyé par mail — pensez à vérifier vos spams.
+      ⚠️ Il s'agit de votre <strong>numéro d'inscription</strong> reçu par email — pas un numéro de dossard.
     </p>
     <p class="verify-hint">
-      Les données sont mises à jour régulièrement. Si votre inscription est récente, comptez <strong>24 à 48h</strong> avant qu'elle apparaisse ici.
+      Données mises à jour toutes les 24h — si votre inscription est récente, patientez avant de revérifier.
     </p>
   </div>
+
+  <!-- Résultat — juste sous le formulaire -->
+  <div class="verify-status" id="verifyStatus" style="display:none"></div>
 
   <!-- Contact -->
   <div class="verify-contact">
-    <p>Pour toute question, contactez-nous par mail à <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
-    ou postez un message sur <a href="https://engage.cloud.microsoft/main/groups/eyJfdHlwZSI6Ikdyb3VwIiwiaWQiOiI2Nzg4NTg4In0" target="_blank" rel="noopener noreferrer">Viva Engage</a>.</p>
+    <p>Un problème ? Écrivez à <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
+    ou sur <a href="https://engage.cloud.microsoft/main/org/sncf.fr/groups/eyJfdHlwZSI6Ikdyb3VwIiwiaWQiOiI2Nzg4NTg4In0" target="_blank" rel="noopener noreferrer">Viva Engage</a>.</p>
   </div>
 
-  <!-- Result area -->
-  <div class="verify-status" id="verifyStatus" style="display:none"></div>
-
-  <!-- Footer discreet admin link -->
+  <!-- Footer discret -->
   <footer class="verify-footer">
     <a href="admin.html" class="verify-admin-link">Administration</a>
   </footer>
 
-</div><!-- /verify-page -->
+</div>
 
 <script src="verify.js"></script>
 </body>
