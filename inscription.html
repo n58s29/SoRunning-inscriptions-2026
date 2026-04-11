@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title>S'inscrire — Challenge Connecté 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .inscription-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .inscription-layout header {
+      flex-shrink: 0;
+    }
+
+    #formsFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      display: block;
+      background: var(--bg);
+    }
+  </style>
+</head>
+<body>
+
+<div class="inscription-layout">
+
+  <!-- ═══ HEADER ═══ -->
+  <header>
+    <div class="logo">
+      <img class="logo-img" src="logo.png" alt="CC"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="logo-badge" style="display:none;">CC</div>
+      <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
+    </div>
+    <div class="header-right">
+      <a href="index.html" class="btn-back">← Accueil</a>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
+              title="Basculer mode clair / sombre">
+        <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ FORMULAIRE MICROSOFT FORMS ═══ -->
+  <iframe
+    id="formsFrame"
+    src="https://forms.office.com/Pages/ResponsePage.aspx?id=OIJ8SplXFkufxprY_OWn2d7Qab57piJJu3lLE68KpuFUMzlDS0NQRkk5WUY1R1U4UVhWNUM2VzBXOCQlQCN0PWcu&embed=true"
+    frameborder="0" marginwidth="0" marginheight="0"
+    allowfullscreen webkitallowfullscreen mozallowfullscreen msallowfullscreen
+    title="Formulaire d'inscription — Challenge Connecté 2026"
+  ></iframe>
+
+</div>
+
+<script>
+/* ─── THÈME ─── */
+const THEME_KEY = 'challenge2026_theme';
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem(THEME_KEY, t);
+}
+function toggleTheme() {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
+})();
+</script>
+
+</body>
+</html>

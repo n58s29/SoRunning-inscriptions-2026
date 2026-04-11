@@ -63,6 +63,23 @@
       color: var(--muted);
       line-height: 1.5;
     }
+    .user-card--primary {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, var(--surface) 60%, color-mix(in srgb, var(--accent) 8%, var(--surface)));
+      flex-direction: row;
+      text-align: left;
+      padding: 24px 28px;
+      gap: 20px;
+    }
+    .user-card--primary .user-card-icon {
+      font-size: 36px;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
+    .user-card--primary:hover {
+      box-shadow: 0 10px 36px rgba(247, 115, 180, 0.25);
+    }
+
     .user-card-badge {
       position: absolute;
       top: 10px;
@@ -327,6 +344,13 @@
 
 <!-- ═══ CONTENU ═══ -->
 <div class="home-page">
+
+  <!-- Carte inscription (pleine largeur) -->
+  <a href="inscription.html" class="user-card user-card--primary">
+    <div class="user-card-icon">📝</div>
+    <div class="user-card-title">S'inscrire au Challenge</div>
+    <div class="user-card-desc">Rejoignez le Challenge Connecté 2026 en remplissant le formulaire d'inscription</div>
+  </a>
 
   <!-- Cartes participants -->
   <div class="user-grid">
