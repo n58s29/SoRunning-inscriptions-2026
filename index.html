@@ -88,6 +88,23 @@
       line-height: 1;
     }
 
+    /* ─── Numéros d'étapes ─── */
+    .step-num {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      border-radius: 999px;
+      padding: 2px 8px;
+      line-height: 1.6;
+    }
+
     /* ─── Séparateur organisateurs ─── */
     .admin-separator {
       display: flex;
@@ -347,6 +364,7 @@
 
   <!-- Carte inscription (pleine largeur) -->
   <a href="inscription.html" class="user-card user-card--primary">
+    <span class="step-num">Étape 1</span>
     <div class="user-card-icon">📝</div>
     <div class="user-card-title">S'inscrire au Challenge</div>
     <div class="user-card-desc">Rejoignez le Challenge Connecté 2026 en remplissant le formulaire d'inscription</div>
@@ -356,12 +374,14 @@
   <div class="user-grid">
 
     <a href="verify.html" class="user-card">
+      <span class="step-num">Étape 2</span>
       <div class="user-card-icon">🔍</div>
       <div class="user-card-title">Vérifier mon inscription</div>
       <div class="user-card-desc">Retrouvez vos informations d'inscription — données mises à jour toutes les 24h, patience si vous venez de vous inscrire !</div>
     </a>
 
     <a href="depot.html" class="user-card" id="card-depot">
+      <span class="step-num">Étape 3</span>
       <div class="user-card-icon">📤</div>
       <div class="user-card-title">Déposer ma preuve</div>
       <div class="user-card-desc">Disponible dès le 8 mai, au lancement du challenge — revenez déposer votre preuve après votre course !</div>
