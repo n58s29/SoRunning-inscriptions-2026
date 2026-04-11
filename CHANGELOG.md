@@ -8,10 +8,10 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [1.7.0] — 2026-04-11
 
 ### Ajouté
-- **Audit RGPD & cybersécurité** (`AUDIT-RGPD-CYBER.md`) : analyse statique complète du code source (23 fichiers, 7 113 lignes) couvrant les vulnérabilités de sécurité, la conformité RGPD article par article, les scénarios d'attaque réalistes et un plan de remédiation priorisé.
+- **Audit RGPD & cybersécurité** (`AUDIT-RGPD-CYBER.md`) : analyse complète du code source couvrant les niveaux de risque réels (basés sur le modèle de données éphémère côté client), la conformité RGPD article par article, les scénarios d'attaque réalistes et un plan de remédiation priorisé. Niveau de risque global : **MOYEN**.
 
 ### Modifié
-- **Anonymisation de l'email dans l'export CSV anonymisé** : le domaine et l'extension sont désormais masqués (ex. `m***.d****@s***.f*` au lieu de `m***.d****@sncf.fr`). Réduit le risque de réidentification des participants via leur employeur.
+- **Anonymisation de l'email dans l'export CSV anonymisé** : le domaine et l'extension sont désormais masqués (`@s***.f*` au lieu de `@sncf.fr`), supprimant la fuite de l'identité de l'employeur via le domaine email.
 
 ---
 

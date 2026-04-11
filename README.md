@@ -21,8 +21,9 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 ├── script.js           # Logique de l'outil admin
 ├── style.css           # Design system partagé (dark/light mode)
 ├── logo.png            # Logo de l'événement
+├── AUDIT-RGPD-CYBER.md # Audit sécurité et conformité RGPD
 └── data/
-    └── participants_anonymises.csv   # CSV mis à jour quotidiennement
+    └── participants_anonymises.csv   # CSV mis à jour quotidiennement (données masquées)
 ```
 
 ---
