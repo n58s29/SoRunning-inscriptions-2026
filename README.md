@@ -37,6 +37,8 @@ Portail d'entrée du site. Présente quatre boutons d'accès :
 
 Les boutons "Déposer votre preuve" et "Résultats" affichent un badge **🔒 Bientôt disponible** et sont désactivés tant que les flags correspondants sont à `false` dans `config.json`.
 
+En bas de page, un encart **Communauté SoRunning** présente trois liens en pills vers : le club Strava, le groupe WhatsApp et l'espace Viva Engage.
+
 ---
 
 ## Page résultats (`resultats.html`)

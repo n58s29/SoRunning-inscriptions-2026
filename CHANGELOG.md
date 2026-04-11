@@ -5,6 +5,13 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.4.1] — 2026-04-11
+
+### Ajouté
+- **Encart communauté SoRunning** sur la page d'accueil (`index.html`) : trois liens en pills avec icônes SVG brand vers le club Strava, le groupe WhatsApp et l'espace Viva Engage. Design sobre (couleurs brand activées uniquement au hover), placé sous l'espace organisateurs pour conserver la hiérarchie visuelle.
+
+---
+
 ## [1.4.0] — 2026-04-10
 
 ### Ajouté
