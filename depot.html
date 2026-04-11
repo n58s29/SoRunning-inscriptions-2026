@@ -14,6 +14,99 @@
       top: 0; right: 0; bottom: 0; left: 0;
       border: 0; width: 100%; height: 100%;
     }
+
+    /* ─── Overlay confirmation ─── */
+    #confirmOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 200;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      text-align: center;
+      animation: fadeIn 0.4s ease;
+    }
+    #confirmOverlay.visible { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .confirm-check {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f773b4, #f7bfd9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin-bottom: 28px;
+      box-shadow: 0 0 0 12px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .confirm-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+
+    .confirm-title span { color: var(--accent); }
+
+    .confirm-sub {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 380px;
+      margin-bottom: 32px;
+    }
+
+    .confirm-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 380px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    .confirm-card strong {
+      color: var(--text);
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      border-radius: 999px;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-home:hover { opacity: 0.88; transform: translateY(-1px); }
   </style>
 </head>
 <body>
@@ -52,6 +145,22 @@
 
 <!-- ═══ BOUTON RETOUR overlay (pleine page Tally) ═══ -->
 <a id="backBtn" href="index.html" class="btn-back btn-back--fixed" style="display:none;">← Accueil</a>
+
+<!-- ═══ OVERLAY CONFIRMATION ═══ -->
+<div id="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="confirm-check">✓</div>
+  <h1 class="confirm-title" id="confirmTitle">Dépôt <span>pris en compte !</span></h1>
+  <p class="confirm-sub">
+    Ta preuve de participation a bien été reçue.<br>
+    Ton inscription est en cours de validation par les organisateurs.
+  </p>
+  <div class="confirm-card">
+    <strong>🏆 Et ensuite ?</strong>
+    Les résultats seront publiés sur ce site dès que toutes les preuves auront été vérifiées.
+    Tu recevras une notification dès que le classement sera disponible.
+  </div>
+  <a href="index.html" class="btn-home">← Retour à l'accueil</a>
+</div>
 
 <!-- ═══ FORMULAIRE TALLY pleine page ═══ -->
 <iframe
@@ -98,6 +207,17 @@ function toggleTheme() {
     document.body.classList.add('tally-fullpage');
   }
 })();
+
+/* ─── CONFIRMATION TALLY ─── */
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.event === 'Tally.FormSubmitted') {
+    document.getElementById('tallyFrame').style.display = 'none';
+    document.getElementById('backBtn').style.display = 'none';
+    document.documentElement.classList.remove('tally-fullpage');
+    document.body.classList.remove('tally-fullpage');
+    document.getElementById('confirmOverlay').classList.add('visible');
+  }
+});
 </script>
 
 </body>

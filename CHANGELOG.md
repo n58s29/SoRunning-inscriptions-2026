@@ -5,6 +5,13 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.4.2] — 2026-04-11
+
+### Ajouté
+- **Overlay de confirmation** sur `depot.html` : après soumission du formulaire Tally, un écran pleine page remplace l'iframe et confirme la prise en compte du dépôt, informe que l'inscription est en cours de validation, et annonce la publication prochaine des résultats. Déclenché via l'event `Tally.FormSubmitted` (postMessage natif de Tally). Bouton "Retour à l'accueil" bien visible.
+
+---
+
 ## [1.4.1] — 2026-04-11
 
 ### Ajouté
