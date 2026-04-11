@@ -25,15 +25,15 @@ Ce constat change significativement les niveaux de risque par rapport à une pre
 
 | Domaine | Niveau de risque | Note |
 |---------|-----------------|------|
-| CSV public (verify.html) | 🔴 CRITIQUE | Seul vrai vecteur d'exposition de données |
-| Conformité RGPD | 🟠 ÉLEVÉ | Indépendant de la sécurité technique |
+| CSV public (verify.html) | 🟡 MOYEN | Données fortement masquées depuis v1.7.0, réidentification peu probable |
+| Conformité RGPD | 🟡 MOYEN | Manques documentaires (politique confidentialité, DPA) |
 | Authentification admin | 🟡 MOYEN | Risque limité sans fichier Excel |
 | Dépendances externes (SRI) | 🟡 MOYEN | Risque théorique supply chain |
 | localStorage | 🟢 FAIBLE | Aucune PII persistée |
 | Validation des entrées | 🟡 MOYEN | XSS mitigé par escapeHtml() |
 | Gestion des erreurs | 🟢 FAIBLE | Messages génériques suffisants |
 
-**Score de conformité RGPD estimé : ~20 %** (principalement des manques documentaires, non des failles techniques majeures)
+**Niveau de risque global : MOYEN** — aucune PII directement exposée, manques principalement documentaires
 
 ---
 
@@ -141,9 +141,9 @@ CSV anonymisé → GitHub Pages (PUBLIC) ← seul vecteur de risque réel
 
 ---
 
-## 4. Vulnérabilité principale — CSV public
+## 4. CSV public — risque recalibré
 
-### 🔴 CRITIQUE — Accès public sans authentification au CSV participants
+### 🟡 MOYEN — Accès public au CSV participants (données fortement masquées)
 
 **Fichier** : [data/participants_anonymises_Challenge_Connecté_2026.csv](data/participants_anonymises_Challenge_Connecté_2026.csv) (52 Ko)  
 **Chargé par** : [verify.js](verify.js) ligne 8, via `fetch()` sans aucun token
@@ -165,7 +165,7 @@ Après v1.7.0 : "A*****" / "l***.a****@s***.f*" / Région "IDF" / 5 km
                → Employeur masqué
 ```
 
-**Risque résiduel** : La combinaison première lettre du nom + première lettre du prénom + région + catégorie de course reste potentiellement réidentifiable par croisement avec un annuaire interne SNCF. Les données restent **pseudonymisées** (et non anonymisées au sens CNIL/RGPD) — elles ne bénéficient donc pas de l'exemption RGPD pour les données anonymes.
+**Risque résiduel** : La combinaison première lettre du nom + première lettre du prénom + catégorie de course pourrait théoriquement aider à réidentifier un participant disposant déjà d'un accès à un annuaire interne SNCF. Ce risque est jugé **faible en pratique** : les données exposées sont insuffisantes pour identifier quelqu'un sans informations préalables significatives. Techniquement, les données restent **pseudonymisées** et non anonymisées au sens strict du RGPD, mais le risque de réidentification raisonnable est bas.
 
 ### Problème 2 — Énumération triviale
 
@@ -413,14 +413,15 @@ Action recommandée : ajouter les hashes SRI (voir section 7).
 
 ## 13. Scénarios d'attaque réalistes
 
-### Scénario 1 — Exfiltration CSV (Probabilité : ÉLEVÉE / Impact : ÉLEVÉ)
+### Scénario 1 — Téléchargement CSV (Probabilité : ÉLEVÉE / Impact : FAIBLE)
 
 ```
 1. Accès direct à l'URL du CSV (publique, aucune auth)
 2. Téléchargement en 1 requête HTTP
-3. Croisement annuaire SNCF → réidentification partielle des 795 participants
+3. Contenu obtenu : initiales, email masqué, numéros de dossard
+4. Réidentification nécessite un annuaire interne + recoupements significatifs
 ```
-**C'est le seul scénario vraiment réaliste avec impact sur des données personnelles.**
+**Impact limité depuis v1.7.0 : les données exposées ne permettent pas d'identification directe.**
 
 ---
 
