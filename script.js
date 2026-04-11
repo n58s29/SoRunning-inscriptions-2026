@@ -764,18 +764,27 @@ function exportCSV() {
 function anonymizeEmail(email) {
   if (!email || !email.includes('@')) return email;
   const [local, domain] = email.split('@');
+
+  // Partie locale : prénom.nom → p***.n**** / sinon première lettre + ***
   const dotIdx = local.indexOf('.');
   let anonLocal;
   if (dotIdx > 0) {
-    // prénom.nom → p***.n****
     const part1 = local.slice(0, dotIdx);
     const part2 = local.slice(dotIdx + 1);
     anonLocal = (part1[0] || '') + '***.' + (part2[0] || '') + '****';
   } else {
-    // pas de point → première lettre + ***
     anonLocal = (local[0] || '') + '***';
   }
-  return anonLocal + '@' + domain;
+
+  // Domaine : première lettre + *** (ex: sncf → s***)
+  const extDotIdx = domain.lastIndexOf('.');
+  const domainName = extDotIdx > 0 ? domain.slice(0, extDotIdx) : domain;
+  const ext        = extDotIdx > 0 ? domain.slice(extDotIdx + 1) : '';
+  const anonDomain = (domainName[0] || '') + '***';
+  const anonExt    = ext ? (ext[0] || '') + '*' : '';
+
+  const anonDomainFull = anonExt ? anonDomain + '.' + anonExt : anonDomain;
+  return anonLocal + '@' + anonDomainFull;
 }
 
 function exportCSVAnonymized() {

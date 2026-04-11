@@ -113,7 +113,7 @@ Accessible à tous les participants. Permet de confirmer son inscription en sais
 3. Si l'ID est trouvé, la page affiche :
    - Nom anonymisé (ex. `D*****`)
    - Prénom anonymisé (ex. `M*****`)
-   - Email masqué (ex. `m***.d****@sncf.fr`)
+   - Email masqué (ex. `m***.d****@s***.f*`)
    - Épreuve(s) inscrite(s) (sans numéro de dossard — attribués ultérieurement)
    - Date de dernière mise à jour des données
 
