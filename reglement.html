@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Règlement — Challenge Connecté 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .doc-page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .doc-header {
+      text-align: center;
+      padding: 32px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+    .doc-header-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .doc-header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .doc-header-sub {
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .doc-contacts {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 24px;
+      align-items: center;
+    }
+    .doc-contacts strong { color: var(--text); }
+    .doc-contacts a { color: var(--accent); text-decoration: none; }
+    .doc-contacts a:hover { text-decoration: underline; }
+
+    .doc-article {
+      margin-bottom: 36px;
+    }
+    .doc-article-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+    }
+    .doc-article-num {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .doc-article p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+    .doc-article p strong { color: var(--text); }
+    .doc-article ul {
+      margin: 8px 0 10px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .doc-article li {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .doc-article li strong { color: var(--text); }
+
+    .doc-highlight {
+      background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.65;
+      margin: 10px 0;
+    }
+
+    .doc-note {
+      font-style: italic;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 520px) {
+      .doc-header-title { font-size: 30px; }
+      .doc-page { padding: 24px 16px 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="btn-back btn-back--fixed">← Accueil</a>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="logo">
+    <img class="logo-img" src="logo.png" alt="CC" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="logo-badge" style="display:none;">CC</div>
+    <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
+  </div>
+  <div class="header-right">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Basculer mode clair / sombre">
+      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══ CONTENU ═══ -->
+<div class="doc-page">
+
+  <div class="doc-header">
+    <div class="doc-header-label">Document officiel</div>
+    <h1 class="doc-header-title">Règlement du Challenge Connecté 2026</h1>
+    <p class="doc-header-sub">by SoRunningSNCF</p>
+  </div>
+
+  <div class="doc-contacts">
+    <strong>Contacts organisateurs :</strong>
+    <span>Loïc Queudrue — <a href="mailto:loic.queudrue@sncf.fr">loic.queudrue@sncf.fr</a> · 06 12 28 33 11</span>
+    <span>Mathieu Ribourg — <a href="mailto:mathieu.ribourg@sncf.fr">mathieu.ribourg@sncf.fr</a> · 06 16 57 53 71</span>
+    <span>Constance Ehret — <a href="mailto:constance.ehret@sncf.fr">constance.ehret@sncf.fr</a></span>
+  </div>
+
+  <!-- Article 1 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 1</span>
+      Organisation
+    </h2>
+    <p>Le Challenge Connecté 2026 est une course virtuelle organisée par les administrateurs de la communauté <strong>#SoRunningSNCF</strong> : Mathieu RIBOURG, Loïc QUEUDRUE et Constance EHRET.</p>
+    <p>Cet événement interne est proposé aux agent·e·s du Groupe SNCF et de ses filiales dans le but de promouvoir la pratique d'une activité physique accessible au plus grand nombre. La marche sportive est encouragée au même titre que la course à pied et constitue une discipline pleinement intégrée au challenge. L'objectif est de permettre à chaque participant·e de prendre part à l'événement selon son niveau, ses capacités et ses motivations afin que chacun·e puisse s'y retrouver et se sentir inclus·e.</p>
+    <p>Le challenge vise à fédérer les collaborateur·rice·s, à encourager la convivialité et à valoriser la diversité des profils sportifs. Il s'inscrit également dans une démarche de promotion de la cohésion collective en collaboration avec SNCF Mixité.</p>
+  </div>
+
+  <!-- Article 2 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 2</span>
+      Déroulement du challenge
+    </h2>
+    <p>Le Challenge Connecté 2026, organisé <strong>du 8 au 11 mai 2026</strong>, invite les participant·e·s à réaliser une ou plusieurs activités de marche ou de course sur des distances au choix (<strong>5 km, 10 km ou 21,1 km</strong>), individuellement ou en sortie collective, sur un parcours libre et sécurisé (route, chemin ou piste d'athlétisme).</p>
+    <p>L'activité doit être enregistrée via une trace GPS (montre connectée ou application smartphone au choix des participant·e·s). Les données de distance et de temps seront issues des outils numériques des participant·e·s (copie d'écran de l'application requise).</p>
+    <p>Vous pouvez aussi faire le choix de courir/marcher plusieurs distances.</p>
+    <div class="doc-highlight">
+      ⚠️ <strong>Les parcours doivent impérativement être réalisés entre le 8 et le 11 mai 2026 inclus.</strong>
+    </div>
+    <p>Les participant·e·s doivent être inscrit·e·s avant la réalisation du challenge et sont sous leur propre et exclusive responsabilité ; ils doivent avoir accepté les termes du règlement de l'épreuve.</p>
+    <p>Cette édition 2026 introduit plusieurs nouveautés :</p>
+    <ul>
+      <li><strong>Prix "Sortie collective"</strong> : récompense la plus grande sortie en groupe (preuve photo requise), mettant en avant l'esprit d'équipe.</li>
+      <li><strong>Prix "Coup de cœur du jury"</strong> : pour la photo illustrant au mieux le thème « La vie en rose ».</li>
+      <li><strong>Prix dédiés à la marche</strong> : trois récompenses (une par distance) pour valoriser cette discipline.</li>
+    </ul>
+    <p>Concernant la validation de la performance, les participant·e·s doivent transmettre via le formulaire :</p>
+    <ul>
+      <li>Leur <strong>résultat final</strong> (distance + temps)</li>
+      <li>Une <strong>photo « Finisher » avec leur dossard</strong> : laissez libre cours à votre imagination en vous inspirant du thème « La vie en rose » !</li>
+    </ul>
+  </div>
+
+  <!-- Article 3 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 3</span>
+      Inscriptions
+    </h2>
+    <p>Les inscriptions sont réservées à toute personne avec une adresse-mail SNCF (y compris les filiales du Groupe : Geodis, Keolis, SNCF Connect, …) et s'effectuent uniquement via un formulaire en ligne.</p>
+    <p>En s'inscrivant, les participant·e·s déclarent disposer des aptitudes physiques nécessaires pour réaliser le challenge. Seules les inscriptions complètes seront validées.</p>
+    <div class="doc-highlight">
+      📅 <strong>Inscriptions ouvertes du 16/03/2026 au 06/05/2026 à 18h00.</strong>
+    </div>
+  </div>
+
+  <!-- Article 4 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 4</span>
+      Tarifs
+    </h2>
+    <p>L'inscription est <strong>gratuite</strong>.</p>
+  </div>
+
+  <!-- Article 5 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 5</span>
+      Dossards
+    </h2>
+    <p>Un dossard personnalisé sera envoyé par mail à l'issue de la clôture des inscriptions. Une photo avec ce dernier sera à charger dans le formulaire qui servira à déposer votre ou vos résultat(s).</p>
+  </div>
+
+  <!-- Article 6 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 6</span>
+      Classement et récompenses
+    </h2>
+    <p>Les classements sont établis à partir des données enregistrées par les outils connectés des participant·e·s et transmises à l'organisation. Celle-ci se réserve le droit de vérifier la cohérence des performances déclarées et d'exclure tout résultat jugé non conforme ou incohérent.</p>
+    <p>Dans un souci d'équité, lorsqu'un·e même participant·e réalise la meilleure performance sur plusieurs distances, une seule de ses performances pourra être retenue pour l'attribution d'une récompense.</p>
+    <ul>
+      <li><strong>Discipline Running :</strong> classement distinct selon le genre pour chacune des distances. Une récompense pour la 1ère féminine et le 1er masculin sur 5 km, 10 km et 21,1 km — soit 6 récompenses au total.</li>
+      <li><strong>Discipline Marche :</strong> pas de classement selon les performances. Un tirage au sort est effectué pour chaque distance (5 km, 10 km, 21,1 km) sans distinction de genre — soit 3 récompenses au total.</li>
+      <li><strong>Prix Esprit d'Équipe :</strong> récompense le groupe ayant réalisé la sortie collective la plus importante en nombre de personnes. Validation par une photographie de groupe avec dossards visibles.</li>
+      <li><strong>Concours photo Coup de Cœur du Jury :</strong> thème « La vie en rose ». Présélection de 15 photos par l'organisation, puis désignation par le jury selon le caractère ludique, la créativité et l'originalité. Photos authentiques en version originale requises. <span class="doc-note">NB : Si vous êtes des ceintures noires de Photoshop, vous êtes toujours les bienvenu·e·s !</span></li>
+    </ul>
+  </div>
+
+  <!-- Article 7 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 7</span>
+      Droit à l'image
+    </h2>
+    <p>Chaque participant·e autorise expressément les organisateurs ainsi que leurs ayants droit, tels que partenaires et médias, à utiliser les images fixes ou audiovisuelles sur lesquelles elle/il pourrait apparaître, prises à l'occasion de sa participation à ce challenge virtuel <strong>#LaVieEnRose</strong> par SoRunningSNCF, sur tous supports, dans le monde entier et pour la durée la plus longue prévue par la loi, les règlements et les traités en vigueur.</p>
+  </div>
+
+  <!-- Article 8 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 8</span>
+      Acceptation du règlement
+    </h2>
+    <p>L'engagement entraîne acceptation, sans réserve, du présent règlement. Toute contestation sur son interprétation ou sur un point non prévu est du ressort exclusif et sans appel du comité d'organisation.</p>
+    <p>Les organisateurs se réservent le droit de modifier le présent règlement. Le cas échéant, le·a participant·e accepte de recevoir une information par e-mail. La participation au challenge vaudra acceptation du règlement modifié.</p>
+  </div>
+
+  <!-- Article 9 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 9</span>
+      Sécurité et médical
+    </h2>
+    <p>La course ne nécessite pas de certificat médical au préalable. Néanmoins, en vous engageant au challenge, nous vous demandons de vous assurer que vous êtes en mesure de le réaliser.</p>
+    <div class="doc-highlight">
+      💙 Si vous avez des douleurs, de la fièvre ou tout autre symptôme douteux, ne faites rien ! C'est un défi plaisir, aucune notion de temps n'est imposée. Prenez soin de vous !
+    </div>
+  </div>
+
+  <!-- Article 10 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 10</span>
+      Assurance
+    </h2>
+    <p>Tous·tes les inscrit·e·s doivent être en possession d'une police d'assurance individuelle accident. Vous participez à cette opération solidaire sous votre entière responsabilité, pour tout dommage, quel qu'il soit. En vous inscrivant, vous déclarez être informé·e de ce point.</p>
+  </div>
+
+  <!-- Article 11 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 11</span>
+      Loi Informatique et Libertés
+    </h2>
+    <p>Conformément à la loi du 6 janvier 1978 modifiée, dite « informatique et libertés », les participant·e·s disposent d'un droit d'accès, de communication et de rectification sur les données les concernant, ainsi que d'un droit d'opposition au traitement et/ou à la publication de leurs données pour des motifs légitimes. Pour exercer ces droits, les participant·e·s peuvent contacter les organisateurs.</p>
+  </div>
+
+  <!-- Article 12 -->
+  <div class="doc-article">
+    <h2 class="doc-article-title">
+      <span class="doc-article-num">Article 12</span>
+      Force majeure
+    </h2>
+    <p>En cas de force majeure, l'événement pourra être annulé ou interrompu.</p>
+  </div>
+
+</div>
+
+<!-- ═══ FOOTER LÉGAL ═══ -->
+<footer class="site-footer">
+  <span>© 2026 Challenge Connecté — SoRunning SNCF</span>
+  <span class="site-footer-sep">|</span>
+  <a href="reglement.html">Règlement</a>
+  <span class="site-footer-sep">|</span>
+  <a href="cgu.html">CGU</a>
+  <span class="site-footer-sep">|</span>
+  <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
+</footer>
+
+<script>
+const THEME_KEY = 'challenge2026_theme';
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem(THEME_KEY, t);
+}
+function toggleTheme() {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
+})();
+</script>
+
+</body>
+</html>

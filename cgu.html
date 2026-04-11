@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGU — Challenge Connecté 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .doc-page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .doc-header {
+      text-align: center;
+      padding: 32px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+    .doc-header-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .doc-header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .doc-header-sub {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .doc-article {
+      margin-bottom: 36px;
+    }
+    .doc-article-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+    }
+    .doc-article-num {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .doc-article p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+    .doc-article p strong { color: var(--text); }
+    .doc-article ul {
+      margin: 8px 0 10px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .doc-article li {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .doc-article li strong { color: var(--text); }
+    .doc-article a { color: var(--accent); text-decoration: none; }
+    .doc-article a:hover { text-decoration: underline; }
+
+    @media (max-width: 520px) {
+      .doc-header-title { font-size: 30px; }
+      .doc-page { padding: 24px 16px 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="btn-back btn-back--fixed">← Accueil</a>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="logo">
+    <img class="logo-img" src="logo.png" alt="CC" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="logo-badge" style="display:none;">CC</div>
+    <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
+  </div>
+  <div class="header-right">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Basculer mode clair / sombre">
+      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══ CONTENU ═══ -->
+<div class="doc-page">
+
+  <div class="doc-header">
+    <div class="doc-header-label">Document officiel</div>
+    <h1 class="doc-header-title">Conditions Générales d'Utilisation</h1>
+    <p class="doc-header-sub">Challenge Connecté 2026 — SoRunningSNCF · En vigueur à compter du 16 mars 2026</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 1</span>Objet</h2>
+    <p>Les présentes Conditions Générales d'Utilisation (ci-après « CGU ») régissent l'accès et l'utilisation du site internet du <strong>Challenge Connecté 2026</strong>, organisé par la communauté SoRunningSNCF au sein du Groupe SNCF. En accédant à ce site, l'utilisateur·rice accepte sans réserve les présentes CGU.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 2</span>Accès au site</h2>
+    <p>Le site est accessible à toute personne disposant d'une adresse e-mail du Groupe SNCF ou de ses filiales (Geodis, Keolis, SNCF Connect, etc.). L'accès est gratuit et ne requiert pas de création de compte utilisateur.</p>
+    <p>Les organisateurs se réservent le droit de suspendre, modifier ou interrompre l'accès au site à tout moment, notamment pour des raisons de maintenance ou de force majeure, sans préavis ni indemnité.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 3</span>Utilisation du site</h2>
+    <p>Le site est strictement réservé à un usage dans le cadre du Challenge Connecté 2026. L'utilisateur·rice s'engage à :</p>
+    <ul>
+      <li>Ne pas utiliser le site à des fins illicites ou contraires aux présentes CGU.</li>
+      <li>Fournir des informations exactes et sincères lors de son inscription et lors du dépôt de ses résultats.</li>
+      <li>Ne pas tenter de perturber le fonctionnement du site ou d'en altérer le contenu.</li>
+      <li>Respecter les droits des tiers, notamment en matière de propriété intellectuelle et de protection des données personnelles.</li>
+    </ul>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 4</span>Données personnelles</h2>
+    <p>Dans le cadre de l'inscription et de la participation au challenge, des données personnelles sont collectées (nom, prénom, adresse e-mail professionnelle, résultats sportifs). Ces données sont utilisées exclusivement pour la gestion du challenge et ne sont pas transmises à des tiers extérieurs au Groupe SNCF.</p>
+    <p>Conformément à la loi n° 78-17 du 6 janvier 1978 modifiée relative à l'informatique, aux fichiers et aux libertés, et au Règlement Général sur la Protection des Données (RGPD), tout·e participant·e dispose d'un droit d'accès, de rectification, d'effacement et d'opposition concernant ses données. Pour exercer ces droits, contacter : <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 5</span>Droit à l'image</h2>
+    <p>En participant au challenge et en soumettant des photographies via le formulaire de dépôt de résultats, le·a participant·e autorise expressément les organisateurs à utiliser ces images à des fins de communication interne au Groupe SNCF, dans le respect des dispositions prévues à l'article 7 du règlement du challenge.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 6</span>Propriété intellectuelle</h2>
+    <p>L'ensemble des éléments constituant ce site (textes, graphismes, logotypes, structure) est la propriété de SoRunningSNCF et du Groupe SNCF. Toute reproduction, représentation ou exploitation, totale ou partielle, sans autorisation expresse est interdite.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 7</span>Responsabilité</h2>
+    <p>Les organisateurs s'efforcent de maintenir le site accessible et à jour. Ils ne sauraient toutefois être tenus responsables :</p>
+    <ul>
+      <li>Des interruptions d'accès liées à des problèmes techniques ou de réseau.</li>
+      <li>Des dommages directs ou indirects résultant de l'utilisation du site.</li>
+      <li>De l'exactitude des informations saisies par les participant·e·s.</li>
+    </ul>
+    <p>La participation au challenge s'effectue sous la seule et entière responsabilité du·de la participant·e, conformément à l'article 9 du règlement.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 8</span>Cookies et technologies de suivi</h2>
+    <p>Ce site n'utilise aucun cookie de traçage ou outil d'analyse d'audience. Les seules données stockées localement (localStorage du navigateur) concernent les préférences d'affichage de l'utilisateur·rice (thème clair/sombre) et n'ont aucun usage commercial ou analytique.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 9</span>Modification des CGU</h2>
+    <p>Les organisateurs se réservent le droit de modifier les présentes CGU à tout moment. Les utilisateur·rice·s seront informé·e·s de toute modification substantielle. La poursuite de l'utilisation du site vaut acceptation des CGU mises à jour.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">Article 10</span>Contact</h2>
+    <p>Pour toute question relative aux présentes CGU ou à l'utilisation du site : <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a></p>
+  </div>
+
+</div>
+
+<!-- ═══ FOOTER LÉGAL ═══ -->
+<footer class="site-footer">
+  <span>© 2026 Challenge Connecté — SoRunning SNCF</span>
+  <span class="site-footer-sep">|</span>
+  <a href="reglement.html">Règlement</a>
+  <span class="site-footer-sep">|</span>
+  <a href="cgu.html">CGU</a>
+  <span class="site-footer-sep">|</span>
+  <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
+</footer>
+
+<script>
+const THEME_KEY = 'challenge2026_theme';
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem(THEME_KEY, t);
+}
+function toggleTheme() {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
+})();
+</script>
+
+</body>
+</html>
