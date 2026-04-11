@@ -26,18 +26,30 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 
 ## Page d'accueil (`index.html`)
 
-Portail d'entrée du site. Présente quatre boutons d'accès :
+Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 
-| Bouton | Destination | Accès |
-|---|---|---|
-| Vérifier mon inscription | `verify.html` | Libre |
-| Administration | `admin.html` | Protégé par mot de passe |
-| Déposer votre preuve | `depot.html` | Contrôlé par `config.json` |
-| Résultats | `resultats.html` | Contrôlé par `config.json` |
+| Étape | Bouton | Destination | Accès |
+|---|---|---|---|
+| 1 | S'inscrire au Challenge | `inscription.html` | Libre |
+| 2 | Vérifier mon inscription | `verify.html` | Libre |
+| 3 | Déposer ma preuve | `depot.html` | Contrôlé par `config.json` (`depotOpen`) |
+| — | Résultats | `resultats.html` | Contrôlé par `config.json` (`resultatsOpen`) |
 
-Les boutons "Déposer votre preuve" et "Résultats" affichent un badge **🔒 Bientôt disponible** et sont désactivés tant que les flags correspondants sont à `false` dans `config.json`.
+Affiche un **popup de confirmation** si la page est chargée avec `?depot=ok` (redirection post-soumission Tally). URL à configurer dans Tally : `https://n58s29.github.io/SoRunning-inscriptions-2026/?depot=ok`.
 
-En bas de page, un encart **Communauté SoRunning** présente trois liens en pills vers : le club Strava, le groupe WhatsApp et l'espace Viva Engage.
+En bas de page : encart **Communauté SoRunning** (Strava, WhatsApp, Viva Engage) et **footer légal** (Règlement, CGU, contact).
+
+---
+
+## Page d'inscription (`inscription.html`)
+
+Formulaire Microsoft Forms intégré en pleine page sous le header. Accessible à tous. Aucune dépendance à `config.json`.
+
+---
+
+## Page de vérification (`verify.html`)
+
+Permet de confirmer son inscription en saisissant le **numéro d'inscription reçu par email** (≠ numéro de dossard). Le résultat s'affiche directement sous le formulaire. Données mises à jour toutes les 24h.
 
 ---
 

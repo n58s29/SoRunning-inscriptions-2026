@@ -5,6 +5,24 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.5.0] — 2026-04-11
+
+### Ajouté
+- **Page d'inscription** (`inscription.html`) : formulaire Microsoft Forms intégré en pleine page sous le header, accessible depuis une nouvelle carte primaire (pleine largeur, bordure accent) sur l'accueil.
+- **Overlay de confirmation dépôt** : popup modal sur `index.html` déclenché via redirection Tally (`?depot=ok`). Confirme la prise en compte, indique que l'inscription est en cours de validation, rappelle qu'un dépôt séparé est requis par course, et annonce la publication des résultats. L'URL est nettoyée après affichage.
+- **Footer légal** sur toutes les pages publiques (`index.html`, `verify.html`, `inscription.html`) : liens vers le Règlement (`reglement.pdf`, à déposer), les CGU (`cgu.html`, à créer) et le contact `sorunningsncf@sncf.fr`.
+- **Numérotation des étapes** (Étape 1 / 2 / 3) sur les cartes participants de l'accueil pour matérialiser le parcours inscription → vérification → dépôt.
+
+### Modifié
+- **Page d'accueil** : hiérarchie des cartes revue — S'inscrire en carte primaire pleine largeur, Vérifier + Déposer en grille 2 colonnes dessous. Descriptions mises à jour (délai 24h sur la vérif, date d'activation 8 mai sur le dépôt).
+- **Page de vérification** (`verify.html`) : hero compacté (icône petite inline), résultat remonté juste sous le formulaire (plus de scroll), label clarifié ("numéro d'inscription reçu par mail ≠ dossard"), contact Viva Engage conservé.
+- **Encart communauté** : liens réels branchés (Strava, WhatsApp via formulaire Office, Viva Engage SNCF).
+
+### Corrigé
+- Remplacement du mécanisme `postMessage` Tally (non fonctionnel) par la redirection URL native de Tally.
+
+---
+
 ## [1.4.2] — 2026-04-11
 
 ### Ajouté
