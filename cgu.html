@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CGU — Challenge Connecté 2026</title>
+  <title>CGU & Confidentialité — Challenge Connecté 2026</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .doc-page {
@@ -84,6 +84,76 @@
     .doc-article a { color: var(--accent); text-decoration: none; }
     .doc-article a:hover { text-decoration: underline; }
 
+    .doc-section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 56px 0 48px;
+    }
+    .doc-section-divider::before,
+    .doc-section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .doc-section-divider-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .doc-section-header {
+      margin-bottom: 40px;
+    }
+    .doc-section-header-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .doc-section-header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .doc-section-header-sub {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .rgpd-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 10px 0;
+    }
+    .rgpd-table th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--border);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    .rgpd-table td {
+      padding: 8px 12px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .rgpd-table tr:last-child td { border-bottom: none; }
+
     @media (max-width: 520px) {
       .doc-header-title { font-size: 30px; }
       .doc-page { padding: 24px 16px 64px; }
@@ -113,7 +183,7 @@
 
   <div class="doc-header">
     <div class="doc-header-label">Document officiel</div>
-    <h1 class="doc-header-title">Conditions Générales d'Utilisation</h1>
+    <h1 class="doc-header-title">CGU & Politique de confidentialité</h1>
     <p class="doc-header-sub">Challenge Connecté 2026 — SoRunningSNCF · En vigueur à compter du 16 mars 2026</p>
   </div>
 
@@ -141,8 +211,7 @@
 
   <div class="doc-article">
     <h2 class="doc-article-title"><span class="doc-article-num">Article 4</span>Données personnelles</h2>
-    <p>Dans le cadre de l'inscription et de la participation au challenge, des données personnelles sont collectées (nom, prénom, adresse e-mail professionnelle, résultats sportifs). Ces données sont utilisées exclusivement pour la gestion du challenge et ne sont pas transmises à des tiers extérieurs au Groupe SNCF.</p>
-    <p>Conformément à la loi n° 78-17 du 6 janvier 1978 modifiée relative à l'informatique, aux fichiers et aux libertés, et au Règlement Général sur la Protection des Données (RGPD), tout·e participant·e dispose d'un droit d'accès, de rectification, d'effacement et d'opposition concernant ses données. Pour exercer ces droits, contacter : <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>.</p>
+    <p>Des données personnelles sont collectées dans le cadre de l'inscription et de la participation au challenge. Leur traitement est conforme au Règlement Général sur la Protection des Données (RGPD). Les détails complets — données collectées, base légale, destinataires, durées de conservation et droits exercables — sont décrits dans la <a href="#confidentialite">Politique de confidentialité</a> ci-dessous.</p>
   </div>
 
   <div class="doc-article">
@@ -181,6 +250,85 @@
     <p>Pour toute question relative aux présentes CGU ou à l'utilisation du site : <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a></p>
   </div>
 
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+
+  <div class="doc-section-divider">
+    <span class="doc-section-divider-label">Document complémentaire</span>
+  </div>
+
+  <div id="confidentialite" class="doc-section-header">
+    <div class="doc-section-header-label">RGPD — Transparence</div>
+    <h2 class="doc-section-header-title">Politique de confidentialité</h2>
+    <p class="doc-section-header-sub">Informations relatives au traitement de vos données personnelles dans le cadre du Challenge Connecté 2026.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">§ 1</span>Responsable du traitement</h2>
+    <p>Le responsable du traitement est la communauté <strong>SoRunningSNCF</strong>, organisation interne au Groupe SNCF. Contact : <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">§ 2</span>Données collectées</h2>
+    <p>Les données suivantes sont collectées lors de l'inscription et du dépôt de résultats :</p>
+    <table class="rgpd-table">
+      <thead>
+        <tr><th>Donnée</th><th>Source</th><th>Finalité</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Nom & prénom</td><td>Formulaire d'inscription (Microsoft Forms)</td><td>Identification du·de la participant·e</td></tr>
+        <tr><td>Adresse e-mail professionnelle</td><td>Formulaire d'inscription (Microsoft Forms)</td><td>Communication, vérification de l'éligibilité</td></tr>
+        <tr><td>Entité / filiale SNCF</td><td>Formulaire d'inscription (Microsoft Forms)</td><td>Classement par équipe</td></tr>
+        <tr><td>Résultats sportifs (distance, durée)</td><td>Formulaire de dépôt (Tally)</td><td>Calcul du classement</td></tr>
+        <tr><td>Photographies (captures d'écran activité)</td><td>Formulaire de dépôt (Tally)</td><td>Vérification des performances déclarées</td></tr>
+      </tbody>
+    </table>
+    <p>Aucune donnée sensible au sens de l'article 9 du RGPD n'est collectée.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">§ 3</span>Base légale</h2>
+    <p>Le traitement repose sur le <strong>consentement</strong> de la personne concernée (article 6.1.a du RGPD), recueilli librement et de manière informée lors de la validation du formulaire d'inscription. Ce consentement est spécifique au Challenge Connecté 2026 et peut être retiré à tout moment.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">§ 4</span>Destinataires des données</h2>
+    <p>Les données collectées sont accessibles aux destinataires suivants, dans la limite de leurs attributions :</p>
+    <ul>
+      <li><strong>Microsoft</strong> — hébergeur du formulaire d'inscription (Microsoft Forms / Microsoft 365). Données soumises à la politique de confidentialité de Microsoft.</li>
+      <li><strong>Tally</strong> — hébergeur du formulaire de dépôt de résultats (tally.so). Données soumises à la politique de confidentialité de Tally.</li>
+      <li><strong>Équipe organisatrice SoRunningSNCF</strong> — accès aux données exportées pour la gestion du classement et la remise des récompenses.</li>
+    </ul>
+    <p>Aucune donnée n'est cédée à des tiers à des fins commerciales ou publicitaires.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">§ 5</span>Durée de conservation</h2>
+    <p>Les données sont conservées pendant la durée du challenge, puis supprimées <strong>30 jours après la remise des récompenses</strong>. Les exports CSV éventuellement générés sont supprimés dans le même délai.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">§ 6</span>Vos droits</h2>
+    <p>Conformément au RGPD et à la loi Informatique et Libertés, vous disposez des droits suivants sur vos données :</p>
+    <ul>
+      <li><strong>Droit d'accès</strong> — obtenir une copie des données vous concernant.</li>
+      <li><strong>Droit de rectification</strong> — corriger des données inexactes ou incomplètes.</li>
+      <li><strong>Droit à l'effacement</strong> — demander la suppression de vos données (« droit à l'oubli »).</li>
+      <li><strong>Droit d'opposition</strong> — vous opposer à un traitement vous concernant.</li>
+      <li><strong>Droit au retrait du consentement</strong> — retirer votre consentement à tout moment, sans que cela remette en cause la licéité du traitement antérieur.</li>
+    </ul>
+    <p>Pour exercer ces droits : <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>. Une réponse vous sera apportée dans un délai maximum d'un mois.</p>
+  </div>
+
+  <div class="doc-article">
+    <h2 class="doc-article-title"><span class="doc-article-num">§ 7</span>Droit de saisir la CNIL</h2>
+    <p>Si vous estimez que le traitement de vos données personnelles constitue une violation du RGPD, vous avez le droit d'introduire une réclamation auprès de la <strong>Commission Nationale de l'Informatique et des Libertés (CNIL)</strong> :</p>
+    <ul>
+      <li>En ligne : <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener">www.cnil.fr/fr/plaintes</a></li>
+      <li>Par courrier : CNIL — 3 place de Fontenoy — TSA 80715 — 75334 Paris Cedex 07</li>
+    </ul>
+  </div>
+
 </div>
 
 <!-- ═══ FOOTER LÉGAL ═══ -->
@@ -189,7 +337,7 @@
   <span class="site-footer-sep">|</span>
   <a href="reglement.html">Règlement</a>
   <span class="site-footer-sep">|</span>
-  <a href="cgu.html">CGU</a>
+  <a href="cgu.html">CGU & Confidentialité</a>
   <span class="site-footer-sep">|</span>
   <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
 </footer>

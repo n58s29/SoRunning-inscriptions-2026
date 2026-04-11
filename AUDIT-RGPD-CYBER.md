@@ -1,7 +1,7 @@
 # Audit RGPD & Cybersécurité — SoRunning Inscriptions 2026
 
 > **Date** : 2026-04-11  
-> **Version analysée** : 1.7.0  
+> **Version analysée** : 1.8.0  
 > **Périmètre** : Revue complète du code source (7 113 lignes, 23 fichiers)  
 > **Réalisé par** : Claude Sonnet 4.6 (analyse statique automatisée)
 
@@ -59,7 +59,7 @@ SoRunning-inscriptions-2026/
 ├── resultats.html      (719 lignes) — Résultats (protégée par mot de passe)
 ├── admin.html          (311 lignes) — Outil admin (dossards, stats, liste)
 ├── reglement.html      (335 lignes) — Règlement officiel (12 articles)
-├── cgu.html            (217 lignes) — CGU (10 articles)
+├── cgu.html            (~370 lignes) — CGU (10 articles) + Politique de confidentialité (7 §)
 ├── home.html           ( 10 lignes) — Redirection legacy
 ├── script.js           (2411 lignes) — Logique admin
 ├── verify.js           ( 264 lignes) — Logique vérification
@@ -329,7 +329,7 @@ Action requise : ajouter les hashes SRI (voir section 7).
 |---------|---------|--------|-------------|
 | **Art. 5** | Principes | ⚠️ PARTIEL | Limitation conservation : CSV sans date d'expiration définie |
 | **Art. 6** | Licéité du traitement | ⚠️ PARTIEL | Base légale (consentement) non documentée formellement |
-| **Art. 13/14** | Information des personnes | ❌ NON | Pas de politique de confidentialité dédiée |
+| **Art. 13/14** | Information des personnes | ✅ OUI | Politique de confidentialité intégrée dans `cgu.html#confidentialite` (v1.8.0) |
 | **Art. 15** | Droit d'accès | ⚠️ PARTIEL | Email de contact fourni, pas de procédure formelle |
 | **Art. 17** | Droit à l'effacement | ❌ NON | Pas de mécanisme de suppression côté utilisateur |
 | **Art. 20** | Portabilité | ❌ NON | Pas d'export pour les personnes concernées |
@@ -345,19 +345,22 @@ Action requise : ajouter les hashes SRI (voir section 7).
 
 ## 12. Documents légaux
 
-### CGU existantes ([cgu.html](cgu.html)) — lacunes
+### CGU & Politique de confidentialité ([cgu.html](cgu.html)) — état v1.8.0
 
 - ✅ Mentionne le RGPD et fournit l'email `sorunningsncf@sncf.fr`
-- ❌ Ne liste pas tous les champs collectés (âge, sexe, région, société absents)
-- ❌ Ne précise pas la durée de conservation
-- ❌ Ne mentionne pas les sous-traitants (Microsoft, Tally)
-- ❌ Ne mentionne pas les cookies et traceurs tiers
+- ✅ Liste exhaustive des données collectées (tableau § 2 : nom, prénom, email, entité, résultats, photos)
+- ✅ Base légale documentée (consentement, art. 6.1.a RGPD — § 3)
+- ✅ Durée de conservation précisée (J+30 après remise des récompenses — § 5)
+- ✅ Sous-traitants mentionnés (Microsoft, Tally, équipe orga — § 4)
+- ✅ Droits des personnes détaillés (accès, rectification, effacement, opposition, retrait — § 6)
+- ✅ Droit de saisir la CNIL (lien direct — § 7)
+- ❌ Ne mentionne pas les cookies et traceurs tiers (Microsoft Forms, Tally, Google Fonts)
 
 ### Documents manquants
 
 | Document | Base légale | Priorité |
 |---------|------------|---------|
-| Politique de confidentialité dédiée | Art. 13/14 RGPD | 🟠 ÉLEVÉ |
+| ~~Politique de confidentialité~~ | ~~Art. 13/14 RGPD~~ | ✅ Fait en v1.8.0 |
 | DPA avec Microsoft | Art. 28 RGPD | 🟠 ÉLEVÉ |
 | DPA avec Tally | Art. 28 RGPD | 🟠 ÉLEVÉ |
 | Registre des traitements | Art. 30 RGPD | 🟡 MOYEN |
@@ -428,7 +431,7 @@ Action requise : ajouter les hashes SRI (voir section 7).
 | [depot.html](depot.html) | 🟡 MOYEN | Iframe Tally sans SRI ni bannière de consentement |
 | [resultats.html](resultats.html) | 🟡 MOYEN | Même auth faible ; risque conditionnel au contenu uploadé |
 | [reglement.html](reglement.html) | 🟢 FAIBLE | Document statique |
-| [cgu.html](cgu.html) | 🟡 MOYEN | Document légal incomplet (voir section 12) |
+| [cgu.html](cgu.html) | 🟢 FAIBLE | CGU + Politique de confidentialité complète (v1.8.0) |
 | [script.js](script.js) | 🟡 MOYEN | innerHTML, pas de validation schéma Excel, PII non persistées |
 | [verify.js](verify.js) | 🟡 MOYEN | escapeHtml OK, CSV chargé sans auth |
 | [style.css](style.css) | 🟢 FAIBLE | Aucun problème |
@@ -448,15 +451,9 @@ Remplacer `cc2026admin` par un token aléatoire long, communiqué hors du dépô
 openssl rand -base64 24
 ```
 
-#### 1.2 Créer une politique de confidentialité
+#### ~~1.2 Créer une politique de confidentialité~~ ✅ Fait en v1.8.0
 
-Page `confidentialite.html` incluant :
-- Liste exhaustive des données collectées
-- Base légale : consentement recueilli lors de l'inscription
-- Destinataires : Microsoft, Tally, équipe organisatrice
-- Durée de conservation : J+30 après remise des récompenses
-- Droits : accès, rectification, suppression — contact `sorunningsncf@sncf.fr`
-- Droit de saisir la CNIL
+Politique de confidentialité intégrée dans `cgu.html` (section `#confidentialite`) plutôt qu'une page dédiée — choix pragmatique pour un site interne de cette taille. Couvre les 7 points requis : responsable du traitement, données collectées (tableau), base légale, destinataires, durée de conservation, droits RGPD, droit de saisir la CNIL.
 
 #### 1.3 Bannière de consentement pour les iframes tierces
 
@@ -527,8 +524,8 @@ git push origin --force
 
 ### RGPD et conformité
 
-- [ ] Créer une politique de confidentialité dédiée
-- [ ] Mettre à jour les CGU (champs, durées, sous-traitants, cookies)
+- [x] Créer une politique de confidentialité dédiée *(fusionnée dans `cgu.html#confidentialite` — v1.8.0)*
+- [x] Mettre à jour les CGU (champs, durées, sous-traitants) *(v1.8.0 — cookies tiers restants)*
 - [ ] Ajouter une bannière de consentement pour les iframes tierces
 - [ ] Confirmer/établir DPA avec Microsoft (contrat SNCF existant ?)
 - [ ] Établir DPA avec Tally.so
@@ -546,5 +543,5 @@ git push origin --force
 
 ---
 
-*Rapport généré le 2026-04-11 — Analyse statique du code source (23 fichiers, 7 113 lignes)*  
+*Rapport généré le 2026-04-11, mis à jour le 2026-04-11 (v1.8.0) — Analyse statique du code source*  
 *Ce rapport ne se substitue pas à un audit professionnel ni à un conseil juridique.*

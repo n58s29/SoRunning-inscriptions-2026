@@ -15,7 +15,7 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 ├── resultats.html      # Page publique — résultats (activable)
 ├── admin.html          # Outil d'administration (accès restreint)
 ├── reglement.html      # Page publique — règlement officiel (12 articles)
-├── cgu.html            # Page publique — conditions générales d'utilisation
+├── cgu.html            # Page publique — CGU + Politique de confidentialité (RGPD)
 ├── config.json         # Flags d'activation des pages depot et résultats
 ├── verify.js           # Logique de la page de vérification
 ├── script.js           # Logique de l'outil admin
@@ -79,7 +79,7 @@ Fonctionnalités :
 | Page | Fichier | Statut |
 |---|---|---|
 | Règlement | `reglement.html` | Complet — à relire |
-| CGU | `cgu.html` | Type — à valider par les organisateurs |
+| CGU & Politique de confidentialité | `cgu.html` | Complet — CGU (10 articles) + Politique de confidentialité RGPD (7 §, ancre `#confidentialite`) |
 
 Les deux pages suivent la charte graphique du site (dark/light mode, Barlow Condensed, footer commun).
 

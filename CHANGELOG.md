@@ -5,6 +5,18 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.8.0] — 2026-04-11
+
+### Ajouté
+- **Politique de confidentialité fusionnée dans `cgu.html`** : plutôt que de créer une page dédiée `confidentialite.html`, la politique de confidentialité (7 paragraphes RGPD) est intégrée directement dans `cgu.html` sous une ancre `#confidentialite`. Couvre : responsable du traitement, données collectées (tableau exhaustif), base légale (consentement art. 6.1.a RGPD), destinataires (Microsoft, Tally, équipe orga), durée de conservation (J+30 après récompenses), droits (accès / rectification / effacement / opposition / retrait consentement), droit de saisir la CNIL.
+
+### Modifié
+- **Titre de `cgu.html`** : "CGU" → "CGU & Politique de confidentialité" (page et balise `<title>`).
+- **Article 4 des CGU** : simplifié, renvoie désormais par lien ancre vers la section Politique de confidentialité ci-dessous.
+- **Footers de toutes les pages publiques** (`index.html`, `verify.html`, `inscription.html`, `reglement.html`, `cgu.html`) : libellé du lien mis à jour "CGU" → "CGU & Confidentialité".
+
+---
+
 ## [1.7.0] — 2026-04-11
 
 ### Ajouté
