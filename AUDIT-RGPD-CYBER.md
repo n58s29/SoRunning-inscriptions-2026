@@ -151,19 +151,21 @@ CSV anonymisé → GitHub Pages (PUBLIC) ← seul vecteur de risque réel
 **Structure exposée :**
 ```
 "ID";"NOM";"PRÉNOM";"EMAIL";"Course 5 km";"Course 10 km";...
-"188";"A*****";"L*****";"l***.a****@sncf.fr";"";"1126";"2048";...
+"188";"A*****";"L*****";"l***.a****@s***.f*";"";"1126";"2048";...
 ```
 
-### Problème 1 — Anonymisation insuffisante
+### Problème 1 — Anonymisation partielle ✅ Améliorée en v1.7.0
 
-La troncature (première lettre + astérisques + domaine email) est réversible par croisement :
+Depuis la version 1.7.0, le domaine et l'extension de l'email sont également masqués (`@s***.f*` au lieu de `@sncf.fr`), ce qui supprime la fuite directe de l'employeur via le domaine.
 
 ```
-Données CSV : "A*****" / "l***.a****@sncf.fr" / Région "IDF" / 5 km
-Croisement annuaire SNCF + réseaux sociaux → identification en quelques minutes
+Avant v1.7.0 : "A*****" / "l***.a****@sncf.fr" / Région "IDF" / 5 km
+               → Employeur SNCF lisible en clair
+Après v1.7.0 : "A*****" / "l***.a****@s***.f*" / Région "IDF" / 5 km
+               → Employeur masqué
 ```
 
-Les données ne sont pas anonymisées au sens CNIL/RGPD — elles sont simplement **pseudonymisées de façon faible**, et ne bénéficient donc pas de l'exemption RGPD pour les données anonymes.
+**Risque résiduel** : La combinaison première lettre du nom + première lettre du prénom + région + catégorie de course reste potentiellement réidentifiable par croisement avec un annuaire interne SNCF. Les données restent **pseudonymisées** (et non anonymisées au sens CNIL/RGPD) — elles ne bénéficient donc pas de l'exemption RGPD pour les données anonymes.
 
 ### Problème 2 — Énumération triviale
 
@@ -375,7 +377,7 @@ Action recommandée : ajouter les hashes SRI (voir section 7).
 | **Art. 15** | Droit d'accès | ⚠️ PARTIEL | Email fourni, pas de procédure formelle |
 | **Art. 17** | Droit à l'effacement | ❌ NON | Aucun mécanisme de suppression |
 | **Art. 20** | Portabilité | ❌ NON | Pas d'export pour les personnes |
-| **Art. 25** | Privacy by design | ❌ NON | Anonymisation CSV insuffisante |
+| **Art. 25** | Privacy by design | ⚠️ PARTIEL | Domaine email masqué depuis v1.7.0 ; pseudonymisation résiduelle par croisement possible |
 | **Art. 28** | Sous-traitant | ❌ NON | Pas de DPA visible avec Microsoft ni Tally |
 | **Art. 30** | Registre des traitements | ❌ NON | Non constitué |
 | **Art. 32** | Sécurité | ⚠️ PARTIEL | CSV public sans auth (corrigé si section 4 traité) |
