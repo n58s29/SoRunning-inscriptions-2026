@@ -5,6 +5,19 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.12.0] — 2026-04-11
+
+### Ajouté
+- **Polices auto-hébergées** (`fonts/`) : les polices Barlow et Barlow Condensed (14 fichiers `.woff2`, latin + latin-ext, graisses 300/400/600 et 400/600/700/900) sont désormais servies depuis GitHub Pages. Suppression de tout appel externe vers `fonts.googleapis.com` et `fonts.gstatic.com`.
+
+### Modifié
+- **`style.css` ligne 1** : `@import` Google Fonts remplacé par 14 blocs `@font-face` locaux pointant vers `fonts/*.woff2`.
+- **`audits/AUDIT-RGESN.md`** : section 6.1 marquée ✅ RÉSOLU, résumé exécutif et plan de remédiation mis à jour.
+- **`audits/AUDIT-RGPD.md`** : Google Fonts retiré des tableaux sous-traitants et cookies/traceurs ; recommandations mises à jour.
+- **`audits/AUDIT-CYBER.md`** : ligne Google Fonts barrée dans le tableau des dépendances ; CSP simplifiée (suppression de `fonts.googleapis.com` et `font-src fonts.gstatic.com`).
+
+---
+
 ## [1.10.0] — 2026-04-11
 
 ### Ajouté

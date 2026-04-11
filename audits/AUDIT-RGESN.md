@@ -15,7 +15,7 @@ Le site bénéficie d'une **architecture intrinsèquement sobre** : statique, sa
 
 **Le niveau de conformité RGESN est estimé à environ 65 %.**
 
-Les points de friction principaux sont la dépendance à Google Fonts (requête externe non auto-hébergée), le logo non optimisé (PNG 65 Ko), l'anti-pattern de cache-busting systématique sur `config.json`, et les bibliothèques CDN lourdes chargées sur la page admin (xlsx ~1 Mo, html2canvas ~200 Ko).
+Les points de friction principaux sont le logo non optimisé (PNG 65 Ko), l'anti-pattern de cache-busting systématique sur `config.json`, et les bibliothèques CDN lourdes chargées sur la page admin (xlsx ~1 Mo, html2canvas ~200 Ko). La dépendance à Google Fonts a été supprimée en v1.12.0 (polices Barlow auto-hébergées).
 
 ### Tableau de synthèse par thème
 
@@ -97,7 +97,7 @@ Les points de friction principaux sont la dépendance à Google Fonts (requête 
 
 ### Points d'attention
 
-- 3 services tiers actifs : **Google Fonts** (CSS), **Tally.so** (iframe dépôt), **Microsoft Forms** (iframe inscription). Chaque service tiers introduit une dépendance de disponibilité et un transfert de données vers des tiers.
+- 2 services tiers actifs : **Tally.so** (iframe dépôt), **Microsoft Forms** (iframe inscription). Chaque service tiers introduit une dépendance de disponibilité et un transfert de données vers des tiers. ~~Google Fonts~~ supprimé en v1.12.0.
 - Les bibliothèques xlsx et html2canvas sont chargées depuis **cdnjs.cloudflare.com** sur `admin.html` — voir section Frontend.
 
 ---
@@ -159,37 +159,13 @@ Les points de friction principaux sont la dépendance à Google Fonts (requête 
 
 C'est le thème avec le plus fort potentiel d'amélioration.
 
-### 6.1 Google Fonts — requête externe non maîtrisée
+### ~~6.1 Google Fonts — requête externe non maîtrisée~~ ✅ RÉSOLU en v1.12.0
 
-**Gravité : Élevée**
+~~**Gravité : Élevée**~~
 
-```css
-/* style.css — ligne 1 */
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;600&display=swap');
-```
+Les polices Barlow et Barlow Condensed (14 fichiers `.woff2`, latin + latin-ext) sont désormais auto-hébergées dans `fonts/`. L'`@import` Google Fonts a été remplacé par des blocs `@font-face` locaux dans `style.css`. Les domaines `fonts.googleapis.com` et `fonts.gstatic.com` ne sont plus contactés.
 
-Constat :
-- À chaque visite, 2 requêtes DNS + TCP/TLS sont établies vers `fonts.googleapis.com` et `fonts.gstatic.com`.
-- Les polices sont téléchargées depuis des serveurs Google hors UE (impact RGPD + éco-conception).
-- Le chargement est **bloquant** (le navigateur doit résoudre DNS avant de rendre la page).
-
-Recommandation : auto-héberger les polices Barlow depuis GitHub Pages.
-
-```bash
-# Télécharger les fichiers WOFF2 depuis Google Fonts et les placer dans /fonts/
-```
-
-```css
-/* Remplacer l'@import par des @font-face locaux */
-@font-face {
-  font-family: 'Barlow Condensed';
-  src: url('./fonts/barlow-condensed-700.woff2') format('woff2');
-  font-weight: 700;
-  font-display: swap;
-}
-```
-
-Gain estimé : **-2 requêtes HTTP** par visite, réduction de 100-300 ms sur la connexion initiale.
+**Gain réalisé : -2 requêtes HTTP/visite, suppression des transferts d'IP vers Google, CSP simplifiée.**
 
 ---
 
@@ -307,7 +283,7 @@ Le service est entièrement statique. Il n'existe pas de backend applicatif. Cet
 
 | Action | Fichier | Gain estimé |
 |--------|---------|-------------|
-| Auto-héberger les polices Barlow | `style.css` | -2 requêtes HTTP/visite, -150 ms |
+| ~~Auto-héberger les polices Barlow~~ | ~~`style.css`~~ | ✅ Fait en v1.12.0 |
 | Optimiser logo en WebP | `logo.png` → `logo.webp` | -50 Ko par visite |
 | Supprimer le cache-busting `Date.now()` | `index.html` | -1 requête réseau/visite |
 
@@ -335,7 +311,7 @@ Le service est entièrement statique. Il n'existe pas de backend applicatif. Cet
 |-----------|---------|
 | **Conformité estimée** | ~65 % |
 | **Empreinte structurelle** | Très faible (site statique, vanilla JS, 0 analytics) |
-| **Principal levier d'amélioration** | Supprimer la dépendance à Google Fonts + optimiser le logo |
+| **Principal levier d'amélioration** | Optimiser le logo (PNG → WebP) + supprimer le cache-busting |
 | **Effort de remédiation total** | Faible à moyen (2-4 heures de travail) |
 
 > L'architecture statique du projet est le meilleur choix possible d'éco-conception pour ce type de service. Les améliorations identifiées sont des optimisations de second niveau — le site part d'une base saine.

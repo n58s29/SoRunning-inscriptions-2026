@@ -209,7 +209,7 @@ if (missing.length) throw new Error(`Colonnes manquantes : ${missing.join(', ')}
 |-------------|---------|------------|-----|
 | SheetJS (xlsx) | 0.18.5 | Aucune critique | ❌ |
 | html2canvas | 1.4.1 | Aucune critique | ❌ |
-| Google Fonts | Latest | Aucune | N/A |
+| ~~Google Fonts~~ | ~~Latest~~ | ~~Aucune~~ | ✅ Auto-hébergé (v1.12.0) |
 | Tally Embed | Latest | Inconnue | ❌ |
 
 Les scripts chargés depuis CDN externe ne sont pas vérifiés par hash. En cas de compromission de `cdnjs.cloudflare.com`, du code malveillant pourrait s'exécuter lors d'une session admin avec un Excel uploadé (exfiltration des PII en mémoire).
@@ -248,8 +248,7 @@ Content-Security-Policy:
   default-src 'self';
   script-src 'self' cdnjs.cloudflare.com tally.so;
   frame-src forms.office.com tally.so;
-  style-src 'self' fonts.googleapis.com 'unsafe-inline';
-  font-src fonts.gstatic.com
+  style-src 'self' 'unsafe-inline';
 
 X-Frame-Options: SAMEORIGIN
 X-Content-Type-Options: nosniff

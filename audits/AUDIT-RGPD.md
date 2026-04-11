@@ -161,7 +161,7 @@ Toutes les données personnelles issues du fichier Excel disparaissent dès le r
 |---------|-------|-------------------|-------------|-----|
 | **Microsoft Forms** | Inscription | Nom, prénom, email, démographie | USA (Azure) | ❌ Non documenté |
 | **Tally.so** | Dépôt de preuves | Photos, email | USA | ❌ Non documenté |
-| **Google Fonts** | Typographie | IP navigateur | USA | N/A |
+| ~~**Google Fonts**~~ | ~~Typographie~~ | ~~IP navigateur~~ | ~~USA~~ | ✅ Supprimé — polices auto-hébergées (v1.12.0) |
 
 L'article 28 du RGPD impose la conclusion d'un contrat de sous-traitance (DPA) avec tout sous-traitant traitant des données personnelles pour le compte du responsable de traitement.
 
@@ -180,7 +180,7 @@ L'article 28 du RGPD impose la conclusion d'un contrat de sous-traitance (DPA) a
 |--------|-------------------|-------------|
 | Microsoft Forms (iframe) | Analytique, session | ❌ Non demandé |
 | Tally.so (iframe) | Analytique | ❌ Non demandé |
-| Google Fonts | IP navigateur | ❌ Non demandé |
+| ~~Google Fonts~~ | ~~IP navigateur~~ | ✅ Supprimé (v1.12.0) |
 
 L'application elle-même ne dépose aucun cookie. Mais les iframes tierces intégrées peuvent le faire sans que l'utilisateur en soit informé, ce qui est non conforme à la directive ePrivacy et aux recommandations CNIL.
 
@@ -233,7 +233,7 @@ Chargement conditionnel des iframes après acceptation explicite d'une notice de
 - ✅ Sous-traitants mentionnés (Microsoft, Tally, équipe orga — § 4)
 - ✅ Droits des personnes détaillés (accès, rectification, effacement, opposition, retrait — § 6)
 - ✅ Droit de saisir la CNIL (lien direct — § 7)
-- ❌ Ne mentionne pas les cookies et traceurs tiers (Microsoft Forms, Tally, Google Fonts)
+- ❌ Ne mentionne pas les cookies et traceurs tiers (Microsoft Forms, Tally)
 
 ### Documents manquants
 
@@ -268,7 +268,7 @@ Chargement conditionnel de Microsoft Forms et Tally.so après acceptation explic
 
 #### 2.2 Compléter la politique de confidentialité (cookies tiers)
 
-Ajouter dans `cgu.html#confidentialite` une section sur les cookies tiers déposés par Microsoft Forms, Tally et Google Fonts, avec leur finalité.
+Ajouter dans `cgu.html#confidentialite` une section sur les cookies tiers déposés par Microsoft Forms et Tally, avec leur finalité.
 
 #### 2.3 Constituer le registre des traitements (Art. 30)
 
