@@ -141,7 +141,7 @@ localStorage['challenge2026_theme']       = "dark"
 
 ### 🟡 MOYEN — Mot de passe côté client uniquement
 
-**Fichiers** : [admin.html](admin.html) ligne 54, [resultats.html](resultats.html) ligne 291
+**Fichiers** : [admin.html](../admin.html) ligne 54, [resultats.html](../resultats.html) ligne 291
 
 ```javascript
 const MDP = 'cc2026admin';
@@ -175,8 +175,8 @@ Le risque principal concerne `resultats.html` : si des résultats nominatifs y s
 
 ### 🟡 MOYEN — Accès public sans authentification, données fortement masquées
 
-**Fichier** : [data/participants_anonymises_Challenge_Connecté_2026.csv](data/participants_anonymises_Challenge_Connecté_2026.csv)  
-**Chargé par** : [verify.js](verify.js) ligne 8, sans token ni authentification
+**Fichier** : [data/participants_anonymises_Challenge_Connecté_2026.csv](../data/participants_anonymises_Challenge_Connecté_2026.csv)  
+**Chargé par** : [verify.js](../verify.js) ligne 8, sans token ni authentification
 
 ### Contenu exposé (v1.7.0)
 
@@ -282,7 +282,7 @@ L'application elle-même ne dépose aucun cookie. Mais les iframes tierces inté
 
 ### XSS
 
-`escapeHtml()` est correctement implémenté dans [verify.js](verify.js) :
+`escapeHtml()` est correctement implémenté dans [verify.js](../verify.js) :
 
 ```javascript
 function escapeHtml(str) {
@@ -345,7 +345,7 @@ Action requise : ajouter les hashes SRI (voir section 7).
 
 ## 12. Documents légaux
 
-### CGU & Politique de confidentialité ([cgu.html](cgu.html)) — état v1.8.0
+### CGU & Politique de confidentialité ([cgu.html](../cgu.html)) — état v1.8.0
 
 - ✅ Mentionne le RGPD et fournit l'email `sorunningsncf@sncf.fr`
 - ✅ Liste exhaustive des données collectées (tableau § 2 : nom, prénom, email, entité, résultats, photos)
@@ -424,18 +424,18 @@ Action requise : ajouter les hashes SRI (voir section 7).
 
 | Fichier | Risque | Observations |
 |---------|--------|-------------|
-| [index.html](index.html) | 🟢 FAIBLE | Pas de traitement de données |
-| [inscription.html](inscription.html) | 🟡 MOYEN | Iframe Microsoft sans bannière de consentement |
-| [verify.html](verify.html) | 🟡 MOYEN | CSV public sans auth, données bien masquées |
-| [admin.html](admin.html) | 🟡 MOYEN | Mot de passe client-side, sans Excel = sans PII |
-| [depot.html](depot.html) | 🟡 MOYEN | Iframe Tally sans SRI ni bannière de consentement |
-| [resultats.html](resultats.html) | 🟡 MOYEN | Même auth faible ; risque conditionnel au contenu uploadé |
-| [reglement.html](reglement.html) | 🟢 FAIBLE | Document statique |
-| [cgu.html](cgu.html) | 🟢 FAIBLE | CGU + Politique de confidentialité complète (v1.8.0) |
-| [script.js](script.js) | 🟡 MOYEN | innerHTML, pas de validation schéma Excel, PII non persistées |
-| [verify.js](verify.js) | 🟡 MOYEN | escapeHtml OK, CSV chargé sans auth |
-| [style.css](style.css) | 🟢 FAIBLE | Aucun problème |
-| [config.json](config.json) | 🟢 FAIBLE | Feature flags publics, pas de secrets |
+| [index.html](../index.html) | 🟢 FAIBLE | Pas de traitement de données |
+| [inscription.html](../inscription.html) | 🟡 MOYEN | Iframe Microsoft sans bannière de consentement |
+| [verify.html](../verify.html) | 🟡 MOYEN | CSV public sans auth, données bien masquées |
+| [admin.html](../admin.html) | 🟡 MOYEN | Mot de passe client-side, sans Excel = sans PII |
+| [depot.html](../depot.html) | 🟡 MOYEN | Iframe Tally sans SRI ni bannière de consentement |
+| [resultats.html](../resultats.html) | 🟡 MOYEN | Même auth faible ; risque conditionnel au contenu uploadé |
+| [reglement.html](../reglement.html) | 🟢 FAIBLE | Document statique |
+| [cgu.html](../cgu.html) | 🟢 FAIBLE | CGU + Politique de confidentialité complète (v1.8.0) |
+| [script.js](../script.js) | 🟡 MOYEN | innerHTML, pas de validation schéma Excel, PII non persistées |
+| [verify.js](../verify.js) | 🟡 MOYEN | escapeHtml OK, CSV chargé sans auth |
+| [style.css](../style.css) | 🟢 FAIBLE | Aucun problème |
+| [config.json](../config.json) | 🟢 FAIBLE | Feature flags publics, pas de secrets |
 
 ---
 

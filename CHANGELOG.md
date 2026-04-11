@@ -5,6 +5,16 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.9.0] — 2026-04-11
+
+### Ajouté
+- **Audit RGAA 4.1** (`audits/AUDIT-RGAA.md`) : analyse statique complète de l'accessibilité couvrant les 13 thèmes du référentiel (images, cadres, couleurs, liens, scripts, structuration, formulaires, navigation, consultation). Conformité estimée à ~35 %. Plan de remédiation priorisé en 4 niveaux (P1 à P4).
+
+### Modifié
+- **Réorganisation des fichiers d'audit** : `AUDIT-RGPD-CYBER.md` déplacé dans le dossier `audits/`. Les liens internes du fichier ont été mis à jour (`../` préfixé). Structure `audits/` créée pour regrouper tous les audits du projet.
+
+---
+
 ## [1.8.0] — 2026-04-11
 
 ### Ajouté
