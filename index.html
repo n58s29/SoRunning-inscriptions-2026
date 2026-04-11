@@ -172,10 +172,117 @@
     .pill-whatsapp    { --c-brand: #25D366; }
     .pill-vivaengage  { --c-brand: #7719AA; }
 
+    /* ─── Overlay confirmation dépôt ─── */
+    #confirmOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+    #confirmOverlay.visible { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .confirm-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 32px 36px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      animation: slideUp 0.35s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .confirm-check {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f773b4, #f7bfd9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 24px;
+      box-shadow: 0 0 0 10px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .confirm-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.1;
+    }
+    .confirm-title span { color: var(--accent); }
+
+    .confirm-sub {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .confirm-info {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+    .confirm-info strong {
+      color: var(--text);
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .btn-confirm-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      border-radius: 999px;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-confirm-home:hover { opacity: 0.88; transform: translateY(-1px); }
+
     @media (max-width: 480px) {
       .user-grid  { grid-template-columns: 1fr; }
       .admin-grid { grid-template-columns: 1fr; }
       .community-pill { font-size: 12px; padding: 8px 14px; }
+      .confirm-box { padding: 32px 20px 28px; }
     }
   </style>
 </head>
@@ -196,6 +303,23 @@
     </button>
   </div>
 </header>
+
+<!-- ═══ OVERLAY CONFIRMATION DÉPÔT ═══ -->
+<div id="confirmOverlay" role="dialog" aria-modal="true">
+  <div class="confirm-box">
+    <div class="confirm-check">✓</div>
+    <h2 class="confirm-title">Dépôt <span>pris en compte !</span></h2>
+    <p class="confirm-sub">
+      Ta preuve de participation a bien été reçue.<br>
+      Ton inscription est en cours de validation par les organisateurs.
+    </p>
+    <div class="confirm-info">
+      <strong>🏆 Et ensuite ?</strong>
+      Les résultats seront publiés sur ce site dès que toutes les preuves auront été vérifiées. Garde un œil sur la page d'accueil !
+    </div>
+    <a href="." class="btn-confirm-home">Retour à l'accueil</a>
+  </div>
+</div>
 
 <!-- ═══ CONTENU ═══ -->
 <div class="home-page">
@@ -277,6 +401,14 @@ function toggleTheme() {
   if (saved) applyTheme(saved);
   else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
   else applyTheme('dark');
+})();
+
+/* ─── CONFIRMATION DÉPÔT (redirection Tally) ─── */
+(function() {
+  if (new URLSearchParams(window.location.search).get('depot') === 'ok') {
+    document.getElementById('confirmOverlay').classList.add('visible');
+    history.replaceState(null, '', '.');   // nettoie l'URL sans recharger
+  }
 })();
 
 /* ─── CONFIG ─── */
