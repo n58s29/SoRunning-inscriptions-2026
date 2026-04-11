@@ -22,7 +22,8 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 ├── style.css           # Design system partagé (dark/light mode)
 ├── logo.png            # Logo de l'événement
 ├── audits/
-│   ├── AUDIT-RGPD-CYBER.md  # Audit sécurité et conformité RGPD
+│   ├── AUDIT-RGPD.md        # Audit conformité RGPD
+│   ├── AUDIT-CYBER.md       # Audit cybersécurité technique
 │   └── AUDIT-RGAA.md        # Audit accessibilité RGAA 4.1
 └── data/
     └── participants_anonymises.csv   # CSV mis à jour quotidiennement (données masquées)

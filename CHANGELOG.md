@@ -5,6 +5,16 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.10.0] — 2026-04-11
+
+### Ajouté
+- **Audit RGPD** (`audits/AUDIT-RGPD.md`) et **Audit Cybersécurité** (`audits/AUDIT-CYBER.md`) : `AUDIT-RGPD-CYBER.md` scindé en deux fichiers distincts. `AUDIT-RGPD.md` couvre la conformité réglementaire (inventaire PII, articles RGPD, DPA, cookies, documents légaux, plan de purge). `AUDIT-CYBER.md` couvre la sécurité technique (authentification, CSV, XSS, SRI, injection Excel, en-têtes HTTP, scénarios d'attaque).
+
+### Supprimé
+- `audits/AUDIT-RGPD-CYBER.md` : remplacé par les deux fichiers ci-dessus.
+
+---
+
 ## [1.9.0] — 2026-04-11
 
 ### Ajouté
