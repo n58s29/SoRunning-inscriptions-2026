@@ -5,6 +5,17 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.6.0] — 2026-04-11
+
+### Ajouté
+- **Page Règlement** (`reglement.html`) : transcription complète des 12 articles du règlement officiel, mise en forme dans la charte du site (articles numérotés, encarts surlignés pour les points critiques, contacts organisateurs cliquables, dark/light mode).
+- **Page CGU** (`cgu.html`) : conditions générales d'utilisation en 10 articles (objet, accès, données personnelles RGPD, droit à l'image, propriété intellectuelle, responsabilité, cookies, modification). À relire et compléter par les organisateurs.
+
+### Modifié
+- Liens du footer mis à jour sur toutes les pages publiques : Règlement et CGU pointent désormais vers les pages HTML dédiées (plus de placeholder PDF).
+
+---
+
 ## [1.5.0] — 2026-04-11
 
 ### Ajouté

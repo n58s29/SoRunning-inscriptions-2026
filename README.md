@@ -8,11 +8,14 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 
 ```
 /
-├── index.html          # Page d'accueil — portail principal
+├── index.html          # Page d'accueil — portail principal (parcours 3 étapes)
+├── inscription.html    # Page publique — formulaire d'inscription Microsoft Forms
 ├── verify.html         # Page publique — vérification d'inscription
 ├── depot.html          # Page publique — dépôt de preuve (activable)
 ├── resultats.html      # Page publique — résultats (activable)
 ├── admin.html          # Outil d'administration (accès restreint)
+├── reglement.html      # Page publique — règlement officiel (12 articles)
+├── cgu.html            # Page publique — conditions générales d'utilisation
 ├── config.json         # Flags d'activation des pages depot et résultats
 ├── verify.js           # Logique de la page de vérification
 ├── script.js           # Logique de l'outil admin
@@ -67,6 +70,17 @@ Fonctionnalités :
 - Catégories d'âge et genre (ESP/SEN/M0…M4+, H/F)
 - Détection d'alertes : dossard inconnu, hors plage, initiales incorrectes
 - Tirage au sort animé pour les marcheurs (avec confettis)
+
+---
+
+## Pages légales
+
+| Page | Fichier | Statut |
+|---|---|---|
+| Règlement | `reglement.html` | Complet — à relire |
+| CGU | `cgu.html` | Type — à valider par les organisateurs |
+
+Les deux pages suivent la charte graphique du site (dark/light mode, Barlow Condensed, footer commun).
 
 ---
 
