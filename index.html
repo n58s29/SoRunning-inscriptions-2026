@@ -318,6 +318,141 @@
       .community-pill { font-size: 12px; padding: 8px 14px; }
       .confirm-box { padding: 32px 20px 28px; }
     }
+
+    /* ─── Jauge inscrits ─── */
+    .gauge-card {
+      background: var(--surface);
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+      border-radius: 20px;
+      padding: 22px 24px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .gauge-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg,
+        color-mix(in srgb, var(--accent) 9%, transparent) 0%,
+        transparent 65%);
+      pointer-events: none;
+    }
+
+    .gauge-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .gauge-label-area {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .gauge-icon { font-size: 15px; }
+    .gauge-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .gauge-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      border-radius: 999px;
+      padding: 3px 10px;
+      white-space: nowrap;
+      animation: gauge-badge-pulse 2.8s ease-in-out infinite;
+    }
+    @keyframes gauge-badge-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+      50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 12%, transparent); }
+    }
+
+    .gauge-numbers {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .gauge-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 56px;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(140deg, var(--text) 30%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gauge-denom {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .gauge-bar-wrap {
+      position: relative;
+      margin-bottom: 6px;
+    }
+    .gauge-bar {
+      height: 13px;
+      background: color-mix(in srgb, var(--border) 90%, transparent);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .gauge-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f773b4 0%, #ff8c42 50%, #ffd050 100%);
+      background-size: 200% 100%;
+      transition: width 1.6s cubic-bezier(0.34, 1.4, 0.64, 1);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 55%, transparent);
+      animation: gauge-shimmer 3.5s ease-in-out infinite;
+    }
+    @keyframes gauge-shimmer {
+      0%, 100% { background-position: 0% 0; }
+      50%       { background-position: 100% 0; }
+    }
+    .gauge-ticks {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      padding: 0;
+      height: 16px;
+    }
+    .gauge-tick {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      transform: translateX(-50%);
+      white-space: nowrap;
+      opacity: 0.75;
+    }
+    .gauge-tick--goal {
+      font-size: 13px;
+      opacity: 1;
+    }
+
+    .gauge-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 22px;
+    }
+    .gauge-pct { color: var(--accent); font-size: 13px; font-weight: 800; }
+    .gauge-encourage { font-style: italic; }
   </style>
 </head>
 <body>
@@ -361,6 +496,41 @@
 
 <!-- ═══ CONTENU ═══ -->
 <div class="home-page">
+
+  <!-- Jauge inscrits -->
+  <div class="gauge-card" id="gaugeCard">
+
+    <div class="gauge-top">
+      <div class="gauge-label-area">
+        <span class="gauge-icon">🏃</span>
+        <span class="gauge-label">Inscriptions Challenge Connecté 2026</span>
+      </div>
+      <span class="gauge-badge" id="gaugeBadge">…</span>
+    </div>
+
+    <div class="gauge-numbers">
+      <span class="gauge-num" id="gaugeNum">—</span>
+      <span class="gauge-denom">/ 1 000 inscrits</span>
+    </div>
+
+    <div class="gauge-bar-wrap">
+      <div class="gauge-bar">
+        <div class="gauge-bar-fill" id="gaugeFill"></div>
+      </div>
+      <div class="gauge-ticks">
+        <span class="gauge-tick" style="left:25%">250</span>
+        <span class="gauge-tick" style="left:50%">500</span>
+        <span class="gauge-tick" style="left:75%">750</span>
+        <span class="gauge-tick gauge-tick--goal" style="left:100%">🏁</span>
+      </div>
+    </div>
+
+    <div class="gauge-footer">
+      <span class="gauge-pct" id="gaugePct">—</span>
+      <span class="gauge-encourage" id="gaugeEncourage"></span>
+    </div>
+
+  </div>
 
   <!-- Carte inscription (pleine largeur) -->
   <a href="inscription.html" class="user-card user-card--primary">
@@ -468,6 +638,59 @@ function toggleTheme() {
     document.getElementById('confirmOverlay').classList.add('visible');
     history.replaceState(null, '', '.');   // nettoie l'URL sans recharger
   }
+})();
+
+/* ─── JAUGE INSCRITS ─── */
+(async function gaugeInit() {
+  const GOAL = 1000;
+  let count = 0;
+  try {
+    const res = await fetch('./data/participants_anonymises_Challenge_Connect%C3%A9_2026.csv?t=' + Date.now());
+    if (res.ok) {
+      const text = await res.text();
+      count = text.split('\n').filter(l => l.trim().length > 0).length - 1;
+    }
+  } catch(e) {}
+
+  const pct = Math.min(100, (count / GOAL) * 100);
+  const remaining = Math.max(0, GOAL - count);
+
+  const badges = [
+    [90, '🔥 Presque au bout !'],
+    [75, '🚀 Dernière ligne droite !'],
+    [50, '⚡ Mi-chemin !'],
+    [25, '💪 C\'est lancé !'],
+    [0,  '🌱 On démarre !'],
+  ];
+  const badge = (badges.find(([min]) => pct >= min) || badges[badges.length - 1])[1];
+
+  document.getElementById('gaugeBadge').textContent = badge;
+  document.getElementById('gaugePct').textContent = Math.round(pct) + '%';
+  document.getElementById('gaugeEncourage').textContent =
+    remaining > 0
+      ? 'encore ' + remaining.toLocaleString('fr-FR') + ' pour l\'objectif !'
+      : '🏆 Objectif atteint !';
+
+  const numEl  = document.getElementById('gaugeNum');
+  const fillEl = document.getElementById('gaugeFill');
+  const duration = 1600;
+
+  setTimeout(function() {
+    fillEl.style.width = pct.toFixed(1) + '%';
+    var t0 = performance.now();
+    var lastVal = -1;
+    function tick(now) {
+      var p       = Math.min(1, (now - t0) / duration);
+      var ease    = 1 - Math.pow(1 - p, 3);
+      var current = Math.round(ease * count);
+      if (current !== lastVal) {
+        numEl.textContent = current.toLocaleString('fr-FR');
+        lastVal = current;
+      }
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }, 250);
 })();
 
 /* ─── CONFIG ─── */

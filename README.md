@@ -42,6 +42,8 @@ Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 | 3 | Déposer ma preuve | `depot.html` | Contrôlé par `config.json` (`depotOpen`) |
 | — | Résultats | `resultats.html` | Contrôlé par `config.json` (`resultatsOpen`) |
 
+Affiche une **jauge de progression des inscriptions** en haut de page : nombre d'inscrits (issu du CSV anonymisé) / objectif 1 000, avec compteur animé, barre de progression et badge contextuel mis à jour à chaque chargement.
+
 Affiche un **popup de confirmation** si la page est chargée avec `?depot=ok` (redirection post-soumission Tally). URL à configurer dans Tally : `https://n58s29.github.io/SoRunning-inscriptions-2026/?depot=ok`.
 
 En bas de page : encart **Communauté SoRunning** (Strava, WhatsApp, Viva Engage) et **footer légal** (Règlement, CGU, contact).

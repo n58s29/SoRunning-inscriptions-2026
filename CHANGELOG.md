@@ -5,6 +5,13 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.13.0] — 2026-04-13
+
+### Ajouté
+- **Jauge de progression des inscriptions** (`index.html`) : widget gamifiant affiché en tête de page d'accueil, au-dessus de la carte Étape 1. Affiche en temps réel le nombre d'inscrits (lu dynamiquement depuis le CSV anonymisé) sur un objectif de 1 000. Comprend un compteur animé, une barre de progression avec effet shimmer, des repères à 250 / 500 / 750 / 🏁, un badge contextuel (🌱 → 💪 → ⚡ → 🚀 → 🔥) et la progression en pourcentage.
+
+---
+
 ## [1.12.0] — 2026-04-11
 
 ### Ajouté
