@@ -14,6 +14,7 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 ├── depot.html          # Page publique — dépôt de preuve (activable)
 ├── resultats.html      # Page publique — résultats (activable)
 ├── admin.html          # Outil d'administration (accès restreint)
+├── tshirt.html         # Espace ambassadeurs — générateur d'e-mail commande t-shirt (accès restreint)
 ├── reglement.html      # Page publique — règlement officiel (12 articles)
 ├── cgu.html            # Page publique — CGU + Politique de confidentialité (RGPD)
 ├── config.json         # Flags d'activation des pages depot et résultats
@@ -21,6 +22,7 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 ├── script.js           # Logique de l'outil admin
 ├── style.css           # Design system partagé (dark/light mode)
 ├── logo.png            # Logo de l'événement
+├── img/                # Visuels du t-shirt SoRunning (tshirt-1.jpg, tshirt-2.jpg…)
 ├── audits/
 │   ├── AUDIT-RGPD.md        # Audit conformité RGPD
 │   ├── AUDIT-CYBER.md       # Audit cybersécurité technique
@@ -41,6 +43,7 @@ Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 | 2 | Vérifier mon inscription | `verify.html` | Libre |
 | 3 | Déposer ma preuve | `depot.html` | Contrôlé par `config.json` (`depotOpen`) |
 | — | Résultats | `resultats.html` | Contrôlé par `config.json` (`resultatsOpen`) |
+| — | T-shirts | `tshirt.html` | Accès restreint (espace ambassadeurs) |
 
 Affiche une **jauge de progression des inscriptions** en haut de page : nombre d'inscrits (issu du CSV anonymisé) / objectif 1 000, avec compteur animé, barre de progression et badge contextuel mis à jour à chaque chargement.
 
@@ -172,12 +175,30 @@ Les numéros sont persistés dans le `localStorage` du navigateur.
 
 ---
 
+## Page ambassadeurs — Commande de t-shirts (`tshirt.html`)
+
+Accessible depuis l'encart organisateurs de la page d'accueil. Protégée par mot de passe (hash SHA-256 via Web Crypto API — le mot de passe n'est jamais stocké en clair dans le code).
+
+### Fonctionnalités
+
+- **Galerie** : affiche automatiquement les images déposées dans `img/` (`tshirt-1.jpg`, `tshirt-2.jpg`…). Fallback graphique si le dossier est vide.
+- **Bloc informatif** : tarif (~30 €/unité), arguments de cohésion d'équipe, exemples d'entités ayant commandé (CRG Pays-de-la-Loire, SNCF Mixité).
+- **Formulaire de demande** : coordonnées de l'ambassadeur, destinataire (directrice/directeur ou sponsor), nombre de t-shirts, calcul automatique du montant, message personnalisé optionnel.
+- **Génération `.eml`** : produit un fichier email RFC 2822 (encodage UTF-8 base64) téléchargeable et directement ouvrable dans Outlook. Aperçu en ligne disponible avant téléchargement.
+
+### Ajouter des images du t-shirt
+
+Déposer les fichiers dans `img/` en les nommant `tshirt-1.jpg`, `tshirt-2.jpg`, etc. La galerie les charge automatiquement sans modifier le code.
+
+---
+
 ## Technologies
 
 - HTML / CSS / JavaScript vanilla — aucune dépendance serveur
 - [SheetJS (xlsx)](https://sheetjs.com/) — lecture des fichiers Excel
 - [html2canvas](https://html2canvas.hertzen.com/) — export PNG des dossards
-- Google Fonts — Barlow & Barlow Condensed
+- Web Crypto API — hash SHA-256 pour la protection par mot de passe
+- Polices Barlow & Barlow Condensed auto-hébergées (`fonts/`)
 - Hébergement : GitHub Pages
 
 ---

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aide commande t-shirt — Challenge Connecté 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ─── Overlay connexion ─── */
+    #loginOverlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg, #0f1117);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .login-box {
+      background: var(--surface, #1a1d27);
+      border: 1px solid var(--border, #2a2d3a);
+      border-radius: 16px;
+      padding: 40px 48px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,.3);
+      max-width: 360px; width: 90%;
+    }
+    .login-box input[type="password"] {
+      width: 100%; box-sizing: border-box;
+      padding: 10px 14px; border-radius: 8px;
+      border: 1px solid var(--border, #2a2d3a);
+      font-size: 1rem; margin-bottom: 12px;
+      background: var(--bg, #0f1117);
+      color: var(--text, #eee);
+      font-family: inherit;
+    }
+    .login-box input[type="password"]:focus {
+      outline: none;
+      border-color: var(--accent, #f773b4);
+    }
+    .login-btn {
+      width: 100%; padding: 11px;
+      background: var(--accent, #f773b4); color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
+    .login-btn:hover { opacity: 0.85; }
+
+    /* ─── Contenu principal ─── */
+    .tshirt-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    /* ─── Galerie t-shirt ─── */
+    .tshirt-gallery {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 24px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .tshirt-gallery img {
+      height: 200px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .tshirt-gallery .img-placeholder {
+      height: 200px;
+      min-width: 280px;
+      border-radius: 10px;
+      border: 2px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      flex-shrink: 0;
+      background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    }
+    .tshirt-gallery .img-placeholder span { font-size: 2.5rem; }
+
+    /* ─── Bloc info t-shirt ─── */
+    .tshirt-info {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .tshirt-info h2 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 10px;
+      color: var(--accent);
+    }
+    .tshirt-info ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+    .tshirt-info li { margin-bottom: 4px; }
+    .contrib-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .contrib-badge {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+      color: var(--accent);
+    }
+
+    /* ─── Formulaire ─── */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 28px;
+    }
+    .form-card h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 20px;
+    }
+    .form-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 20px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .price-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .price-total {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* ─── Aperçu email ─── */
+    #previewSection {
+      margin-top: 24px;
+      display: none;
+    }
+    .preview-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .preview-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+    .preview-subject {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .preview-body {
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      color: var(--text);
+      background: color-mix(in srgb, var(--bg) 80%, var(--surface));
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    /* ─── Boutons action ─── */
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      flex: 1;
+      min-width: 160px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary {
+      flex: 1;
+      min-width: 160px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── Download success ─── */
+    .success-msg {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: color-mix(in srgb, #4caf50 12%, var(--surface));
+      border: 1px solid color-mix(in srgb, #4caf50 40%, transparent);
+      color: #4caf50;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 540px) {
+      .form-row { grid-template-columns: 1fr; }
+      .login-box { padding: 32px 24px; }
+      .form-card { padding: 20px 16px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ═══ ÉCRAN DE CONNEXION ═══ -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div style="font-size:2.2rem; margin-bottom:8px;">👕</div>
+    <div style="font-size:1.25rem; font-weight:700; margin-bottom:4px;">Espace ambassadeurs</div>
+    <div style="font-size:.9rem; color:var(--muted); margin-bottom:24px;">Challenge Connecté 2026</div>
+    <input type="password" id="loginInput" placeholder="Mot de passe" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter') checkLogin()">
+    <button class="login-btn" onclick="checkLogin()">Entrer</button>
+    <div id="loginError" style="color:#e53935; font-size:.85rem; margin-top:10px; display:none;">
+      Mot de passe incorrect.
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // SHA-256 hash de "ambassadeur2026sr!" — le mot de passe n'est jamais stocké en clair
+  const HASH = 'd97f749c84b47ba8e2a4dd9e763d3cc87e28615add531aa516cdde4572e540b6';
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  if (sessionStorage.getItem('tshirt_ok') === '1') {
+    document.getElementById('loginOverlay').style.display = 'none';
+  }
+
+  window.checkLogin = async function() {
+    const val = document.getElementById('loginInput').value;
+    const h = await sha256(val);
+    if (h === HASH) {
+      sessionStorage.setItem('tshirt_ok', '1');
+      document.getElementById('loginOverlay').style.display = 'none';
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('loginInput').value = '';
+      document.getElementById('loginInput').focus();
+    }
+  };
+})();
+</script>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="logo">
+    <img class="logo-img" src="logo.png" alt="CC" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="logo-badge" style="display:none;">CC</div>
+    <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
+  </div>
+  <div class="header-right">
+    <a href="index.html" class="header-back">← Accueil</a>
+    <button class="theme-toggle" id="themeToggle" title="Changer le thème" aria-label="Changer le thème">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ═══ CONTENU ═══ -->
+<main class="tshirt-container">
+
+  <h1 style="font-size:1.4rem; font-weight:800; margin-bottom:4px;">👕 Commande de t-shirts</h1>
+  <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">
+    Génère un e-mail prêt à envoyer à ta/ton directrice/directeur ou à un sponsor pour financer les t-shirts SoRunning.
+  </p>
+
+  <!-- Galerie photos -->
+  <div class="tshirt-gallery" id="tshirtGallery">
+    <!-- Les images seront chargées dynamiquement depuis img/ -->
+  </div>
+
+  <!-- Bloc info -->
+  <div class="tshirt-info">
+    <h2>Pourquoi commander un t-shirt SoRunning ?</h2>
+    <p>
+      Porter un t-shirt commun, c'est afficher sa fierté d'appartenir à la grande famille SoRunning et au
+      <strong>Challenge Connecté 2026</strong>. C'est aussi un signal fort de cohésion d'équipe, visible sur
+      le terrain comme sur les réseaux sociaux.
+    </p>
+    <ul>
+      <li><strong>Prix unitaire :</strong> environ 30 €</li>
+      <li><strong>Identité commune :</strong> couleurs, logo, événement</li>
+      <li><strong>Visibilité :</strong> photos de course, stories, Viva Engage, Strava…</li>
+      <li><strong>Esprit d'équipe :</strong> motiver les collègues à participer</li>
+    </ul>
+    <p style="margin-top:12px; font-size:13px; color:var(--muted);">
+      Des entités ont déjà sauté le pas — rejoins-les !
+    </p>
+    <div class="contrib-badges">
+      <span class="contrib-badge">✅ CRG Pays-de-la-Loire</span>
+      <span class="contrib-badge">✅ SNCF Mixité</span>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-card">
+    <h2>✉️ Générer mon e-mail de demande</h2>
+
+    <div class="form-section-title">Mes informations</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="senderPrenom">Prénom</label>
+        <input type="text" id="senderPrenom" placeholder="Ex : Marie">
+      </div>
+      <div class="form-group">
+        <label for="senderNom">Nom</label>
+        <input type="text" id="senderNom" placeholder="Ex : Dupont">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="senderEmail">Mon adresse e-mail</label>
+        <input type="email" id="senderEmail" placeholder="prenom.nom@sncf.fr">
+      </div>
+      <div class="form-group">
+        <label for="senderEntite">Mon entité / équipe</label>
+        <input type="text" id="senderEntite" placeholder="Ex : CRG Île-de-France">
+      </div>
+    </div>
+
+    <div class="form-section-title">Destinataire</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="recipientCivilite">Civilité</label>
+        <select id="recipientCivilite">
+          <option value="Madame">Madame</option>
+          <option value="Monsieur">Monsieur</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="recipientNom">Nom du/de la destinataire</label>
+        <input type="text" id="recipientNom" placeholder="Ex : Martin">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="recipientRole">Rôle (facultatif)</label>
+        <input type="text" id="recipientRole" placeholder="Ex : Directrice RH, Sponsor…">
+      </div>
+      <div class="form-group">
+        <label for="recipientEmail">E-mail du/de la destinataire</label>
+        <input type="email" id="recipientEmail" placeholder="prenom.nom@sncf.fr">
+      </div>
+    </div>
+
+    <div class="form-section-title">La commande</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="nbTshirts">Nombre de t-shirts souhaités</label>
+        <input type="number" id="nbTshirts" min="1" max="999" value="5" oninput="updateTotal()">
+        <span class="price-hint">≈ 30 € / t-shirt</span>
+      </div>
+      <div class="form-group" style="justify-content:flex-end;">
+        <label>Montant total estimé</label>
+        <div class="price-total" id="prixTotal">150 €</div>
+        <span class="price-hint">Budget indicatif à confirmer</span>
+      </div>
+    </div>
+
+    <div class="form-section-title">Message complémentaire (facultatif)</div>
+    <div class="form-row single">
+      <div class="form-group">
+        <label for="msgPerso">Ajouter un mot personnalisé</label>
+        <textarea id="msgPerso" placeholder="Un contexte, une motivation, une anecdote… laisse libre cours !"></textarea>
+      </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="action-row">
+      <button class="btn-secondary" onclick="previewEmail()">👁️ Aperçu de l'e-mail</button>
+      <button class="btn-primary" onclick="downloadEml()">⬇️ Télécharger le .eml</button>
+    </div>
+    <div class="success-msg" id="successMsg">
+      ✅ Fichier .eml généré ! Ouvre-le avec Outlook ou un autre client mail pour l'envoyer directement.
+    </div>
+  </div>
+
+  <!-- Aperçu -->
+  <div id="previewSection">
+    <div class="preview-card">
+      <h3>Aperçu de l'e-mail</h3>
+      <div class="preview-subject" id="previewSubject"></div>
+      <div class="preview-body" id="previewBody"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <p>Challenge Connecté SoRunning 2026 &nbsp;·&nbsp;
+    <a href="reglement.html">Règlement</a> &nbsp;·&nbsp;
+    <a href="cgu.html">CGU</a>
+  </p>
+</footer>
+
+<script>
+/* ─── Thème ─── */
+(function() {
+  const saved = localStorage.getItem('theme') || 'dark';
+  if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  const btn = document.getElementById('themeToggle');
+  function setIcons(theme) {
+    btn.querySelector('.icon-moon').style.display = theme === 'dark' ? '' : 'none';
+    btn.querySelector('.icon-sun').style.display  = theme === 'light' ? '' : 'none';
+  }
+  setIcons(saved);
+  btn.addEventListener('click', () => {
+    const curr = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    const next = curr === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next === 'dark' ? '' : 'light');
+    localStorage.setItem('theme', next);
+    setIcons(next);
+  });
+})();
+
+/* ─── Galerie dynamique ─── */
+(function() {
+  // Liste des images attendues dans le dossier img/
+  // Ajoute ici les noms de fichiers quand tu les uploades
+  const IMAGES = [
+    'img/tshirt-1.jpg',
+    'img/tshirt-2.jpg',
+    'img/tshirt-3.jpg',
+  ];
+  const gallery = document.getElementById('tshirtGallery');
+  let loaded = 0;
+  IMAGES.forEach(src => {
+    const img = new Image();
+    img.src = src;
+    img.alt = 'T-shirt SoRunning Challenge Connecté 2026';
+    img.onload = function() {
+      gallery.appendChild(img);
+      loaded++;
+    };
+    img.onerror = function() {
+      // Image absente : on ignore silencieusement
+    };
+  });
+  // Placeholder si aucune image n'est encore disponible
+  setTimeout(() => {
+    if (gallery.children.length === 0) {
+      const ph = document.createElement('div');
+      ph.className = 'img-placeholder';
+      ph.innerHTML = '<span>👕</span><p style="margin:0;font-size:12px;text-align:center">Photos à venir<br>dossier <code>img/</code></p>';
+      gallery.appendChild(ph);
+    }
+  }, 600);
+})();
+
+/* ─── Calcul prix ─── */
+function updateTotal() {
+  const nb = parseInt(document.getElementById('nbTshirts').value) || 0;
+  document.getElementById('prixTotal').textContent = (nb * 30).toLocaleString('fr-FR') + ' €';
+}
+
+/* ─── Construction de l'e-mail ─── */
+function buildEmail() {
+  const prenom    = document.getElementById('senderPrenom').value.trim();
+  const nom       = document.getElementById('senderNom').value.trim();
+  const email     = document.getElementById('senderEmail').value.trim();
+  const entite    = document.getElementById('senderEntite').value.trim();
+  const civRecip  = document.getElementById('recipientCivilite').value;
+  const nomRecip  = document.getElementById('recipientNom').value.trim();
+  const roleRecip = document.getElementById('recipientRole').value.trim();
+  const emailRecip = document.getElementById('recipientEmail').value.trim();
+  const nb        = parseInt(document.getElementById('nbTshirts').value) || 1;
+  const msgPerso  = document.getElementById('msgPerso').value.trim();
+
+  const senderFull   = [prenom, nom].filter(Boolean).join(' ') || 'Un·e ambassadeur·rice SoRunning';
+  const recipientFull = [civRecip, nomRecip].filter(Boolean).join(' ');
+  const roleStr       = roleRecip ? `${civRecip === 'Madame' ? 'notre' : 'notre'} ${roleRecip}` : '';
+  const montant       = (nb * 30).toLocaleString('fr-FR');
+  const entiteStr     = entite || 'notre entité';
+
+  const subject = `Soutien à la commande de t-shirts — Challenge Connecté SoRunning 2026`;
+
+  let body = `${recipientFull},\n\n`;
+
+  body += `Je me permets de vous contacter en tant que participant·e au Challenge Connecté SoRunning 2026, un événement sportif fédérateur organisé au sein du groupe SNCF.\n\n`;
+
+  body += `Dans le cadre de ce challenge, nous souhaitons commander des t-shirts à l'effigie de l'événement pour ${entiteStr}. Ces t-shirts permettent de renforcer notre cohésion d'équipe, d'afficher notre appartenance commune et de valoriser la pratique sportive en entreprise.\n\n`;
+
+  body += `📋 Détail de la demande :\n`;
+  body += `  • Nombre de t-shirts : ${nb}\n`;
+  body += `  • Prix unitaire estimé : 30 €\n`;
+  body += `  • Budget total estimé : ${montant} €\n\n`;
+
+  body += `Cette initiative a déjà séduit d'autres entités du groupe — notamment le CRG Pays-de-la-Loire et SNCF Mixité — qui ont soutenu la commande pour leurs équipes respectives.\n\n`;
+
+  if (msgPerso) {
+    body += `${msgPerso}\n\n`;
+  }
+
+  body += `Pourriez-vous nous apporter votre soutien pour financer tout ou partie de cette commande ?\n\n`;
+
+  body += `Je reste bien sûr disponible pour tout échange complémentaire ou pour vous présenter le projet plus en détail.\n\n`;
+
+  body += `En vous remerciant par avance de l'attention portée à cette demande,\n\n`;
+  body += `Bien cordialement,\n`;
+  body += `${senderFull}`;
+  if (entite) body += `\n${entite}`;
+  if (email)  body += `\n${email}`;
+
+  return { subject, body, fromName: senderFull, fromEmail: email, toEmail: emailRecip, toName: recipientFull };
+}
+
+/* ─── Aperçu ─── */
+function previewEmail() {
+  const { subject, body, toEmail, toName } = buildEmail();
+  document.getElementById('previewSubject').textContent = `Objet : ${subject}`;
+  document.getElementById('previewBody').textContent = body;
+  const sec = document.getElementById('previewSection');
+  sec.style.display = 'block';
+  sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ─── Téléchargement .eml ─── */
+function downloadEml() {
+  const { subject, body, fromName, fromEmail, toEmail, toName } = buildEmail();
+
+  const date = new Date().toUTCString();
+  const fromHeader = fromEmail
+    ? `${fromName} <${fromEmail}>`
+    : fromName;
+  const toHeader = toEmail
+    ? `${toName} <${toEmail}>`
+    : toName || 'destinataire@example.com';
+
+  // Encodage base64 du corps pour garantir les accents
+  const bodyB64 = btoa(unescape(encodeURIComponent(body)));
+
+  const eml = [
+    `Date: ${date}`,
+    `From: ${fromHeader}`,
+    `To: ${toHeader}`,
+    `Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,
+    `MIME-Version: 1.0`,
+    `Content-Type: text/plain; charset=UTF-8`,
+    `Content-Transfer-Encoding: base64`,
+    `X-Generator: Challenge Connecté SoRunning 2026`,
+    ``,
+    bodyB64,
+  ].join('\r\n');
+
+  const blob = new Blob([eml], { type: 'message/rfc822' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `demande-tshirt-sorunning-2026.eml`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  const msg = document.getElementById('successMsg');
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 6000);
+}
+</script>
+
+</body>
+</html>

@@ -127,7 +127,7 @@
     /* ─── Cartes admin ─── */
     .admin-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 12px;
     }
     .admin-card {
@@ -573,6 +573,11 @@
     <a href="resultats.html" class="admin-card" id="card-resultats">
       <span class="admin-card-icon">🏆</span>
       <span>Résultats</span>
+    </a>
+
+    <a href="tshirt.html" class="admin-card">
+      <span class="admin-card-icon">👕</span>
+      <span>T-shirts</span>
     </a>
 
   </div>

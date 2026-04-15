@@ -5,6 +5,15 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.14.0] — 2026-04-15
+
+### Ajouté
+- **Page "Aide à la commande de t-shirts"** (`tshirt.html`) : espace ambassadeurs protégé par mot de passe (hash SHA-256 via Web Crypto API — mot de passe jamais stocké en clair dans le HTML). Contient une galerie d'images (dossier `img/`), un bloc d'information sur l'intérêt des t-shirts (~30 €/unité, identité commune, exemples : CRG Pays-de-la-Loire et SNCF Mixité), et un formulaire de génération d'e-mail de demande de financement à l'attention d'une directrice/d'un directeur ou d'un sponsor. Le formulaire produit un fichier `.eml` téléchargeable, directement ouvrable dans Outlook.
+- **Dossier `img/`** : répertoire dédié aux visuels du t-shirt, chargés dynamiquement par la page (fallback placeholder si aucune image n'est encore présente).
+- **Carte "T-shirts"** dans l'encart organisateurs de `index.html` : lien vers `tshirt.html`, icône 👕, intégré à la grille admin (désormais `repeat(auto-fit, minmax(120px, 1fr))` pour s'adapter à 3 cartes).
+
+---
+
 ## [1.13.0] — 2026-04-13
 
 ### Ajouté
