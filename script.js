@@ -1482,8 +1482,15 @@ function renderStats() {
   const ages = participants.map(p => parseInt(p.age, 10)).filter(a => !isNaN(a));
   const ageMoy = ages.length ? Math.round(ages.reduce((s, a) => s + a, 0) / ages.length) : null;
 
+  // Total km cumulés (nb dossards × distance par catégorie)
+  let totalKm = 0;
+  Object.entries(byCat).forEach(([cat, count]) => {
+    const dist = parseFloat((CATS[cat]?.dist || '0').replace(',', '.'));
+    totalKm += dist * count;
+  });
+
   // ── Render ─────────────────────────────────────────────────────
-  renderKPIs(allDossards.length, N, byCat, bySexe, ageMoy, Object.keys(bySociete).length);
+  renderKPIs(allDossards.length, N, byCat, bySexe, ageMoy, Object.keys(bySociete).length, totalKm);
   renderCatBars(byCat);
   renderSexeDonut(bySexe, N);
   renderAgeBars(ageBuckets);
@@ -1494,13 +1501,14 @@ function renderStats() {
 /* ─────────────────────────────────────────────
    KPI CARDS
 ───────────────────────────────────────────── */
-function renderKPIs(totalDossards, totalPart, byCat, bySexe, ageMoy, nbSocietes) {
+function renderKPIs(totalDossards, totalPart, byCat, bySexe, ageMoy, nbSocietes, totalKm) {
   const H = bySexe['H'] || bySexe['M'] || bySexe['Homme'] || bySexe['Masculin'] || 0;
   const F = bySexe['F'] || bySexe['Femme'] || bySexe['Féminin'] || 0;
   const totalCourses = (byCat['Course 5 km'] || 0) + (byCat['Course 10 km'] || 0) + (byCat['Course 21,1 km'] || 0);
   const totalMarches = (byCat['Marche 5 km'] || 0) + (byCat['Marche 10 km'] || 0) + (byCat['Marche 21,1 km'] || 0);
 
   const ratioHF = (H + F > 0) ? `${Math.round(H/(H+F)*100)} % H` : '—';
+  const totalKmFmt = Math.round(totalKm || 0).toLocaleString('fr-FR');
 
   document.getElementById('statsKpis').innerHTML = `
     <div class="kpi-card kpi-card--pink">
@@ -1535,6 +1543,12 @@ function renderKPIs(totalDossards, totalPart, byCat, bySexe, ageMoy, nbSocietes)
       <div class="kpi-icon">🏢</div>
       <div class="kpi-value">${nbSocietes}</div>
       <div class="kpi-label">Sociétés</div>
+    </div>
+    <div class="kpi-card kpi-card--gold">
+      <div class="kpi-medal-badge">🗺️</div>
+      <div class="kpi-value kpi-value--gold">${totalKmFmt}</div>
+      <div class="kpi-label">Kilomètres cumulés</div>
+      <div class="kpi-sub">dossards × distances</div>
     </div>
   `;
 }

@@ -156,7 +156,7 @@ Réservé aux organisateurs. L'accès est protégé par un mot de passe demandé
 |---|---|
 | **Dossards** | Visualisation et export PNG des dossards, application d'une trame personnalisée, envoi par email |
 | **Liste des participants** | Recherche, export CSV complet, export CSV anonymisé RGPD |
-| **Statistiques** | KPIs, répartition par catégorie, sexe, âge, région, société |
+| **Statistiques** | KPIs (dont total km cumulés — dossards × distances, affiché en macaron doré), répartition par catégorie, sexe, âge, région, société |
 | **Doublons** | Détection automatique d'inscriptions dupliquées |
 | **Paramètres** | Nom de l'événement, catégories, plages de numéros de dossards |
 
