@@ -5,6 +5,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.14.1] — 2026-04-15
+
+### Modifié
+- **`tshirt.html`** : suppression de toutes les références à "Challenge Connecté" dans le contenu de la page (titre, sous-titre du login, bloc info, e-mail généré) — les t-shirts étant destinés à tous les événements SoRunning, le contenu est désormais générique. Objet de l'e-mail simplifié en "Soutien à la commande de t-shirts SoRunning".
+- **`tshirt.html` — galerie** : correction de la logique du placeholder "Photos à venir" — l'affichage ne se déclenche plus via un `setTimeout` (risque d'apparition prématurée si les images sont lentes), mais uniquement après que toutes les tentatives de chargement ont abouti à une erreur.
+
+---
+
 ## [1.14.0] — 2026-04-15
 
 ### Ajouté

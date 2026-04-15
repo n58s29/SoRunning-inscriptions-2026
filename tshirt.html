@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aide commande t-shirt — Challenge Connecté 2026</title>
+  <title>Aide commande t-shirt — SoRunning</title>
   <link rel="stylesheet" href="style.css">
   <style>
     /* ─── Overlay connexion ─── */
@@ -296,7 +296,7 @@
   <div class="login-box">
     <div style="font-size:2.2rem; margin-bottom:8px;">👕</div>
     <div style="font-size:1.25rem; font-weight:700; margin-bottom:4px;">Espace ambassadeurs</div>
-    <div style="font-size:.9rem; color:var(--muted); margin-bottom:24px;">Challenge Connecté 2026</div>
+    <div style="font-size:.9rem; color:var(--muted); margin-bottom:24px;">Espace ambassadeurs SoRunning</div>
     <input type="password" id="loginInput" placeholder="Mot de passe" autocomplete="current-password"
       onkeydown="if(event.key==='Enter') checkLogin()">
     <button class="login-btn" onclick="checkLogin()">Entrer</button>
@@ -368,13 +368,12 @@
   <div class="tshirt-info">
     <h2>Pourquoi commander un t-shirt SoRunning ?</h2>
     <p>
-      Porter un t-shirt commun, c'est afficher sa fierté d'appartenir à la grande famille SoRunning et au
-      <strong>Challenge Connecté 2026</strong>. C'est aussi un signal fort de cohésion d'équipe, visible sur
-      le terrain comme sur les réseaux sociaux.
+      Porter un t-shirt commun, c'est afficher sa fierté d'appartenir à la grande famille SoRunning.
+      C'est aussi un signal fort de cohésion d'équipe, visible sur le terrain comme sur les réseaux sociaux.
     </p>
     <ul>
       <li><strong>Prix unitaire :</strong> environ 30 €</li>
-      <li><strong>Identité commune :</strong> couleurs, logo, événement</li>
+      <li><strong>Identité commune :</strong> couleurs, logo, événements SoRunning</li>
       <li><strong>Visibilité :</strong> photos de course, stories, Viva Engage, Strava…</li>
       <li><strong>Esprit d'équipe :</strong> motiver les collègues à participer</li>
     </ul>
@@ -519,28 +518,28 @@
     'img/tshirt-3.jpg',
   ];
   const gallery = document.getElementById('tshirtGallery');
-  let loaded = 0;
-  IMAGES.forEach(src => {
-    const img = new Image();
-    img.src = src;
-    img.alt = 'T-shirt SoRunning Challenge Connecté 2026';
-    img.onload = function() {
-      gallery.appendChild(img);
-      loaded++;
-    };
-    img.onerror = function() {
-      // Image absente : on ignore silencieusement
-    };
-  });
-  // Placeholder si aucune image n'est encore disponible
-  setTimeout(() => {
-    if (gallery.children.length === 0) {
+  const total = IMAGES.length;
+  let settled = 0;
+  function onSettled() {
+    settled++;
+    // Placeholder uniquement si toutes les images ont échoué
+    if (settled === total && gallery.children.length === 0) {
       const ph = document.createElement('div');
       ph.className = 'img-placeholder';
       ph.innerHTML = '<span>👕</span><p style="margin:0;font-size:12px;text-align:center">Photos à venir<br>dossier <code>img/</code></p>';
       gallery.appendChild(ph);
     }
-  }, 600);
+  }
+  IMAGES.forEach(src => {
+    const img = new Image();
+    img.src = src;
+    img.alt = 'T-shirt SoRunning';
+    img.onload = function() {
+      gallery.appendChild(img);
+      onSettled();
+    };
+    img.onerror = onSettled;
+  });
 })();
 
 /* ─── Calcul prix ─── */
@@ -568,13 +567,13 @@ function buildEmail() {
   const montant       = (nb * 30).toLocaleString('fr-FR');
   const entiteStr     = entite || 'notre entité';
 
-  const subject = `Soutien à la commande de t-shirts — Challenge Connecté SoRunning 2026`;
+  const subject = `Soutien à la commande de t-shirts SoRunning`;
 
   let body = `${recipientFull},\n\n`;
 
-  body += `Je me permets de vous contacter en tant que participant·e au Challenge Connecté SoRunning 2026, un événement sportif fédérateur organisé au sein du groupe SNCF.\n\n`;
+  body += `Je me permets de vous contacter en tant que membre de la communauté SoRunning SNCF, qui rassemble des coureurs et marcheurs au sein du groupe SNCF autour de différents événements sportifs tout au long de l'année.\n\n`;
 
-  body += `Dans le cadre de ce challenge, nous souhaitons commander des t-shirts à l'effigie de l'événement pour ${entiteStr}. Ces t-shirts permettent de renforcer notre cohésion d'équipe, d'afficher notre appartenance commune et de valoriser la pratique sportive en entreprise.\n\n`;
+  body += `Dans ce cadre, nous souhaitons commander des t-shirts à l'effigie de SoRunning pour ${entiteStr}. Ces t-shirts permettent de renforcer notre cohésion d'équipe, d'afficher notre appartenance commune et de valoriser la pratique sportive en entreprise.\n\n`;
 
   body += `📋 Détail de la demande :\n`;
   body += `  • Nombre de t-shirts : ${nb}\n`;
@@ -633,7 +632,7 @@ function downloadEml() {
     `MIME-Version: 1.0`,
     `Content-Type: text/plain; charset=UTF-8`,
     `Content-Transfer-Encoding: base64`,
-    `X-Generator: Challenge Connecté SoRunning 2026`,
+    `X-Generator: SoRunning`,
     ``,
     bodyB64,
   ].join('\r\n');
