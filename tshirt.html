@@ -296,7 +296,7 @@
   <div class="login-box">
     <div style="font-size:2.2rem; margin-bottom:8px;">👕</div>
     <div style="font-size:1.25rem; font-weight:700; margin-bottom:4px;">Espace ambassadeurs</div>
-    <div style="font-size:.9rem; color:var(--muted); margin-bottom:24px;">Espace ambassadeurs SoRunning</div>
+    <div style="font-size:.9rem; color:var(--muted); margin-bottom:24px;">Commande de t-shirts SoRunning</div>
     <input type="password" id="loginInput" placeholder="Mot de passe" autocomplete="current-password"
       onkeydown="if(event.key==='Enter') checkLogin()">
     <button class="login-btn" onclick="checkLogin()">Entrer</button>
@@ -343,10 +343,9 @@
     <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
   </div>
   <div class="header-right">
-    <a href="index.html" class="header-back">← Accueil</a>
-    <button class="theme-toggle" id="themeToggle" title="Changer le thème" aria-label="Changer le thème">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <a href="index.html" style="font-size:13px; color:var(--muted); text-decoration:none; margin-right:8px;">← Accueil</a>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Basculer mode clair / sombre">
+      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
     </button>
   </div>
 </header>
@@ -481,31 +480,33 @@
 </main>
 
 <!-- ═══ FOOTER ═══ -->
-<footer>
-  <p>Challenge Connecté SoRunning 2026 &nbsp;·&nbsp;
-    <a href="reglement.html">Règlement</a> &nbsp;·&nbsp;
-    <a href="cgu.html">CGU</a>
-  </p>
+<footer class="site-footer">
+  <span>© 2026 Challenge Connecté — SoRunning SNCF</span>
+  <span class="site-footer-sep">|</span>
+  <a href="reglement.html">Règlement</a>
+  <span class="site-footer-sep">|</span>
+  <a href="cgu.html">CGU & Confidentialité</a>
+  <span class="site-footer-sep">|</span>
+  <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
 </footer>
 
 <script>
 /* ─── Thème ─── */
-(function() {
-  const saved = localStorage.getItem('theme') || 'dark';
-  if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
-  const btn = document.getElementById('themeToggle');
-  function setIcons(theme) {
-    btn.querySelector('.icon-moon').style.display = theme === 'dark' ? '' : 'none';
-    btn.querySelector('.icon-sun').style.display  = theme === 'light' ? '' : 'none';
-  }
-  setIcons(saved);
-  btn.addEventListener('click', () => {
-    const curr = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-    const next = curr === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next === 'dark' ? '' : 'light');
-    localStorage.setItem('theme', next);
-    setIcons(next);
-  });
+const THEME_KEY = 'challenge2026_theme';
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem(THEME_KEY, t);
+}
+function toggleTheme() {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
 })();
 
 /* ─── Galerie dynamique ─── */
