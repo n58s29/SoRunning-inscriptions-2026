@@ -504,7 +504,7 @@ function processDistance(km) {
   document.getElementById('step3').style.display = 'block';
 }
 
-// ── MAP TILES (CartoDB dark matter, CORS-enabled) ──────────────────────────────
+// ── MAP TILES ─────────────────────────────────────────────────────────────────
 function latLonToPx(lat, lon, zoom) {
   const n = Math.pow(2, zoom) * 256;
   const latR = lat * Math.PI / 180;
@@ -523,63 +523,88 @@ function chooseZoom(minLat, maxLat, minLon, maxLon, W, H) {
   return 1;
 }
 
-function getTileUrl(z, x, y) {
-  return `https://${'abcd'[(x + y) % 4]}.basemaps.cartocdn.com/dark_matter/${z}/${x}/${y}.png`;
+// Charge une tuile (résout avec l'Image ou null)
+function fetchTile(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
 }
 
 // ── CANVAS MAP ────────────────────────────────────────────────────────────────
 async function drawRoute(canvas, pts) {
-  const W = canvas.width;
-  const H = canvas.height;
+  const W = canvas.width, H = canvas.height;
   const ctx = canvas.getContext('2d');
 
-  // Dark fallback background
   ctx.fillStyle = '#0d0f1a';
   ctx.fillRect(0, 0, W, H);
 
-  const lats = pts.map(p => p.lat);
-  const lons = pts.map(p => p.lon);
+  const lats = pts.map(p => p.lat), lons = pts.map(p => p.lon);
   const minLat = Math.min(...lats), maxLat = Math.max(...lats);
   const minLon = Math.min(...lons), maxLon = Math.max(...lons);
 
   const zoom = chooseZoom(minLat, maxLat, minLon, maxLon, W, H);
   const TILE = 256;
-
-  // Canvas origin in world pixels (center on bounding box)
   const mid = latLonToPx((minLat + maxLat) / 2, (minLon + maxLon) / 2, zoom);
-  const ox = mid.x - W / 2;
-  const oy = mid.y - H / 2;
+  const ox = mid.x - W / 2, oy = mid.y - H / 2;
 
-  // Tile range
-  const txMin = Math.floor(ox / TILE);
-  const txMax = Math.floor((ox + W - 1) / TILE);
-  const tyMin = Math.floor(oy / TILE);
-  const tyMax = Math.floor((oy + H - 1) / TILE);
+  const txMin = Math.floor(ox / TILE), txMax = Math.floor((ox + W - 1) / TILE);
+  const tyMin = Math.floor(oy / TILE), tyMax = Math.floor((oy + H - 1) / TILE);
   const maxIdx = Math.pow(2, zoom) - 1;
 
-  // Load and draw all tiles in parallel
-  await Promise.all(
-    Array.from({ length: txMax - txMin + 1 }, (_, i) => txMin + i).flatMap(tx =>
-      Array.from({ length: tyMax - tyMin + 1 }, (_, j) => tyMin + j).map(ty => {
-        if (ty < 0 || ty > maxIdx) return Promise.resolve();
-        const cx = ((tx % (maxIdx + 1)) + (maxIdx + 1)) % (maxIdx + 1);
-        const dx = Math.round(tx * TILE - ox);
-        const dy = Math.round(ty * TILE - oy);
-        return new Promise(resolve => {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => { ctx.drawImage(img, dx, dy, TILE, TILE); resolve(); };
-          img.onerror = resolve;
-          img.src = getTileUrl(zoom, cx, ty);
-        });
-      })
-    )
-  );
+  // Liste des tuiles à charger
+  const jobs = [];
+  for (let tx = txMin; tx <= txMax; tx++) {
+    for (let ty = tyMin; ty <= tyMax; ty++) {
+      if (ty < 0 || ty > maxIdx) continue;
+      const cx = ((tx % (maxIdx + 1)) + (maxIdx + 1)) % (maxIdx + 1);
+      jobs.push({ cx, ty, dx: Math.round(tx * TILE - ox), dy: Math.round(ty * TILE - oy) });
+    }
+  }
 
-  // Helper: lat/lon → canvas coords
+  // ── Cascade de providers ──────────────────────────────────────────────────
+  // 1. CartoDB dark (tuiles sombres, idéales)
+  // 2. OSM standard avec filtre d'inversion CSS (tuiles claires → dark)
+  // 3. Fallback grille
+
+  const CARTO = (z, x, y) =>
+    `https://${'abcd'[(x + y) % 4]}.basemaps.cartocdn.com/dark_matter/${z}/${x}/${y}.png`;
+  const OSM = (z, x, y) =>
+    `https://${'abc'[Math.abs(x + y) % 3]}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+
+  // Phase 1 : CartoDB avec timeout 3s (onerror immédiat si réseau bloqué)
+  const r1 = await Promise.all(jobs.map(j =>
+    Promise.race([
+      fetchTile(CARTO(zoom, j.cx, j.ty)),
+      new Promise(r => setTimeout(() => r(null), 3000))
+    ])
+  ));
+  let loaded = 0;
+  r1.forEach((img, i) => { if (img) { ctx.drawImage(img, jobs[i].dx, jobs[i].dy, TILE, TILE); loaded++; } });
+
+  if (loaded === 0) {
+    // Phase 2 : OSM avec filtre CSS invert → dark style
+    ctx.save();
+    ctx.filter = 'invert(1) hue-rotate(200deg) brightness(0.55) saturate(0.85)';
+    const r2 = await Promise.all(jobs.map(j => fetchTile(OSM(zoom, j.cx, j.ty))));
+    r2.forEach((img, i) => { if (img) { ctx.drawImage(img, jobs[i].dx, jobs[i].dy, TILE, TILE); loaded++; } });
+    ctx.restore();
+
+    // Phase 3 : grille si les deux providers ont échoué
+    if (loaded === 0) {
+      ctx.strokeStyle = 'rgba(45,49,73,0.45)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 44) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 44) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    }
+  }
+
+  // ── Tracé du parcours ─────────────────────────────────────────────────────
   const toC = p => { const px = latLonToPx(p.lat, p.lon, zoom); return { x: px.x - ox, y: px.y - oy }; };
-  const p0 = toC(pts[0]);
-  const pN = toC(pts[pts.length - 1]);
+  const p0 = toC(pts[0]), pN = toC(pts[pts.length - 1]);
 
   // Glow
   ctx.strokeStyle = 'rgba(247,115,180,0.28)';
@@ -588,29 +613,26 @@ async function drawRoute(canvas, pts) {
   pts.forEach((p, i) => { const c = toC(p); i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y); });
   ctx.stroke();
 
-  // Route gradient green → pink
+  // Route gradient vert → rose
   const grad = ctx.createLinearGradient(p0.x, p0.y, pN.x, pN.y);
-  grad.addColorStop(0, '#22c55e');
-  grad.addColorStop(0.5, '#f773b4');
-  grad.addColorStop(1, '#f7bfd9');
-  ctx.strokeStyle = grad;
-  ctx.lineWidth = 3.5;
+  grad.addColorStop(0, '#22c55e'); grad.addColorStop(0.5, '#f773b4'); grad.addColorStop(1, '#f7bfd9');
+  ctx.strokeStyle = grad; ctx.lineWidth = 3.5;
   ctx.beginPath();
   pts.forEach((p, i) => { const c = toC(p); i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y); });
   ctx.stroke();
 
-  // Start dot (green)
+  // Dot départ (vert)
   ctx.shadowColor = '#22c55e'; ctx.shadowBlur = 12;
   ctx.fillStyle = '#22c55e';
   ctx.beginPath(); ctx.arc(p0.x, p0.y, 6, 0, 2 * Math.PI); ctx.fill();
 
-  // End dot (pink)
+  // Dot arrivée (rose)
   ctx.shadowColor = '#f773b4'; ctx.shadowBlur = 12;
   ctx.fillStyle = '#f773b4';
   ctx.beginPath(); ctx.arc(pN.x, pN.y, 6, 0, 2 * Math.PI); ctx.fill();
   ctx.shadowBlur = 0;
 
-  // Attribution (required by CartoDB/OSM)
+  // Attribution
   const fs = Math.max(9, Math.round(9 * W / 700));
   ctx.fillStyle = 'rgba(255,255,255,0.38)';
   ctx.font = `${fs}px sans-serif`;
