@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✂️ Découpeur GPX — Challenge Connecté 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .gpx-page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    /* Drop zone */
+    .gpx-drop {
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 64px 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      background: var(--surface);
+    }
+    .gpx-drop:hover, .gpx-drop.drag-over {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+    .drop-icon { font-size: 48px; margin-bottom: 16px; }
+    .drop-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .drop-sub { font-size: 14px; color: var(--muted); }
+
+    /* Track info */
+    .track-info {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 24px;
+      margin-bottom: 32px;
+    }
+    .tstat { display: flex; flex-direction: column; gap: 2px; }
+    .tstat-label {
+      font-size: 11px; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--muted);
+    }
+    .tstat-value {
+      font-size: 20px; font-weight: 700;
+      font-family: 'Barlow Condensed', sans-serif; color: var(--text);
+    }
+
+    /* Step heading */
+    .step-heading {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
+      color: var(--text); margin-bottom: 20px;
+    }
+
+    /* Distance buttons */
+    .dist-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+    .dist-btn {
+      flex: 1; min-width: 140px;
+      background: var(--surface); border: 2px solid var(--border);
+      border-radius: 16px; padding: 28px 16px;
+      text-align: center; cursor: pointer; color: var(--text);
+      font-family: inherit;
+      transition: border-color .2s, background .2s, transform .15s;
+    }
+    .dist-btn:hover:not(.dist-btn--off) {
+      border-color: var(--accent);
+      background: var(--surface2);
+      transform: translateY(-2px);
+    }
+    .dist-btn--off { opacity: .35; cursor: not-allowed; pointer-events: none; }
+    .dist-num {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 52px; font-weight: 900;
+      color: var(--accent); line-height: 1;
+    }
+    .dist-unit { display: block; font-size: 15px; font-weight: 600; margin-top: 4px; }
+    .dist-sublabel { display: block; font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    /* Error / warning */
+    .gpx-err {
+      background: rgba(239,68,68,.08);
+      border: 1px solid rgba(239,68,68,.35);
+      border-radius: 10px; padding: 14px 18px;
+      color: #f87171; font-size: 14px; margin-top: 16px;
+    }
+    .gpx-warn {
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.3);
+      border-radius: 10px; padding: 12px 16px;
+      color: #fbbf24; font-size: 13px; margin-bottom: 16px;
+    }
+
+    /* Certificate card — hardcoded dark colors for reliable PNG export */
+    .cert-card {
+      background: #0f1117;
+      border-radius: 18px;
+      border: 1px solid #2d3149;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .cert-hd {
+      background: linear-gradient(135deg, #16192a 0%, #1e2236 100%);
+      padding: 22px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #2d3149;
+    }
+    .cert-brand { display: flex; align-items: center; gap: 10px; }
+    .cert-brand-img { width: 36px; height: 36px; object-fit: contain; }
+    .cert-brand-txt {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px; font-weight: 700; color: #f0f2f8; line-height: 1.2;
+    }
+    .cert-brand-txt span { color: #f773b4; }
+    .cert-pill {
+      background: #f773b4; color: #0f1117;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 20px;
+    }
+    .cert-body { padding: 28px 28px 24px; }
+    .cert-subtitle {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: #7a7f96; text-align: center; margin-bottom: 20px;
+    }
+    .cert-dist { text-align: center; margin-bottom: 24px; }
+    .cert-dist-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 100px; font-weight: 900;
+      color: #f773b4; line-height: 1; letter-spacing: -2px;
+    }
+    .cert-dist-unit {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 30px; font-weight: 700;
+      color: #f0f2f8; text-transform: uppercase;
+    }
+    .cert-dist-cat { font-size: 13px; color: #7a7f96; margin-top: 4px; }
+    .cert-stats {
+      display: flex;
+      background: #1a1d27; border: 1px solid #2d3149;
+      border-radius: 10px; overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .cert-stat {
+      flex: 1; padding: 14px 12px; text-align: center;
+      border-right: 1px solid #2d3149;
+    }
+    .cert-stat:last-child { border-right: none; }
+    .cert-stat-lbl {
+      font-size: 10px; text-transform: uppercase;
+      letter-spacing: .1em; color: #7a7f96; margin-bottom: 5px;
+    }
+    .cert-stat-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px; font-weight: 700; color: #f0f2f8;
+    }
+    .cert-map {
+      border-radius: 10px; overflow: hidden;
+      background: #0d0f1a; margin-bottom: 16px;
+      line-height: 0;
+    }
+    .cert-map canvas { display: block; width: 100%; height: 240px; }
+    .cert-ft {
+      display: flex; justify-content: space-between;
+      font-size: 10px; color: #4a4f66;
+      padding-top: 14px; border-top: 1px solid #1e2236;
+    }
+
+    /* Actions */
+    .gpx-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .gpx-btn {
+      flex: 1; min-width: 160px;
+      padding: 14px 20px; border-radius: 10px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; border: none;
+      transition: opacity .2s, transform .15s;
+      font-family: inherit;
+    }
+    .gpx-btn:hover:not(:disabled) { opacity: .85; transform: translateY(-1px); }
+    .gpx-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .gpx-btn-primary { background: var(--accent); color: #0f1117; }
+    .gpx-btn-ghost {
+      background: var(--surface2); color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-change {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted); font-size: 13px; cursor: pointer;
+      margin-bottom: 20px; font-family: inherit;
+      transition: color .2s, border-color .2s;
+    }
+    .btn-change:hover { color: var(--text); border-color: var(--accent); }
+
+    /* Header GPX button */
+    .btn-gpx {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px;
+      background: rgba(247,115,180,.12);
+      border: 1px solid rgba(247,115,180,.35);
+      color: var(--accent); font-size: 14px; font-weight: 600;
+      text-decoration: none;
+      transition: background .2s, border-color .2s;
+    }
+    .btn-gpx:hover { background: rgba(247,115,180,.2); border-color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img class="logo-img" src="logo.png" alt="CC"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="logo-badge" style="display:none;">CC</div>
+    <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
+  </div>
+  <div class="header-right">
+    <a href="depot.html" class="btn-back">← Dépose ta preuve</a>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
+            title="Basculer mode clair / sombre">
+      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+    </button>
+  </div>
+</header>
+
+<div class="gpx-page">
+
+  <!-- Hero -->
+  <div style="text-align:center; margin-bottom:48px;">
+    <div style="font-size:52px; margin-bottom:16px;">✂️</div>
+    <h1 style="font-family:'Barlow Condensed',sans-serif; font-size:44px; font-weight:900;
+               text-transform:uppercase; letter-spacing:.03em; margin:0 0 12px;">
+      Découpeur GPX
+    </h1>
+    <p style="color:var(--muted); font-size:16px; max-width:500px; margin:0 auto; line-height:1.6;">
+      Tu as couru plus loin que la distance visée ? Dépose ton fichier GPX,
+      choisis ta distance Challenge Connecté, et on extrait ton meilleur temps sur cette distance.
+    </p>
+  </div>
+
+  <!-- ── STEP 1 : dépôt fichier ── -->
+  <div id="step1">
+    <div class="gpx-drop" id="dropZone">
+      <div class="drop-icon">📂</div>
+      <p class="drop-title">Glisse ton fichier GPX ici</p>
+      <p class="drop-sub">ou clique pour sélectionner</p>
+      <input type="file" id="fileInput" accept=".gpx" style="display:none">
+    </div>
+  </div>
+
+  <!-- ── STEP 2 : choix distance ── -->
+  <div id="step2" style="display:none">
+    <div class="track-info" id="trackInfo"></div>
+    <p class="step-heading">Choisir ta distance Challenge Connecté</p>
+    <div class="dist-grid">
+      <button class="dist-btn" id="btn5" onclick="processDistance(5)">
+        <span class="dist-num">5</span>
+        <span class="dist-unit">km</span>
+      </button>
+      <button class="dist-btn" id="btn10" onclick="processDistance(10)">
+        <span class="dist-num">10</span>
+        <span class="dist-unit">km</span>
+      </button>
+      <button class="dist-btn" id="btn21" onclick="processDistance(21.1)">
+        <span class="dist-num">21,1</span>
+        <span class="dist-unit">km</span>
+        <span class="dist-sublabel">Semi-marathon</span>
+      </button>
+    </div>
+    <div id="distErr" class="gpx-err" style="display:none"></div>
+  </div>
+
+  <!-- ── STEP 3 : certificat ── -->
+  <div id="step3" style="display:none">
+    <button class="btn-change" onclick="backToStep2()">← Changer la distance</button>
+    <div class="cert-card" id="certCard"></div>
+    <div class="gpx-actions">
+      <button class="gpx-btn gpx-btn-primary" id="exportBtn" onclick="exportPNG()">
+        📥 Exporter en PNG
+      </button>
+      <button class="gpx-btn gpx-btn-ghost" onclick="resetAll()">↩ Nouveau fichier</button>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <span>© 2026 Challenge Connecté — SoRunning SNCF</span>
+  <span class="site-footer-sep">|</span>
+  <a href="reglement.html">Règlement</a>
+  <span class="site-footer-sep">|</span>
+  <a href="cgu.html">CGU & Confidentialité</a>
+  <span class="site-footer-sep">|</span>
+  <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// ── THEME ─────────────────────────────────────────────────────────────────────
+const THEME_KEY = 'challenge2026_theme';
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem(THEME_KEY, t);
+}
+function toggleTheme() {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+(function() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
+})();
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let gpxPoints = [];
+let gpxName = '';
+let hasTimestamps = false;
+let currentKm = null;
+let currentSeg = null;
+
+// ── FILE HANDLING ─────────────────────────────────────────────────────────────
+const dz = document.getElementById('dropZone');
+const fi = document.getElementById('fileInput');
+
+dz.addEventListener('click', () => fi.click());
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+fi.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+function handleFile(file) {
+  if (!file.name.toLowerCase().endsWith('.gpx')) {
+    alert('Merci de fournir un fichier .gpx');
+    return;
+  }
+  gpxName = file.name.replace(/\.gpx$/i, '');
+  const reader = new FileReader();
+  reader.onload = e => {
+    const pts = parseGPX(e.target.result);
+    if (!pts || pts.length < 2) { alert('Fichier GPX invalide ou vide.'); return; }
+    gpxPoints = pts;
+    computeDist(gpxPoints);
+    hasTimestamps = gpxPoints.some(p => p.time !== null);
+    showStep2();
+  };
+  reader.readAsText(file);
+}
+
+// ── GPX PARSING ───────────────────────────────────────────────────────────────
+function parseGPX(text) {
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  const trkpts = doc.querySelectorAll('trkpt');
+  if (!trkpts.length) return null;
+  const pts = [];
+  trkpts.forEach(pt => {
+    const lat = parseFloat(pt.getAttribute('lat'));
+    const lon = parseFloat(pt.getAttribute('lon'));
+    if (isNaN(lat) || isNaN(lon)) return;
+    const te = pt.querySelector('time');
+    const ee = pt.querySelector('ele');
+    pts.push({
+      lat, lon,
+      ele: ee ? parseFloat(ee.textContent) : 0,
+      time: te ? new Date(te.textContent) : null
+    });
+  });
+  return pts.length >= 2 ? pts : null;
+}
+
+// ── DISTANCE ──────────────────────────────────────────────────────────────────
+function hav(p1, p2) {
+  const R = 6371000, r = Math.PI / 180;
+  const dLat = (p2.lat - p1.lat) * r;
+  const dLon = (p2.lon - p1.lon) * r;
+  const a = Math.sin(dLat/2)**2 + Math.cos(p1.lat*r) * Math.cos(p2.lat*r) * Math.sin(dLon/2)**2;
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function computeDist(pts) {
+  pts[0].dist = 0;
+  for (let i = 1; i < pts.length; i++) pts[i].dist = pts[i-1].dist + hav(pts[i-1], pts[i]);
+}
+
+// ── BEST SEGMENT (sliding window two-pointer) ──────────────────────────────────
+function bestSegment(pts, targetM) {
+  const total = pts[pts.length - 1].dist;
+  if (total < targetM) return null;
+
+  // No timestamps: cut from start at target distance
+  if (!hasTimestamps) {
+    let j = 0;
+    while (j < pts.length - 1 && pts[j].dist < targetM) j++;
+    return { timeMs: null, points: pts.slice(0, j + 1) };
+  }
+
+  let bestMs = Infinity, bestS = 0, bestE = 1;
+  let j = 0;
+  for (let i = 0; i < pts.length; i++) {
+    if (j <= i) j = i + 1;
+    // Advance j until segment covers targetM
+    while (j < pts.length - 1 && (pts[j].dist - pts[i].dist) < targetM) j++;
+    if ((pts[j].dist - pts[i].dist) < targetM) break;
+    const t0 = pts[i].time?.getTime();
+    const t1 = pts[j].time?.getTime();
+    if (!t0 || !t1 || t1 <= t0) continue;
+    const ms = t1 - t0;
+    if (ms < bestMs) { bestMs = ms; bestS = i; bestE = j; }
+  }
+
+  if (bestMs === Infinity) return null;
+  return { timeMs: bestMs, points: pts.slice(bestS, bestE + 1) };
+}
+
+// ── FORMATTERS ────────────────────────────────────────────────────────────────
+function fmtTime(ms) {
+  if (ms == null) return '--:--';
+  const s = Math.round(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const p = n => String(n).padStart(2, '0');
+  return h > 0 ? `${h}:${p(m)}:${p(sec)}` : `${m}:${p(sec)}`;
+}
+
+function fmtPace(ms, km) {
+  if (ms == null) return '--\'--"';
+  const spk = (ms / 1000) / km;
+  const m = Math.floor(spk / 60);
+  const s = Math.round(spk % 60);
+  return `${m}'${String(s).padStart(2, '0')}"`;
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ── STEP 2 ────────────────────────────────────────────────────────────────────
+function showStep2() {
+  const total = gpxPoints[gpxPoints.length - 1].dist;
+  const t0 = gpxPoints[0].time?.getTime();
+  const tN = gpxPoints[gpxPoints.length - 1].time?.getTime();
+  const totalMs = (hasTimestamps && t0 && tN) ? tN - t0 : null;
+
+  document.getElementById('trackInfo').innerHTML = `
+    <div class="tstat">
+      <span class="tstat-label">Fichier</span>
+      <span class="tstat-value" style="font-size:13px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${gpxName}</span>
+    </div>
+    <div class="tstat">
+      <span class="tstat-label">Distance totale</span>
+      <span class="tstat-value">${(total / 1000).toFixed(2)} km</span>
+    </div>
+    ${totalMs ? `<div class="tstat">
+      <span class="tstat-label">Durée totale</span>
+      <span class="tstat-value">${fmtTime(totalMs)}</span>
+    </div>` : ''}
+    ${gpxPoints[0].time ? `<div class="tstat">
+      <span class="tstat-label">Date</span>
+      <span class="tstat-value" style="font-size:13px;">${fmtDate(gpxPoints[0].time)}</span>
+    </div>` : ''}
+  `;
+
+  [['btn5', 5000], ['btn10', 10000], ['btn21', 21100]].forEach(([id, m]) => {
+    document.getElementById(id).classList.toggle('dist-btn--off', total < m);
+  });
+
+  document.getElementById('distErr').style.display = 'none';
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+}
+
+// ── PROCESS DISTANCE ──────────────────────────────────────────────────────────
+function processDistance(km) {
+  document.getElementById('distErr').style.display = 'none';
+  const seg = bestSegment(gpxPoints, km * 1000);
+  if (!seg) {
+    const el = document.getElementById('distErr');
+    el.textContent = `La distance totale de ta trace est insuffisante pour extraire ${km} km.`;
+    el.style.display = 'block';
+    return;
+  }
+  currentKm = km;
+  currentSeg = seg;
+  renderCert(km, seg);
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'block';
+}
+
+// ── CANVAS MAP ────────────────────────────────────────────────────────────────
+function drawRoute(canvas, pts) {
+  const W = canvas.width;
+  const H = canvas.height;
+  const ctx = canvas.getContext('2d');
+
+  const lats = pts.map(p => p.lat);
+  const lons = pts.map(p => p.lon);
+  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+  const minLon = Math.min(...lons), maxLon = Math.max(...lons);
+  const dLat = maxLat - minLat || 0.001;
+  const dLon = maxLon - minLon || 0.001;
+  // Correct aspect ratio for latitude distortion
+  const aspect = (dLon / Math.cos((minLat + maxLat) / 2 * Math.PI / 180)) / dLat;
+
+  const pad = 32;
+  let dW, dH;
+  if (aspect > (W - 2 * pad) / (H - 2 * pad)) {
+    dW = W - 2 * pad; dH = dW / aspect;
+  } else {
+    dH = H - 2 * pad; dW = dH * aspect;
+  }
+  const ox = (W - dW) / 2, oy = (H - dH) / 2;
+
+  const tx = lon => ox + (lon - minLon) / dLon * dW;
+  const ty = lat => oy + (1 - (lat - minLat) / dLat) * dH;
+
+  // Background
+  ctx.fillStyle = '#0d0f1a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle grid
+  ctx.strokeStyle = 'rgba(45,49,73,0.45)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 44) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 44) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Glow under route
+  ctx.strokeStyle = 'rgba(247,115,180,0.12)';
+  ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(tx(pts[0].lon), ty(pts[0].lat));
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(tx(pts[i].lon), ty(pts[i].lat));
+  ctx.stroke();
+
+  // Route line (gradient green → pink)
+  const grad = ctx.createLinearGradient(
+    tx(pts[0].lon), ty(pts[0].lat),
+    tx(pts[pts.length-1].lon), ty(pts[pts.length-1].lat)
+  );
+  grad.addColorStop(0, '#22c55e');
+  grad.addColorStop(0.5, '#f773b4');
+  grad.addColorStop(1, '#f7bfd9');
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(tx(pts[0].lon), ty(pts[0].lat));
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(tx(pts[i].lon), ty(pts[i].lat));
+  ctx.stroke();
+
+  // Start dot (green)
+  ctx.shadowColor = '#22c55e'; ctx.shadowBlur = 14;
+  ctx.fillStyle = '#22c55e';
+  ctx.beginPath(); ctx.arc(tx(pts[0].lon), ty(pts[0].lat), 7, 0, 2 * Math.PI); ctx.fill();
+
+  // End dot (pink)
+  ctx.shadowColor = '#f773b4'; ctx.shadowBlur = 14;
+  ctx.fillStyle = '#f773b4';
+  ctx.beginPath(); ctx.arc(tx(pts[pts.length-1].lon), ty(pts[pts.length-1].lat), 7, 0, 2 * Math.PI); ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+// ── RENDER CERTIFICATE ────────────────────────────────────────────────────────
+function renderCert(km, seg) {
+  const { timeMs, points: pts } = seg;
+  const distDisplay = km === 21.1 ? '21,1' : String(km);
+  const runDate = pts[0].time;
+
+  document.getElementById('certCard').innerHTML = `
+    <div class="cert-hd">
+      <div class="cert-brand">
+        <img src="logo.png" alt="CC" class="cert-brand-img"
+             onerror="this.style.display='none'">
+        <div class="cert-brand-txt">Challenge <span>Connecté</span> 2026</div>
+      </div>
+      <div class="cert-pill">Certificat de performance</div>
+    </div>
+    <div class="cert-body">
+      ${!hasTimestamps ? '<div class="gpx-warn">⚠️ Ton fichier GPX ne contient pas d\'horodatage — les temps ne sont pas disponibles.</div>' : ''}
+      <div class="cert-subtitle">Meilleur temps sur la distance</div>
+      <div class="cert-dist">
+        <div class="cert-dist-num">${distDisplay}</div>
+        <div class="cert-dist-unit">kilomètre${km > 1 ? 's' : ''}</div>
+        ${km === 21.1 ? '<div class="cert-dist-cat">Semi-marathon</div>' : ''}
+      </div>
+      <div class="cert-stats">
+        <div class="cert-stat">
+          <div class="cert-stat-lbl">Temps</div>
+          <div class="cert-stat-val">${fmtTime(timeMs)}</div>
+        </div>
+        <div class="cert-stat">
+          <div class="cert-stat-lbl">Allure</div>
+          <div class="cert-stat-val">${fmtPace(timeMs, km)}</div>
+        </div>
+        ${runDate ? `<div class="cert-stat">
+          <div class="cert-stat-lbl">Date</div>
+          <div class="cert-stat-val" style="font-size:15px;">${fmtDate(runDate)}</div>
+        </div>` : ''}
+      </div>
+      <div class="cert-map">
+        <canvas id="mapCvs"></canvas>
+      </div>
+      <div class="cert-ft">
+        <span>Généré par SoRunning</span>
+        <span>Challenge Connecté 2026 · 8–11 mai 2026</span>
+      </div>
+    </div>
+  `;
+
+  requestAnimationFrame(() => {
+    const cvs = document.getElementById('mapCvs');
+    cvs.width = cvs.offsetWidth || 700;
+    cvs.height = 240;
+    drawRoute(cvs, pts);
+  });
+}
+
+// ── EXPORT PNG ────────────────────────────────────────────────────────────────
+async function exportPNG() {
+  const btn = document.getElementById('exportBtn');
+  btn.textContent = '⏳ Génération…';
+  btn.disabled = true;
+  try {
+    // Redraw map at 2× for crisp export
+    const cvs = document.getElementById('mapCvs');
+    const W = cvs.offsetWidth || 700;
+    cvs.width = W * 2;
+    cvs.height = 480;
+    drawRoute(cvs, currentSeg.points);
+
+    const canvas = await html2canvas(document.getElementById('certCard'), {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#0f1117',
+      logging: false
+    });
+
+    const distStr = currentKm === 21.1 ? '21km' : `${currentKm}km`;
+    const a = document.createElement('a');
+    a.download = `certificat-cc2026-${distStr}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+
+    // Restore display resolution
+    cvs.width = W;
+    cvs.height = 240;
+    drawRoute(cvs, currentSeg.points);
+  } finally {
+    btn.textContent = '📥 Exporter en PNG';
+    btn.disabled = false;
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function backToStep2() {
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+}
+
+function resetAll() {
+  gpxPoints = []; gpxName = ''; hasTimestamps = false;
+  currentKm = null; currentSeg = null;
+  fi.value = '';
+  document.getElementById('certCard').innerHTML = '';
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('step1').style.display = 'block';
+}
+</script>
+</body>
+</html>

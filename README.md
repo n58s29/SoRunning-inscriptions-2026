@@ -12,6 +12,7 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 ├── inscription.html    # Page publique — formulaire d'inscription Microsoft Forms
 ├── verify.html         # Page publique — vérification d'inscription
 ├── depot.html          # Page publique — dépôt de preuve (activable)
+├── gpx-cutter.html     # Page publique — découpeur GPX & certificat de performance
 ├── resultats.html      # Page publique — résultats (activable)
 ├── admin.html          # Outil d'administration (accès restreint)
 ├── tshirt.html         # Espace ambassadeurs — générateur d'e-mail commande t-shirt (accès restreint)
@@ -79,6 +80,22 @@ Fonctionnalités :
 - Catégories d'âge et genre (ESP/SEN/M0…M4+, H/F)
 - Détection d'alertes : dossard inconnu, hors plage, initiales incorrectes
 - Tirage au sort animé pour les marcheurs (avec confettis)
+
+---
+
+## Découpeur GPX (`gpx-cutter.html`)
+
+Outil pour les participants ayant couru plus loin que la distance Challenge Connecté visée (cas typique : sortie longue du 8–11 mai). Accessible via un raccourci dans le bandeau de `depot.html`.
+
+Fonctionnement :
+1. Dépôt d'un fichier `.gpx` (drag & drop ou sélecteur)
+2. Affichage des statistiques de la trace (distance totale, durée, date)
+3. Choix de la distance cible — 5 km / 10 km / 21,1 km (boutons désactivés si trace trop courte)
+4. Extraction du meilleur segment par algorithme de fenêtre glissante à deux pointeurs (O(n)) — identifie le tronçon le plus rapide couvrant exactement la distance cible
+5. Génération d'un **certificat de performance** : distance, temps, allure, date, carte canvas (trace gradient vert → rose sur fond sombre)
+6. Export PNG haute résolution (rendu 2×, html2canvas)
+
+Gère les fichiers GPX sans horodatage : repli sur découpe depuis le départ, avertissement affiché.
 
 ---
 

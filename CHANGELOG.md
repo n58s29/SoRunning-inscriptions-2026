@@ -5,6 +5,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.16.0] — 2026-04-17
+
+### Ajouté
+- **Page "Découpeur GPX"** (`gpx-cutter.html`) : outil permettant aux participants ayant couru plus loin que la distance visée d'extraire un segment de preuve conforme. Dépose un fichier `.gpx` via drag & drop ou sélecteur, choisit la distance Challenge Connecté (5 km / 10 km / 21,1 km), et l'outil extrait automatiquement le meilleur temps sur cette distance par algorithme de fenêtre glissante (deux pointeurs, O(n)). Génère un certificat de performance avec distance, temps, allure, date, et carte de la trace rendue sur `<canvas>` (gradient vert → rose, glow, dots départ/arrivée). Le certificat est exportable en PNG haute résolution via html2canvas (rendu 2×). Gère les fichiers GPX sans horodatage (repli sur découpe depuis le départ). Les boutons de distance sont désactivés si la trace est trop courte.
+- **Raccourci "✂️ Découper GPX"** dans le bandeau supérieur de `depot.html` : bouton rosé distinct du bouton Accueil, visible dans la vue verrouillée.
+
+---
+
 ## [1.14.1] — 2026-04-15
 
 ### Modifié
