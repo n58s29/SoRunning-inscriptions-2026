@@ -168,7 +168,7 @@
       background: #0d0f1a; margin-bottom: 16px;
       line-height: 0;
     }
-    .cert-map canvas { display: block; width: 100%; height: 240px; }
+    .cert-map canvas { display: block; width: 100%; height: 260px; }
     .cert-ft {
       display: flex; justify-content: space-between;
       font-size: 10px; color: #4a4f66;
@@ -504,74 +504,118 @@ function processDistance(km) {
   document.getElementById('step3').style.display = 'block';
 }
 
+// ── MAP TILES (CartoDB dark matter, CORS-enabled) ──────────────────────────────
+function latLonToPx(lat, lon, zoom) {
+  const n = Math.pow(2, zoom) * 256;
+  const latR = lat * Math.PI / 180;
+  return {
+    x: (lon + 180) / 360 * n,
+    y: (1 - Math.log(Math.tan(latR) + 1 / Math.cos(latR)) / Math.PI) / 2 * n
+  };
+}
+
+function chooseZoom(minLat, maxLat, minLon, maxLon, W, H) {
+  for (let z = 17; z >= 1; z--) {
+    const tl = latLonToPx(maxLat, minLon, z);
+    const br = latLonToPx(minLat, maxLon, z);
+    if (Math.abs(br.x - tl.x) <= W * 0.72 && Math.abs(br.y - tl.y) <= H * 0.72) return z;
+  }
+  return 1;
+}
+
+function getTileUrl(z, x, y) {
+  return `https://${'abcd'[(x + y) % 4]}.basemaps.cartocdn.com/dark_matter/${z}/${x}/${y}.png`;
+}
+
 // ── CANVAS MAP ────────────────────────────────────────────────────────────────
-function drawRoute(canvas, pts) {
+async function drawRoute(canvas, pts) {
   const W = canvas.width;
   const H = canvas.height;
   const ctx = canvas.getContext('2d');
+
+  // Dark fallback background
+  ctx.fillStyle = '#0d0f1a';
+  ctx.fillRect(0, 0, W, H);
 
   const lats = pts.map(p => p.lat);
   const lons = pts.map(p => p.lon);
   const minLat = Math.min(...lats), maxLat = Math.max(...lats);
   const minLon = Math.min(...lons), maxLon = Math.max(...lons);
-  const dLat = maxLat - minLat || 0.001;
-  const dLon = maxLon - minLon || 0.001;
-  // Correct aspect ratio for latitude distortion
-  const aspect = (dLon / Math.cos((minLat + maxLat) / 2 * Math.PI / 180)) / dLat;
 
-  const pad = 32;
-  let dW, dH;
-  if (aspect > (W - 2 * pad) / (H - 2 * pad)) {
-    dW = W - 2 * pad; dH = dW / aspect;
-  } else {
-    dH = H - 2 * pad; dW = dH * aspect;
-  }
-  const ox = (W - dW) / 2, oy = (H - dH) / 2;
+  const zoom = chooseZoom(minLat, maxLat, minLon, maxLon, W, H);
+  const TILE = 256;
 
-  const tx = lon => ox + (lon - minLon) / dLon * dW;
-  const ty = lat => oy + (1 - (lat - minLat) / dLat) * dH;
+  // Canvas origin in world pixels (center on bounding box)
+  const mid = latLonToPx((minLat + maxLat) / 2, (minLon + maxLon) / 2, zoom);
+  const ox = mid.x - W / 2;
+  const oy = mid.y - H / 2;
 
-  // Background
-  ctx.fillStyle = '#0d0f1a';
-  ctx.fillRect(0, 0, W, H);
+  // Tile range
+  const txMin = Math.floor(ox / TILE);
+  const txMax = Math.floor((ox + W - 1) / TILE);
+  const tyMin = Math.floor(oy / TILE);
+  const tyMax = Math.floor((oy + H - 1) / TILE);
+  const maxIdx = Math.pow(2, zoom) - 1;
 
-  // Subtle grid
-  ctx.strokeStyle = 'rgba(45,49,73,0.45)';
-  ctx.lineWidth = 1;
-  for (let x = 0; x < W; x += 44) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-  for (let y = 0; y < H; y += 44) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  // Load and draw all tiles in parallel
+  await Promise.all(
+    Array.from({ length: txMax - txMin + 1 }, (_, i) => txMin + i).flatMap(tx =>
+      Array.from({ length: tyMax - tyMin + 1 }, (_, j) => tyMin + j).map(ty => {
+        if (ty < 0 || ty > maxIdx) return Promise.resolve();
+        const cx = ((tx % (maxIdx + 1)) + (maxIdx + 1)) % (maxIdx + 1);
+        const dx = Math.round(tx * TILE - ox);
+        const dy = Math.round(ty * TILE - oy);
+        return new Promise(resolve => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => { ctx.drawImage(img, dx, dy, TILE, TILE); resolve(); };
+          img.onerror = resolve;
+          img.src = getTileUrl(zoom, cx, ty);
+        });
+      })
+    )
+  );
 
-  // Glow under route
-  ctx.strokeStyle = 'rgba(247,115,180,0.12)';
-  ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.beginPath(); ctx.moveTo(tx(pts[0].lon), ty(pts[0].lat));
-  for (let i = 1; i < pts.length; i++) ctx.lineTo(tx(pts[i].lon), ty(pts[i].lat));
+  // Helper: lat/lon → canvas coords
+  const toC = p => { const px = latLonToPx(p.lat, p.lon, zoom); return { x: px.x - ox, y: px.y - oy }; };
+  const p0 = toC(pts[0]);
+  const pN = toC(pts[pts.length - 1]);
+
+  // Glow
+  ctx.strokeStyle = 'rgba(247,115,180,0.28)';
+  ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  pts.forEach((p, i) => { const c = toC(p); i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y); });
   ctx.stroke();
 
-  // Route line (gradient green → pink)
-  const grad = ctx.createLinearGradient(
-    tx(pts[0].lon), ty(pts[0].lat),
-    tx(pts[pts.length-1].lon), ty(pts[pts.length-1].lat)
-  );
+  // Route gradient green → pink
+  const grad = ctx.createLinearGradient(p0.x, p0.y, pN.x, pN.y);
   grad.addColorStop(0, '#22c55e');
   grad.addColorStop(0.5, '#f773b4');
   grad.addColorStop(1, '#f7bfd9');
   ctx.strokeStyle = grad;
-  ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.moveTo(tx(pts[0].lon), ty(pts[0].lat));
-  for (let i = 1; i < pts.length; i++) ctx.lineTo(tx(pts[i].lon), ty(pts[i].lat));
+  ctx.lineWidth = 3.5;
+  ctx.beginPath();
+  pts.forEach((p, i) => { const c = toC(p); i === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y); });
   ctx.stroke();
 
   // Start dot (green)
-  ctx.shadowColor = '#22c55e'; ctx.shadowBlur = 14;
+  ctx.shadowColor = '#22c55e'; ctx.shadowBlur = 12;
   ctx.fillStyle = '#22c55e';
-  ctx.beginPath(); ctx.arc(tx(pts[0].lon), ty(pts[0].lat), 7, 0, 2 * Math.PI); ctx.fill();
+  ctx.beginPath(); ctx.arc(p0.x, p0.y, 6, 0, 2 * Math.PI); ctx.fill();
 
   // End dot (pink)
-  ctx.shadowColor = '#f773b4'; ctx.shadowBlur = 14;
+  ctx.shadowColor = '#f773b4'; ctx.shadowBlur = 12;
   ctx.fillStyle = '#f773b4';
-  ctx.beginPath(); ctx.arc(tx(pts[pts.length-1].lon), ty(pts[pts.length-1].lat), 7, 0, 2 * Math.PI); ctx.fill();
+  ctx.beginPath(); ctx.arc(pN.x, pN.y, 6, 0, 2 * Math.PI); ctx.fill();
   ctx.shadowBlur = 0;
+
+  // Attribution (required by CartoDB/OSM)
+  const fs = Math.max(9, Math.round(9 * W / 700));
+  ctx.fillStyle = 'rgba(255,255,255,0.38)';
+  ctx.font = `${fs}px sans-serif`;
+  ctx.textAlign = 'right';
+  ctx.fillText('© OpenStreetMap contributors © CARTO', W - 5, H - 4);
 }
 
 // ── RENDER CERTIFICATE ────────────────────────────────────────────────────────
@@ -621,11 +665,11 @@ function renderCert(km, seg) {
     </div>
   `;
 
-  requestAnimationFrame(() => {
+  requestAnimationFrame(async () => {
     const cvs = document.getElementById('mapCvs');
     cvs.width = cvs.offsetWidth || 700;
-    cvs.height = 240;
-    drawRoute(cvs, pts);
+    cvs.height = 260;
+    await drawRoute(cvs, pts);
   });
 }
 
@@ -639,8 +683,8 @@ async function exportPNG() {
     const cvs = document.getElementById('mapCvs');
     const W = cvs.offsetWidth || 700;
     cvs.width = W * 2;
-    cvs.height = 480;
-    drawRoute(cvs, currentSeg.points);
+    cvs.height = 520;
+    await drawRoute(cvs, currentSeg.points);
 
     const canvas = await html2canvas(document.getElementById('certCard'), {
       scale: 2,
@@ -658,8 +702,8 @@ async function exportPNG() {
 
     // Restore display resolution
     cvs.width = W;
-    cvs.height = 240;
-    drawRoute(cvs, currentSeg.points);
+    cvs.height = 260;
+    await drawRoute(cvs, currentSeg.points);
   } finally {
     btn.textContent = '📥 Exporter en PNG';
     btn.disabled = false;
