@@ -16,6 +16,7 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 ├── resultats.html      # Page publique — résultats (activable)
 ├── admin.html          # Outil d'administration (accès restreint)
 ├── tshirt.html         # Espace ambassadeurs — générateur d'e-mail commande t-shirt (accès restreint)
+├── FAQ.html            # Page publique — foire aux questions (en construction)
 ├── reglement.html      # Page publique — règlement officiel (12 articles)
 ├── cgu.html            # Page publique — CGU + Politique de confidentialité (RGPD)
 ├── config.json         # Flags d'activation des pages depot et résultats
@@ -45,8 +46,11 @@ Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 | 3 | Déposer ma preuve | `depot.html` | Contrôlé par `config.json` (`depotOpen`) |
 | — | Résultats | `resultats.html` | Contrôlé par `config.json` (`resultatsOpen`) |
 | — | T-shirts | `tshirt.html` | Accès restreint (espace ambassadeurs) |
+| — | FAQ | `FAQ.html` | Libre |
 
-Affiche une **jauge de progression des inscriptions** en haut de page : nombre d'inscrits (issu du CSV anonymisé) / objectif 1 000, avec compteur animé, barre de progression et badge contextuel mis à jour à chaque chargement.
+Affiche une **rangée jauge + FAQ** en haut de page : la jauge (2/3 de largeur) montre le nombre d'inscrits (issu du CSV anonymisé) / objectif 1 000 avec compteur animé, barre de progression et badge contextuel ; le pavé FAQ (1/3) renvoie vers `FAQ.html`. Sur mobile les deux s'empilent verticalement.
+
+La **carte "S'inscrire au Challenge"** (Étape 1) est mise en avant visuellement : fond rose dégradé, bordure 2 px accent, glow permanent.
 
 Affiche un **popup de confirmation** si la page est chargée avec `?depot=ok` (redirection post-soumission Tally). URL à configurer dans Tally : `https://n58s29.github.io/SoRunning-inscriptions-2026/?depot=ok`.
 

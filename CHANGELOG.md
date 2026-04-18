@@ -5,6 +5,18 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.17.0] — 2026-04-18
+
+### Ajouté
+- **Page FAQ** (`FAQ.html`) : page vierge avec header, lien retour accueil et footer — structure prête à recevoir les questions fréquentes.
+- **Pavé FAQ** sur `index.html` : carte ❓ "FAQ / Vos questions, nos réponses" occupant le tiers droit de la rangée supérieure, aux côtés de la jauge des inscrits.
+
+### Modifié
+- **`index.html` — rangée jauge + FAQ** : la jauge des inscrits est désormais intégrée dans un grid `2fr 1fr` (`.gauge-faq-row`) : jauge à gauche (2/3 de la largeur), pavé FAQ à droite (1/3). Les deux blocs s'empilent verticalement sur mobile (≤ 480 px).
+- **`index.html` — carte Inscription** : mise en valeur renforcée — fond rose dégradé (28 → 14 % accent), bordure passée à 2 px, glow rose permanent (`box-shadow`), intensifié au hover.
+
+---
+
 ## [1.16.0] — 2026-04-17
 
 ### Ajouté

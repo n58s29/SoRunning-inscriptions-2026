@@ -65,7 +65,7 @@
     }
     .user-card--primary {
       border-color: var(--accent);
-      background: linear-gradient(135deg, var(--surface) 60%, color-mix(in srgb, var(--accent) 8%, var(--surface)));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 28%, var(--surface)) 0%, color-mix(in srgb, var(--accent) 14%, var(--surface)) 100%);
       flex-direction: row;
       text-align: left;
       padding: 24px 28px;
@@ -76,8 +76,12 @@
       margin-bottom: 0;
       flex-shrink: 0;
     }
+    .user-card--primary {
+      box-shadow: 0 4px 24px rgba(247, 115, 180, 0.18);
+      border-width: 2px;
+    }
     .user-card--primary:hover {
-      box-shadow: 0 10px 36px rgba(247, 115, 180, 0.25);
+      box-shadow: 0 12px 40px rgba(247, 115, 180, 0.32);
     }
 
     .user-card-badge {
@@ -313,10 +317,53 @@
     .btn-confirm-home:hover { opacity: 0.88; transform: translateY(-1px); }
 
     @media (max-width: 480px) {
+      .gauge-faq-row { grid-template-columns: 1fr; }
       .user-grid  { grid-template-columns: 1fr; }
       .admin-grid { grid-template-columns: 1fr; }
       .community-pill { font-size: 12px; padding: 8px 14px; }
       .confirm-box { padding: 32px 20px 28px; }
+    }
+
+    /* ─── Rangée jauge + FAQ ─── */
+    .gauge-faq-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    /* ─── Carte FAQ ─── */
+    .faq-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      gap: 10px;
+    }
+    .faq-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 36px rgba(247, 115, 180, 0.15);
+    }
+    .faq-card-icon { font-size: 32px; line-height: 1; }
+    .faq-card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .faq-card-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
     }
 
     /* ─── Jauge inscrits ─── */
@@ -497,38 +544,50 @@
 <!-- ═══ CONTENU ═══ -->
 <div class="home-page">
 
-  <!-- Jauge inscrits -->
-  <div class="gauge-card" id="gaugeCard">
+  <!-- Rangée jauge + FAQ -->
+  <div class="gauge-faq-row">
 
-    <div class="gauge-top">
-      <div class="gauge-label-area">
-        <span class="gauge-icon">🏃</span>
-        <span class="gauge-label">Inscriptions Challenge Connecté 2026</span>
+    <!-- Jauge inscrits -->
+    <div class="gauge-card" id="gaugeCard">
+
+      <div class="gauge-top">
+        <div class="gauge-label-area">
+          <span class="gauge-icon">🏃</span>
+          <span class="gauge-label">Inscriptions Challenge Connecté 2026</span>
+        </div>
+        <span class="gauge-badge" id="gaugeBadge">…</span>
       </div>
-      <span class="gauge-badge" id="gaugeBadge">…</span>
-    </div>
 
-    <div class="gauge-numbers">
-      <span class="gauge-num" id="gaugeNum">—</span>
-      <span class="gauge-denom">/ 1 000 inscrits</span>
-    </div>
-
-    <div class="gauge-bar-wrap">
-      <div class="gauge-bar">
-        <div class="gauge-bar-fill" id="gaugeFill"></div>
+      <div class="gauge-numbers">
+        <span class="gauge-num" id="gaugeNum">—</span>
+        <span class="gauge-denom">/ 1 000 inscrits</span>
       </div>
-      <div class="gauge-ticks">
-        <span class="gauge-tick" style="left:25%">250</span>
-        <span class="gauge-tick" style="left:50%">500</span>
-        <span class="gauge-tick" style="left:75%">750</span>
-        <span class="gauge-tick gauge-tick--goal" style="left:100%">🏁</span>
+
+      <div class="gauge-bar-wrap">
+        <div class="gauge-bar">
+          <div class="gauge-bar-fill" id="gaugeFill"></div>
+        </div>
+        <div class="gauge-ticks">
+          <span class="gauge-tick" style="left:25%">250</span>
+          <span class="gauge-tick" style="left:50%">500</span>
+          <span class="gauge-tick" style="left:75%">750</span>
+          <span class="gauge-tick gauge-tick--goal" style="left:100%">🏁</span>
+        </div>
       </div>
+
+      <div class="gauge-footer">
+        <span class="gauge-pct" id="gaugePct">—</span>
+        <span class="gauge-encourage" id="gaugeEncourage"></span>
+      </div>
+
     </div>
 
-    <div class="gauge-footer">
-      <span class="gauge-pct" id="gaugePct">—</span>
-      <span class="gauge-encourage" id="gaugeEncourage"></span>
-    </div>
+    <!-- Pavé FAQ -->
+    <a href="FAQ.html" class="faq-card">
+      <div class="faq-card-icon">❓</div>
+      <div class="faq-card-title">FAQ</div>
+      <div class="faq-card-desc">Vos questions, nos réponses</div>
+    </a>
 
   </div>
 
