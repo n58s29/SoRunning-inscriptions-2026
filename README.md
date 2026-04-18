@@ -50,7 +50,13 @@ Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 
 Affiche une **rangée jauge + FAQ** en haut de page : la jauge (2/3 de largeur) montre le nombre d'inscrits (issu du CSV anonymisé) / objectif 1 000 avec compteur animé, barre de progression et badge contextuel ; le pavé FAQ (1/3) renvoie vers `FAQ.html`. Sur mobile les deux s'empilent verticalement.
 
-La **carte "S'inscrire au Challenge"** (Étape 1) est mise en avant visuellement : fond rose dégradé, bordure 2 px accent, glow permanent.
+Les **cartes Étapes 1, 2 et 3** ont toutes un fond rose dégradé (28→14 % accent). La bulle `.step-num` est en blanc pour éviter le rose sur rose. La carte Étape 1 (Inscription) est en plus mise en avant : bordure 2 px, glow permanent.
+
+La **jauge** n'affiche plus que le nombre d'inscrits et la barre de progression (label, badge et message d'encouragement supprimés).
+
+### Standard bouton retour
+
+Toutes les pages utilisent `<a href="index.html" class="btn-back">← Accueil</a>` placé dans le `<div class="header-right">` du header, à gauche du toggle thème — identique à `inscription.html`.
 
 ---
 

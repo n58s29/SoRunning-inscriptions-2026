@@ -28,7 +28,7 @@
       align-items: center;
       text-align: center;
       padding: 32px 20px 28px;
-      background: var(--surface);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 28%, var(--surface)) 0%, color-mix(in srgb, var(--accent) 14%, var(--surface)) 100%);
       border: 1px solid var(--border);
       border-radius: 16px;
       text-decoration: none;
@@ -101,9 +101,9 @@
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.06em;
-      color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 12%, transparent);
-      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      color: #fff;
+      background: rgba(255,255,255,0.22);
+      border: 1px solid rgba(255,255,255,0.38);
       border-radius: 999px;
       padding: 2px 8px;
       line-height: 1.6;
@@ -357,7 +357,7 @@
     .faq-card-icon { font-size: 32px; line-height: 1; }
     .faq-card-title {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
+      font-size: 26px;
       font-weight: 700;
     }
     .faq-card-desc {
@@ -371,7 +371,7 @@
       background: var(--surface);
       border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
       border-radius: 20px;
-      padding: 22px 24px 18px;
+      padding: 14px 20px 12px;
       position: relative;
       overflow: hidden;
     }
@@ -424,7 +424,7 @@
       display: flex;
       align-items: baseline;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 8px;
     }
     .gauge-num {
       font-family: 'Barlow Condensed', sans-serif;
@@ -550,14 +550,6 @@
     <!-- Jauge inscrits -->
     <div class="gauge-card" id="gaugeCard">
 
-      <div class="gauge-top">
-        <div class="gauge-label-area">
-          <span class="gauge-icon">🏃</span>
-          <span class="gauge-label">Inscriptions Challenge Connecté 2026</span>
-        </div>
-        <span class="gauge-badge" id="gaugeBadge">…</span>
-      </div>
-
       <div class="gauge-numbers">
         <span class="gauge-num" id="gaugeNum">—</span>
         <span class="gauge-denom">/ 1 000 inscrits</span>
@@ -573,11 +565,6 @@
           <span class="gauge-tick" style="left:75%">750</span>
           <span class="gauge-tick gauge-tick--goal" style="left:100%">🏁</span>
         </div>
-      </div>
-
-      <div class="gauge-footer">
-        <span class="gauge-pct" id="gaugePct">—</span>
-        <span class="gauge-encourage" id="gaugeEncourage"></span>
       </div>
 
     </div>
@@ -717,23 +704,6 @@ function toggleTheme() {
   } catch(e) {}
 
   const pct = Math.min(100, (count / GOAL) * 100);
-  const remaining = Math.max(0, GOAL - count);
-
-  const badges = [
-    [90, '🔥 Presque au bout !'],
-    [75, '🚀 Dernière ligne droite !'],
-    [50, '⚡ Mi-chemin !'],
-    [25, '💪 C\'est lancé !'],
-    [0,  '🌱 On démarre !'],
-  ];
-  const badge = (badges.find(([min]) => pct >= min) || badges[badges.length - 1])[1];
-
-  document.getElementById('gaugeBadge').textContent = badge;
-  document.getElementById('gaugePct').textContent = Math.round(pct) + '%';
-  document.getElementById('gaugeEncourage').textContent =
-    remaining > 0
-      ? 'encore ' + remaining.toLocaleString('fr-FR') + ' pour l\'objectif !'
-      : '🏆 Objectif atteint !';
 
   const numEl  = document.getElementById('gaugeNum');
   const fillEl = document.getElementById('gaugeFill');

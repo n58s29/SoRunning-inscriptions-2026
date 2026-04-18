@@ -5,6 +5,22 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.19.0] — 2026-04-18
+
+### Modifié
+- **Boutons retour standardisés** sur toutes les pages : `<a href="index.html" class="btn-back">← Accueil</a>` placé dans le `header-right` aux côtés du toggle thème, identique au standard de `inscription.html`.
+  - `admin.html` : `admin-back-link` → `btn-back`, attribut `title` supprimé
+  - `cgu.html`, `reglement.html`, `verify.html` : lien fixe hors header supprimé, btn-back ajouté dans le header
+  - `tshirt.html` : lien avec styles inline remplacé par `btn-back`
+  - `gpx-cutter.html` : lien vers `depot.html` remplacé par lien vers `index.html`
+  - `FAQ.html` : lien `.back-link` dans le contenu supprimé (CSS inclus), btn-back ajouté dans le header
+  - `resultats.html` : doublon `← Retour à l'accueil` dans le contenu supprimé
+- **`index.html`** : fond rose dégradé appliqué aux cartes Étape 2 et 3 (même gradient 28→14 % que l'Étape 1). Bulle `.step-num` passée en blanc (`#fff`, fond et bordure semi-transparents blancs) pour éviter le rose sur rose.
+- **`index.html`** : titre du pavé FAQ agrandi (18 px → 26 px).
+- **`index.html`** : jauge allégée — suppression du label "Inscriptions Challenge Connecté 2026", du badge contextuel, du pourcentage et du message "encore X pour l'objectif". Padding réduit. JS nettoyé en conséquence.
+
+---
+
 ## [1.18.0] — 2026-04-18
 
 ### Ajouté

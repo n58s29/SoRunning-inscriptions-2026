@@ -42,19 +42,6 @@
       color: var(--muted);
     }
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      text-decoration: none;
-      margin-bottom: 32px;
-      transition: color 0.2s;
-    }
-    .back-link:hover { color: var(--text); }
-
     /* ─── États chargement / erreur ─── */
     .faq-loading, .faq-error {
       display: flex;
@@ -220,6 +207,7 @@
     <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
   </div>
   <div class="header-right">
+    <a href="index.html" class="btn-back">← Accueil</a>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
             title="Basculer mode clair / sombre">
       <span class="theme-toggle-icon" id="themeIcon">🌙</span>
@@ -228,8 +216,6 @@
 </header>
 
 <div class="doc-page">
-
-  <a href="index.html" class="back-link">← Retour à l'accueil</a>
 
   <div class="doc-header">
     <div class="doc-header-label">❓ Questions fréquentes</div>
