@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FAQ — Challenge Connecté 2026</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     .doc-page {
       max-width: 720px;
@@ -14,6 +15,7 @@
       flex-direction: column;
       gap: 0;
     }
+
     .doc-header {
       text-align: center;
       padding: 32px 0 40px;
@@ -39,6 +41,7 @@
       font-size: 15px;
       color: var(--muted);
     }
+
     .back-link {
       display: inline-flex;
       align-items: center;
@@ -51,6 +54,160 @@
       transition: color 0.2s;
     }
     .back-link:hover { color: var(--text); }
+
+    /* ─── États chargement / erreur ─── */
+    .faq-loading, .faq-error {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 60px 24px;
+      gap: 16px;
+      color: var(--muted);
+    }
+    .faq-loading-icon, .faq-error-icon { font-size: 40px; }
+    .faq-loading p, .faq-error p { font-size: 14px; line-height: 1.6; }
+    .faq-error-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .btn-template {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      margin-top: 4px;
+    }
+    .btn-template:hover { border-color: var(--accent); color: var(--accent); }
+
+    .faq-hint {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      text-align: left;
+      line-height: 1.6;
+      max-width: 400px;
+    }
+    .faq-hint code {
+      font-family: monospace;
+      font-size: 11px;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+
+    /* ─── Spinner ─── */
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Catégories et accordion ─── */
+    .faq-category { margin-bottom: 36px; }
+
+    .faq-category-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .faq-category-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .faq-item.open {
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--surface);
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .faq-question:hover {
+      background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+    }
+
+    .faq-chevron {
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      background: var(--surface);
+      padding: 0 20px;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 800px;
+      padding: 0 20px 18px;
+    }
+    .faq-answer-inner {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    /* ─── Compteur ─── */
+    .faq-meta {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 32px;
+    }
   </style>
 </head>
 <body>
@@ -80,7 +237,12 @@
     <p class="doc-header-sub">Challenge Connecté 2026 — SoRunning SNCF</p>
   </div>
 
-  <!-- Contenu à venir -->
+  <div id="faqContent">
+    <div class="faq-loading">
+      <div class="spinner"></div>
+      <p>Chargement des questions…</p>
+    </div>
+  </div>
 
 </div>
 
@@ -95,6 +257,7 @@
 </footer>
 
 <script>
+/* ─── THÈME ─── */
 const THEME_KEY = 'challenge2026_theme';
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
@@ -111,6 +274,106 @@ function toggleTheme() {
   else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
   else applyTheme('dark');
 })();
+
+/* ─── FAQ ─── */
+(async function loadFAQ() {
+  const container = document.getElementById('faqContent');
+
+  let rows;
+  try {
+    const res = await fetch('./data/faq.xlsx?t=' + Date.now());
+    if (!res.ok) throw new Error('not found');
+    const buf = await res.arrayBuffer();
+    const wb  = XLSX.read(buf, { type: 'array' });
+    const ws  = wb.Sheets[wb.SheetNames[0]];
+    rows = XLSX.utils.sheet_to_json(ws);
+  } catch(e) {
+    showError(container);
+    return;
+  }
+
+  if (!rows.length) { showError(container); return; }
+
+  /* Grouper par catégorie (ordre d'apparition dans le fichier) */
+  const groups = {};
+  const order  = [];
+  for (const row of rows) {
+    const cat = String(row['Catégorie'] || row['Categorie'] || 'Général').trim();
+    const q   = String(row['Question'] || '').trim();
+    const r   = String(row['Réponse']  || row['Reponse']  || '').trim();
+    if (!q) continue;
+    if (!groups[cat]) { groups[cat] = []; order.push(cat); }
+    groups[cat].push({ q, r });
+  }
+
+  const totalQ = order.reduce((s, c) => s + groups[c].length, 0);
+
+  let html = `<p class="faq-meta">${totalQ} question${totalQ > 1 ? 's' : ''} dans ${order.length} catégorie${order.length > 1 ? 's' : ''}</p>`;
+
+  for (const cat of order) {
+    html += `<div class="faq-category">
+      <div class="faq-category-title">${escHtml(cat)}</div>`;
+    for (const { q, r } of groups[cat]) {
+      html += `
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <span>${escHtml(q)}</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">${escHtml(r).replace(/\n/g, '<br>')}</div>
+        </div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  container.innerHTML = html;
+})();
+
+function toggle(questionEl) {
+  questionEl.closest('.faq-item').classList.toggle('open');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showError(container) {
+  container.innerHTML = `
+    <div class="faq-error">
+      <div class="faq-error-icon">📂</div>
+      <div class="faq-error-title">Fichier FAQ introuvable</div>
+      <p>Le fichier <code>data/faq.xlsx</code> n'existe pas encore.<br>
+         Téléchargez le modèle, remplissez-le et déposez-le dans <code>data/</code> du dépôt.</p>
+      <button class="btn-template" onclick="downloadTemplate()">⬇ Télécharger le modèle XLSX</button>
+      <div class="faq-hint">
+        <strong>Format attendu :</strong> 3 colonnes —
+        <code>Catégorie</code> · <code>Question</code> · <code>Réponse</code><br>
+        Première ligne = en-têtes (déjà présents dans le modèle).
+      </div>
+    </div>`;
+}
+
+function downloadTemplate() {
+  const data = [
+    ['Catégorie', 'Question', 'Réponse'],
+    ['Inscription', 'Comment s\'inscrire au Challenge ?', 'Rendez-vous sur la page Inscription et remplissez le formulaire en ligne. Vous recevrez un email de confirmation avec votre numéro d\'inscription.'],
+    ['Inscription', 'Puis-je m\'inscrire à plusieurs épreuves ?', 'Oui, vous pouvez vous inscrire à plusieurs distances (5 km, 10 km, 21,1 km). Chaque épreuve nécessitera un dépôt de preuve distinct.'],
+    ['Inscription', 'Jusqu\'à quelle date puis-je m\'inscrire ?', 'Les inscriptions sont ouvertes jusqu\'au 7 mai 2026.'],
+    ['Course', 'Quand se déroule le Challenge ?', 'Le Challenge Connecté 2026 se déroule du 8 au 11 mai 2026. Vous pouvez courir à votre rythme pendant cette fenêtre.'],
+    ['Course', 'Puis-je utiliser un tapis de course ?', 'Oui, toute activité de course à pied est acceptée — en extérieur comme en intérieur. L\'essentiel est de disposer d\'une trace Strava ou d\'une montre GPS.'],
+    ['Preuve', 'Comment déposer ma preuve de participation ?', 'Après votre course, rendez-vous sur la page "Déposer ma preuve" (disponible dès le 8 mai) et suivez les instructions.'],
+    ['Preuve', 'Quel type de preuve est accepté ?', 'Une capture d\'écran de votre activité Strava ou de votre montre GPS suffit. La trace doit afficher la distance, le temps et la date.'],
+    ['Résultats', 'Quand les résultats seront-ils publiés ?', 'Les résultats seront mis en ligne après vérification de l\'ensemble des preuves, aux alentours du 19 mai 2026.'],
+  ];
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  /* Largeurs de colonnes indicatives */
+  ws['!cols'] = [{ wch: 18 }, { wch: 55 }, { wch: 80 }];
+  XLSX.utils.book_append_sheet(wb, ws, 'FAQ');
+  XLSX.writeFile(wb, 'faq.xlsx');
+}
 </script>
 
 </body>

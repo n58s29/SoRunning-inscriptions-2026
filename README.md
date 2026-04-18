@@ -16,7 +16,7 @@ Outil de gestion des inscriptions et de génération de dossards pour le **Chall
 ├── resultats.html      # Page publique — résultats (activable)
 ├── admin.html          # Outil d'administration (accès restreint)
 ├── tshirt.html         # Espace ambassadeurs — générateur d'e-mail commande t-shirt (accès restreint)
-├── FAQ.html            # Page publique — foire aux questions (en construction)
+├── FAQ.html            # Page publique — foire aux questions (alimentée par data/faq.xlsx)
 ├── reglement.html      # Page publique — règlement officiel (12 articles)
 ├── cgu.html            # Page publique — CGU + Politique de confidentialité (RGPD)
 ├── config.json         # Flags d'activation des pages depot et résultats
@@ -51,6 +51,22 @@ Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 Affiche une **rangée jauge + FAQ** en haut de page : la jauge (2/3 de largeur) montre le nombre d'inscrits (issu du CSV anonymisé) / objectif 1 000 avec compteur animé, barre de progression et badge contextuel ; le pavé FAQ (1/3) renvoie vers `FAQ.html`. Sur mobile les deux s'empilent verticalement.
 
 La **carte "S'inscrire au Challenge"** (Étape 1) est mise en avant visuellement : fond rose dégradé, bordure 2 px accent, glow permanent.
+
+---
+
+## Page FAQ (`FAQ.html`)
+
+Chargement dynamique depuis `data/faq.xlsx` (SheetJS). Format attendu : 3 colonnes — `Catégorie`, `Question`, `Réponse`. L'ordre des lignes dans Excel détermine l'ordre d'affichage.
+
+- Questions groupées par catégorie avec séparateur visuel
+- Accordéon animé (clic pour déplier/replier)
+- Si `data/faq.xlsx` absent : message d'erreur + bouton **"Télécharger le modèle XLSX"** générant un fichier pré-rempli
+
+### Mise à jour de la FAQ
+
+1. Ouvrir `data/faq.xlsx` dans Excel (ou télécharger le modèle depuis la page)
+2. Ajouter / modifier les lignes (colonnes `Catégorie`, `Question`, `Réponse`)
+3. Sauvegarder et commiter `data/faq.xlsx` sur GitHub
 
 Affiche un **popup de confirmation** si la page est chargée avec `?depot=ok` (redirection post-soumission Tally). URL à configurer dans Tally : `https://n58s29.github.io/SoRunning-inscriptions-2026/?depot=ok`.
 

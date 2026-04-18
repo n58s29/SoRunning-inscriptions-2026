@@ -5,6 +5,13 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.18.0] — 2026-04-18
+
+### Ajouté
+- **FAQ dynamique** (`FAQ.html`) : page alimentée par un fichier `data/faq.xlsx` (3 colonnes : `Catégorie`, `Question`, `Réponse`). Chargement via SheetJS, questions groupées par catégorie, rendu en accordéon animé (max-height CSS). Affiche un état de chargement (spinner) puis un état d'erreur si le fichier est absent — avec un bouton "Télécharger le modèle XLSX" qui génère et télécharge un fichier Excel pré-rempli d'exemples (colonnes larges, 8 Q&A de départ).
+
+---
+
 ## [1.17.0] — 2026-04-18
 
 ### Ajouté
