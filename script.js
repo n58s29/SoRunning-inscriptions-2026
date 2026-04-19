@@ -1123,8 +1123,8 @@ function downloadBlankTemplate() {
   }, 'image/png');
 }
 
-// ── Export PNG vers dossier choisi ───────────────────────────────
-async function saveDossardsPNG() {
+// ── Export PNG — modal de sélection ──────────────────────────────
+function saveDossardsPNG() {
   if (!trameSrc) {
     showToast('⚠️ Charge d\'abord la trame PNG avant d\'exporter.');
     return;
@@ -1138,13 +1138,43 @@ async function saveDossardsPNG() {
     return;
   }
 
+  const visible = allDossards.filter(d => currentFilter === 'all' || d.cat === currentFilter);
+  const ids = visible.map(d => parseInt(d.id)).filter(n => !isNaN(n)).sort((a, b) => a - b);
+  document.getElementById('exportSelectSub').textContent = ids.length
+    ? `${visible.length} dossard(s) · IDs ${ids[0]} → ${ids[ids.length - 1]}`
+    : `${visible.length} dossard(s)`;
+
+  document.getElementById('exportScopeAll').checked = true;
+  document.getElementById('exportIdFrom').value = '';
+  document.getElementById('exportIdTo').value = '';
+  document.getElementById('exportSelectOverlay').classList.remove('hidden');
+}
+
+function confirmExportSelection() {
+  const scope  = document.querySelector('input[name="exportScope"]:checked').value;
+  const fromId = parseInt(document.getElementById('exportIdFrom').value);
+  const toId   = parseInt(document.getElementById('exportIdTo').value);
+
+  if (scope === 'range' && (isNaN(fromId) || isNaN(toId) || fromId > toId)) {
+    showToast('⚠️ Plage d\'IDs invalide.');
+    return;
+  }
+
+  document.getElementById('exportSelectOverlay').classList.add('hidden');
+  _runExportPNG(scope === 'range' ? { from: fromId, to: toId } : null);
+}
+
+// ── Export PNG vers dossier choisi ───────────────────────────────
+async function _runExportPNG(idRange) {
+  // idRange = null (tout) ou { from, to } pour filtrer par ID d'inscription
   let dirHandle;
   try {
     dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-  } catch { return; } // annulé par l'utilisateur
+  } catch { return; }
 
   const toGenerate = [...allDossards]
     .filter(d => currentFilter === 'all' || d.cat === currentFilter)
+    .filter(d => !idRange || (parseInt(d.id) >= idRange.from && parseInt(d.id) <= idRange.to))
     .sort((a, b) => a.number - b.number);
 
   if (toGenerate.length === 0) {

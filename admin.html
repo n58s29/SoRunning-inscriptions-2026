@@ -292,6 +292,34 @@
 <!-- Toast notification -->
 <div class="toast" id="toast"></div>
 
+<!-- Modal de sélection export dossards -->
+<div class="export-overlay hidden" id="exportSelectOverlay">
+  <div class="export-modal">
+    <div class="export-modal-icon">💾</div>
+    <div class="export-modal-title">Exporter les dossards</div>
+    <div class="export-modal-sub" id="exportSelectSub">Choisissez la sélection à exporter</div>
+    <div class="export-select-options">
+      <label class="export-select-opt">
+        <input type="radio" name="exportScope" value="all" id="exportScopeAll" checked>
+        Tout exporter
+      </label>
+      <label class="export-select-opt">
+        <input type="radio" name="exportScope" value="range" id="exportScopeRange">
+        De l'ID inscription&nbsp;
+        <input type="number" id="exportIdFrom" placeholder="début" min="1"
+               onclick="document.getElementById('exportScopeRange').checked=true">
+        &nbsp;à&nbsp;
+        <input type="number" id="exportIdTo" placeholder="fin" min="1"
+               onclick="document.getElementById('exportScopeRange').checked=true">
+      </label>
+    </div>
+    <div class="export-select-actions">
+      <button class="export-btn-confirm" onclick="confirmExportSelection()">Exporter</button>
+      <button class="export-btn-cancel" onclick="document.getElementById('exportSelectOverlay').classList.add('hidden')">Annuler</button>
+    </div>
+  </div>
+</div>
+
 <!-- Overlay de progression export PNG -->
 <div class="export-overlay hidden" id="exportOverlay">
   <div class="export-modal">
