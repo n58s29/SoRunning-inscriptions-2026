@@ -535,7 +535,7 @@ function renderDossard(d) {
       <!-- Contenu dynamique superposé à la trame -->
       <div class="dossard-overlay">
         <div class="dossard-number">${num}</div>
-        <div class="dossard-name">${d.name}</div>
+        <div class="dossard-name">${d.prenom}</div>
         <div class="dossard-badge ${cat.cssClass}">
           <span class="badge-dist">${cat.dist}</span>
           <span class="badge-km">KM</span>
@@ -859,7 +859,7 @@ function buildDossardHTMLForExport(d) {
       position:absolute; inset:0; z-index:1;
       display:flex; flex-direction:column;
       align-items:flex-start; justify-content:flex-end;
-      padding: 0 72px 80px 80px;
+      padding: 0 72px 200px 80px;
     ">
       <!-- Numéro -->
       <div style="
@@ -881,7 +881,7 @@ function buildDossardHTMLForExport(d) {
         letter-spacing:1px; text-transform:uppercase; line-height:1;
         text-shadow:0 2px 10px rgba(255,255,255,0.5);
         max-width:1300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-      ">${d.name}</div>
+      ">${d.prenom}</div>
     </div>
 
     <!-- Badge type/distance — coin bas-droite -->
