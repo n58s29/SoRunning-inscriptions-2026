@@ -197,7 +197,7 @@ Réservé aux organisateurs. L'accès est protégé par un mot de passe demandé
 
 | Onglet | Fonctionnalités |
 |---|---|
-| **Dossards** | Visualisation et export PNG des dossards, application d'une trame personnalisée, envoi par email |
+| **Dossards** | Visualisation et export PNG des dossards (prénom seul affiché — RGPD), sélection par plage d'IDs d'inscription à l'export, application d'une trame personnalisée, envoi par email |
 | **Liste des participants** | Recherche, export CSV complet, export CSV anonymisé RGPD |
 | **Statistiques** | KPIs (dont total km cumulés — dossards × distances, affiché en macaron doré), répartition par catégorie, sexe, âge, région, société |
 | **Doublons** | Détection automatique d'inscriptions dupliquées |

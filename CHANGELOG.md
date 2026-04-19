@@ -5,6 +5,28 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.20.0] — 2026-04-19
+
+### Ajouté
+- **Modal de sélection export PNG** (`admin.html`) : au clic sur "Exporter les dossards", une popup apparaît avec deux options — tout exporter, ou filtrer par plage d'IDs d'inscription (de XX à YY). Le sous-titre affiche le nombre de dossards disponibles et la plage d'IDs couverte.
+
+---
+
+## [1.19.2] — 2026-04-19
+
+### Corrigé
+- **Dossards exportés** : affichage du prénom seul (RGPD — le nom de famille n'apparaît plus sur le fichier PNG généré).
+- **Dossards exportés** : numéro remonté dans le cadre rose (`padding-bottom` export passé de 80 px à 200 px).
+
+---
+
+## [1.19.1] — 2026-04-18
+
+### Modifié
+- **`index.html`** : étiquettes des étapes (Étape 1 / 2 / 3) passées en rose foncé pour meilleur contraste sur fond rose.
+
+---
+
 ## [1.19.0] — 2026-04-18
 
 ### Modifié
