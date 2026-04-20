@@ -177,9 +177,10 @@ async function renderDossards(participant) {
   // Vérifier l'existence de chaque PNG
   const checks = await Promise.all(
     races.map(async cat => {
-      const bib = participant[cat]; // valeur du CSV : "XXXX.png"
-      const folder = getDossardFolder(bib);
-      const url = DOSSARD_DIR + (folder ? folder + '/' : '') + bib;
+      const bibRaw  = participant[cat];
+      const bib     = bibRaw.endsWith('.png') ? bibRaw : bibRaw + '.png';
+      const folder  = getDossardFolder(bibRaw);
+      const url     = DOSSARD_DIR + (folder ? folder + '/' : '') + bib;
       const exists = await checkImageExists(url);
       return { cat, bib, url, exists };
     })
