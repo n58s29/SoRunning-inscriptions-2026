@@ -106,16 +106,40 @@ Permet à chaque participant de **télécharger son ou ses dossards PNG** en sai
 3. Pour chaque épreuve, elle cherche le fichier `dossards/XXXX.png` correspondant.
 4. Si le PNG existe : aperçu + bouton **Télécharger** (`XXXX.png`). Sinon : message "Non disponible".
 
+### Structure du dossier `dossards/`
+
+Les PNG sont répartis en 6 sous-dossiers selon la catégorie :
+
+```
+dossards/
+├── course-5km/     # 0001.png – 0999.png
+├── course-10km/    # 1001.png – 1999.png
+├── course-21km/    # 2001.png – 2999.png
+├── marche-5km/     # 3001.png – 3999.png
+├── marche-10km/    # 4001.png – 4999.png
+└── marche-21km/    # 5001.png – 5999.png
+```
+
 ### Mise à disposition des dossards
 
 ```
 1. Ouvrir admin.html et charger le fichier Excel des inscriptions
 2. Onglet "Dossards" → "Exporter les dossards" → choisir un dossier de destination
    → fichiers générés : 1126.png, 2048.png, etc.
-3. Copier tous les PNG dans le dossier dossards/ du repo
+3. Copier les PNG dans les sous-dossiers correspondants de dossards/
 4. Exporter le CSV anonymisé (onglet "Liste" → "Exporter CSV anonymisé")
 5. Remplacer data/participants_anonymises_Challenge_Connecté_2026.csv
 6. Commiter et pousser sur GitHub
+```
+
+### Restauration des assignments (perte de localStorage)
+
+Si les numéros attribués semblent incorrects après un changement de navigateur ou de machine :
+
+```
+1. Onglet "Dossards" → "📥 Restaurer depuis CSV"
+2. Sélectionner data/participants_anonymises_Challenge_Connecté_2026.csv
+3. Recharger le fichier Excel → les numéros corrects sont rétablis
 ```
 
 ---
@@ -225,8 +249,8 @@ Réservé aux organisateurs. L'accès est protégé par un mot de passe demandé
 
 | Onglet | Fonctionnalités |
 |---|---|
-| **Dossards** | Visualisation et export PNG des dossards (prénom seul affiché — RGPD), sélection par plage d'IDs d'inscription à l'export, application d'une trame personnalisée, envoi par email |
-| **Liste des participants** | Recherche, export CSV complet, export CSV anonymisé RGPD |
+| **Dossards** | Visualisation et export PNG des dossards (prénom seul affiché — RGPD), sélection par plage d'IDs d'inscription à l'export, application d'une trame personnalisée, envoi par email, correction manuelle d'un numéro (double-clic), restauration des assignments depuis CSV, détection des PNG manquants |
+| **Liste des participants** | Recherche, export CSV complet, export CSV anonymisé RGPD (avec chemin des PNG) |
 | **Statistiques** | KPIs (dont total km cumulés — dossards × distances, affiché en macaron doré), répartition par catégorie, sexe, âge, région, société |
 | **Doublons** | Détection automatique d'inscriptions dupliquées |
 | **Paramètres** | Nom de l'événement, catégories, plages de numéros de dossards |

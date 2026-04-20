@@ -5,15 +5,27 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.22.0] — 2026-04-20
+
+### Corrigé
+- **Bouton "Restaurer depuis CSV"** : utilise désormais un `<input type="file">` dans le DOM (même pattern que "Charger la trame") — plus de blocage navigateur sur le clic programmatique.
+- **Bouton "Dossards manquants"** : détection du support `showDirectoryPicker` avec message explicite si navigateur non compatible (Firefox, Safari) ; erreur d'annulation ignorée silencieusement.
+
+---
+
 ## [1.21.0] — 2026-04-20
 
 ### Ajouté
 - **Page de récupération des dossards** (`dossard.html` + `dossard.js`) : les participants saisissent leur numéro d'inscription et visualisent les dossards de leurs épreuves avec un aperçu PNG et un bouton de téléchargement direct.
-- **Dossier `dossards/`** : répertoire destiné à recevoir les PNG générés par l'admin, nommés `XXXX.png`.
+- **Dossier `dossards/`** réparti en 6 sous-dossiers par catégorie (`course-5km/`, `course-10km/`, `course-21km/`, `marche-5km/`, `marche-10km/`, `marche-21km/`) — 1 454 PNG déposés.
+- **Bouton "📥 Restaurer depuis CSV"** (`admin.html`) : relit le CSV anonymisé exporté et restaure tous les assignments ID→numéro dans le localStorage sans régénérer les PNG. Remet aussi les compteurs au bon niveau. Résout la perte d'assignments en cas de changement de session/navigateur.
+- **Bouton "🔍 Dossards manquants"** (`admin.html`) : compare les dossards attendus (en mémoire) avec les fichiers présents dans un dossier local sélectionné ; affiche le premier ID d'inscription manquant et la liste complète avec chemin attendu.
+- **Correction manuelle du numéro** : double-clic sur le numéro d'un dossard dans la grille admin ouvre un prompt pour corriger l'assignment, avec vérification de conflit.
+- **Affichage de l'ID d'inscription** sous chaque prénom dans la grille admin (`inscr. #XXX`), masqué à l'impression et dans les PNG exportés.
 
 ### Modifié
-- **Export PNG admin** : les dossards sont maintenant exportés sous la forme `XXXX.png` (ex. `1126.png`) au lieu de `dossard_XXXX.png`.
-- **Export CSV anonymisé** : les colonnes d'épreuve contiennent désormais le nom de fichier complet (`1126.png`) plutôt que le seul numéro, pour correspondre directement aux fichiers du dossier `dossards/`.
+- **Export PNG admin** : fichiers nommés `XXXX.png` (ex. `1126.png`) au lieu de `dossard_XXXX.png`.
+- **Export CSV anonymisé** : colonnes d'épreuve contiennent le chemin complet (`course-10km/1126.png`) pour correspondre directement à la structure du dossier `dossards/`.
 
 ---
 
