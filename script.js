@@ -832,6 +832,95 @@ function printList() {
 // SECTION 9 — EXPORT PNG (avec trame en fond)
 // ═══════════════════════════════════════════════════════════════════
 
+async function checkMissingDossards() {
+  if (!allDossards || allDossards.length === 0) {
+    showToast('⚠️ Aucun participant chargé.');
+    return;
+  }
+
+  let dirHandle;
+  try {
+    dirHandle = await window.showDirectoryPicker({ mode: 'read' });
+  } catch { return; }
+
+  // Collecter les PNG existants dans les 6 sous-dossiers
+  const existing = new Set();
+  for (const sub of DOSSARD_FOLDERS) {
+    try {
+      const subHandle = await dirHandle.getDirectoryHandle(sub);
+      for await (const [name] of subHandle.entries()) {
+        if (name.endsWith('.png')) existing.add(sub + '/' + name);
+      }
+    } catch {}
+  }
+  // Compatibilité dossier plat
+  for await (const [name, handle] of dirHandle.entries()) {
+    if (name.endsWith('.png')) existing.add(name);
+  }
+
+  // Trouver les manquants
+  const missing = [];
+  for (const d of allDossards) {
+    if (!d.number) continue;
+    const filename = formatNumber(d.number) + '.png';
+    const folder   = getDossardFolder(d.number);
+    const path     = folder ? folder + '/' + filename : filename;
+    if (!existing.has(path)) {
+      missing.push({ id: parseInt(d.id), nom: d.nom, prenom: d.prenom, cat: d.cat, path });
+    }
+  }
+
+  missing.sort((a, b) => a.id - b.id);
+
+  const overlay = document.getElementById('missingOverlay');
+  const content = document.getElementById('missingContent');
+
+  if (missing.length === 0) {
+    content.innerHTML = `<div style="text-align:center;padding:16px 0;color:var(--accent);font-size:15px">✅ Tous les dossards sont présents !</div>`;
+    overlay.classList.remove('hidden');
+    return;
+  }
+
+  const firstId = missing[0].id;
+
+  // Grouper par ID inscription
+  const byId = {};
+  missing.forEach(m => { (byId[m.id] = byId[m.id] || []).push(m); });
+
+  const rows = Object.entries(byId)
+    .sort(([a], [b]) => +a - +b)
+    .map(([id, entries]) => `
+      <tr>
+        <td style="padding:6px 10px;font-weight:600">${id}</td>
+        <td style="padding:6px 10px">${entries[0].prenom} ${(entries[0].nom || '')[0] || ''}*</td>
+        <td style="padding:6px 10px">${entries.map(e => e.cat).join(', ')}</td>
+        <td style="padding:6px 10px;color:var(--muted);font-size:11px">${entries.map(e => e.path).join('<br>')}</td>
+      </tr>`)
+    .join('');
+
+  content.innerHTML = `
+    <div style="margin-bottom:14px;font-size:13px;color:var(--muted)">
+      <strong style="color:var(--text)">${missing.length}</strong> dossard(s) manquant(s) pour
+      <strong style="color:var(--text)">${Object.keys(byId).length}</strong> inscription(s) —
+      premier ID manquant : <strong style="color:var(--accent);font-size:15px">#${firstId}</strong>
+    </div>
+    <div style="overflow-y:auto;max-height:340px;border:1px solid var(--border);border-radius:8px">
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <thead>
+          <tr style="background:var(--surface2)">
+            <th style="padding:7px 10px;text-align:left;position:sticky;top:0;background:var(--surface2)">ID inscr.</th>
+            <th style="padding:7px 10px;text-align:left;position:sticky;top:0;background:var(--surface2)">Participant</th>
+            <th style="padding:7px 10px;text-align:left;position:sticky;top:0;background:var(--surface2)">Catégorie</th>
+            <th style="padding:7px 10px;text-align:left;position:sticky;top:0;background:var(--surface2)">Fichier attendu</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+
+  overlay.classList.remove('hidden');
+}
+
 function cancelExport() {
   exportCancelled = true;
   document.getElementById('exportOverlay').classList.add('hidden');

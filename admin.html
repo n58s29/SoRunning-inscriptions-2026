@@ -158,6 +158,7 @@
       <button class="btn-export" onclick="emailDossards()" title="Préparer l'envoi des dossards par email">📧 Email dossards</button>
       <button class="btn-reset" onclick="resetNumbers()" title="Réinitialise les numéros (⚠️ irréversible)">🔄 Réinitialiser les n°</button>
       <button class="btn-print" onclick="saveDossardsPNG()" id="btnExport">💾 Exporter les dossards</button>
+      <button class="btn-export" onclick="checkMissingDossards()" title="Vérifier quels dossards PNG sont manquants dans un dossier local">🔍 Dossards manquants</button>
     </div>
 
     <!-- Grille des dossards -->
@@ -331,6 +332,18 @@
     </div>
     <div class="export-progress-label" id="exportProgressLabel">0 / 0</div>
     <button class="export-btn-cancel" onclick="cancelExport()">✕ Annuler</button>
+  </div>
+</div>
+
+<!-- Modal dossards manquants -->
+<div class="export-overlay hidden" id="missingOverlay">
+  <div class="export-modal" style="max-width:600px;width:90vw">
+    <div class="export-modal-icon">🔍</div>
+    <div class="export-modal-title">Dossards manquants</div>
+    <div id="missingContent" style="margin-top:12px"></div>
+    <div style="margin-top:16px">
+      <button class="export-btn-cancel" onclick="document.getElementById('missingOverlay').classList.add('hidden')">Fermer</button>
+    </div>
   </div>
 </div>
 
