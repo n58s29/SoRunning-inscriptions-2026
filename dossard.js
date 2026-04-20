@@ -140,13 +140,13 @@ function hideGrid() {
 // ─────────────────────────────────────────────
 // VÉRIFICATION DE L'EXISTENCE D'UN PNG
 // ─────────────────────────────────────────────
-async function checkImageExists(url) {
-  try {
-    const resp = await fetch(url, { method: 'HEAD' });
-    return resp.ok;
-  } catch {
-    return false;
-  }
+function checkImageExists(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload  = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
 }
 
 // ─────────────────────────────────────────────
