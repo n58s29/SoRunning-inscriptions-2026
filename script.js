@@ -835,6 +835,77 @@ function printList() {
 // SECTION 9 — EXPORT PNG (avec trame en fond)
 // ═══════════════════════════════════════════════════════════════════
 
+// ── Restauration des assignments depuis le CSV anonymisé ─────────
+function restoreFromCSV() {
+  const input = document.createElement('input');
+  input.type  = 'file';
+  input.accept = '.csv';
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    const text = await file.text();
+    const lines = text.replace(/^\uFEFF/, '').split('\n').filter(l => l.trim());
+    if (lines.length < 2) { showToast('⚠️ CSV vide ou invalide.'); return; }
+
+    // Parsing CSV (même logique que verify.js)
+    function parseRow(line) {
+      const fields = []; let cur = ''; let inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else { inQ = !inQ; } }
+        else if (ch === ';' && !inQ) { fields.push(cur); cur = ''; }
+        else { cur += ch; }
+      }
+      fields.push(cur);
+      return fields.map(f => f.trim());
+    }
+
+    const headers = parseRow(lines[0]);
+    const idIdx   = headers.indexOf('ID');
+    if (idIdx === -1) { showToast('⚠️ Colonne ID introuvable dans le CSV.'); return; }
+
+    // Colonnes catégories = tout ce qui est après EMAIL (index 4+)
+    const catHeaders = headers.slice(4);
+
+    const assignments = loadAssignments();
+    let restored = 0;
+
+    for (let i = 1; i < lines.length; i++) {
+      const fields = parseRow(lines[i]);
+      const id = fields[idIdx];
+      if (!id) continue;
+
+      catHeaders.forEach((cat, ci) => {
+        const val = fields[4 + ci] || '';
+        if (!val) return;
+        // Extraire le numéro : "course-5km/0190.png" → 190, "0190.png" → 190, "0190" → 190
+        const match = val.match(/(\d+)(?:\.png)?$/);
+        if (!match) return;
+        const num = parseInt(match[1], 10);
+        if (isNaN(num) || num <= 0) return;
+        assignments[`${id}_${cat}`] = num;
+        restored++;
+      });
+    }
+
+    saveAssignments(assignments);
+
+    // Mettre à jour les compteurs pour qu'ils soient au-delà des numéros restaurés
+    const counters = loadCounters();
+    Object.keys(CATS).forEach(cat => {
+      const maxForCat = Object.entries(assignments)
+        .filter(([k]) => k.endsWith('_' + cat))
+        .reduce((max, [, v]) => Math.max(max, v), CATS[cat].start - 1);
+      if (maxForCat >= counters[cat]) counters[cat] = maxForCat + 1;
+    });
+    saveCounters(counters);
+
+    showToast(`✅ ${restored} assignment(s) restaurés depuis le CSV. Recharge ton fichier Excel.`);
+  };
+  input.click();
+}
+
 function editDossardNumber(inscriptionId, cat, currentNumber) {
   const catConf = CATS[cat];
   if (!catConf) return;
