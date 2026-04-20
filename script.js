@@ -836,12 +836,10 @@ function printList() {
 // ═══════════════════════════════════════════════════════════════════
 
 // ── Restauration des assignments depuis le CSV anonymisé ─────────
-function restoreFromCSV() {
-  const input = document.createElement('input');
-  input.type  = 'file';
-  input.accept = '.csv';
-  input.onchange = async () => {
+async function restoreFromCSV(input) {
+  {
     const file = input.files[0];
+    input.value = ''; // reset pour permettre re-sélection du même fichier
     if (!file) return;
 
     const text = await file.text();
@@ -902,8 +900,7 @@ function restoreFromCSV() {
     saveCounters(counters);
 
     showToast(`✅ ${restored} assignment(s) restaurés depuis le CSV. Recharge ton fichier Excel.`);
-  };
-  input.click();
+  }
 }
 
 function editDossardNumber(inscriptionId, cat, currentNumber) {
@@ -948,14 +945,22 @@ function editDossardNumber(inscriptionId, cat, currentNumber) {
 
 async function checkMissingDossards() {
   if (!allDossards || allDossards.length === 0) {
-    showToast('⚠️ Aucun participant chargé.');
+    showToast('⚠️ Charge d\'abord le fichier Excel des inscriptions.');
+    return;
+  }
+
+  if (!window.showDirectoryPicker) {
+    showToast('⚠️ Fonctionnalité non supportée par ce navigateur. Utilise Chrome ou Edge.');
     return;
   }
 
   let dirHandle;
   try {
-    dirHandle = await window.showDirectoryPicker({ mode: 'read' });
-  } catch { return; }
+    dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+  } catch (e) {
+    if (e.name !== 'AbortError') showToast('⚠️ Impossible d\'accéder au dossier : ' + e.message);
+    return;
+  }
 
   // Collecter les PNG existants dans les 6 sous-dossiers
   const existing = new Set();
