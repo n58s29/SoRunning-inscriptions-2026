@@ -5,6 +5,18 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.21.0] — 2026-04-20
+
+### Ajouté
+- **Page de récupération des dossards** (`dossard.html` + `dossard.js`) : les participants saisissent leur numéro d'inscription et visualisent les dossards de leurs épreuves avec un aperçu PNG et un bouton de téléchargement direct.
+- **Dossier `dossards/`** : répertoire destiné à recevoir les PNG générés par l'admin, nommés `XXXX.png`.
+
+### Modifié
+- **Export PNG admin** : les dossards sont maintenant exportés sous la forme `XXXX.png` (ex. `1126.png`) au lieu de `dossard_XXXX.png`.
+- **Export CSV anonymisé** : les colonnes d'épreuve contiennent désormais le nom de fichier complet (`1126.png`) plutôt que le seul numéro, pour correspondre directement aux fichiers du dossier `dossards/`.
+
+---
+
 ## [1.20.0] — 2026-04-19
 
 ### Ajouté

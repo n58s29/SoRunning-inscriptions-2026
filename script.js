@@ -796,7 +796,7 @@ function exportCSVAnonymized() {
     const prenomAnon = (p.prenom ? p.prenom[0].toUpperCase() : '') + '*****';
     const emailAnon  = anonymizeEmail(p.email);
     const row = [p.id, nomAnon, prenomAnon, emailAnon];
-    CAT_COLS.forEach(cat => row.push(p.dossardsParCat[cat] ? formatNumber(p.dossardsParCat[cat]) : ''));
+    CAT_COLS.forEach(cat => row.push(p.dossardsParCat[cat] ? formatNumber(p.dossardsParCat[cat]) + '.png' : ''));
     rows.push(row);
   });
   const csv  = rows.map(r => r.map(c => `"${c}"`).join(';')).join('\n');
@@ -1208,7 +1208,7 @@ async function _runExportPNG(idRange) {
   for (const d of toGenerate) {
     if (exportCancelled) break;
 
-    const filename = `dossard_${formatNumber(d.number)}.png`;
+    const filename = `${formatNumber(d.number)}.png`;
 
     if (existingFiles.has(filename)) {
       skipped++; done++;
