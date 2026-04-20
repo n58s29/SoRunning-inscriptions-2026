@@ -8,6 +8,14 @@ const CSV_PATH    = './data/participants_anonymises_Challenge_Connecté_2026.csv
 const DOSSARD_DIR = './dossards/';
 const THEME_KEY   = 'challenge2026_theme';
 
+const DOSSARD_FOLDERS = ['course-5km', 'course-10km', 'course-21km', 'marche-5km', 'marche-10km', 'marche-21km'];
+
+function getDossardFolder(bibFilename) {
+  const num = parseInt(bibFilename, 10);
+  const folder = DOSSARD_FOLDERS[Math.floor(num / 1000)];
+  return folder || '';
+}
+
 // ─────────────────────────────────────────────
 // THÈME
 // ─────────────────────────────────────────────
@@ -170,7 +178,8 @@ async function renderDossards(participant) {
   const checks = await Promise.all(
     races.map(async cat => {
       const bib = participant[cat]; // valeur du CSV : "XXXX.png"
-      const url = DOSSARD_DIR + bib;
+      const folder = getDossardFolder(bib);
+      const url = DOSSARD_DIR + (folder ? folder + '/' : '') + bib;
       const exists = await checkImageExists(url);
       return { cat, bib, url, exists };
     })

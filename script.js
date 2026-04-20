@@ -452,6 +452,12 @@ function formatNumber(n) {
   return String(n).padStart(4, '0');
 }
 
+const DOSSARD_FOLDERS = ['course-5km', 'course-10km', 'course-21km', 'marche-5km', 'marche-10km', 'marche-21km'];
+
+function getDossardFolder(num) {
+  return DOSSARD_FOLDERS[Math.floor(parseInt(num, 10) / 1000)] || '';
+}
+
 // ── Message d'attente trame ──────────────────────────────────────
 function trameMissingHTML() {
   return `
@@ -796,7 +802,12 @@ function exportCSVAnonymized() {
     const prenomAnon = (p.prenom ? p.prenom[0].toUpperCase() : '') + '*****';
     const emailAnon  = anonymizeEmail(p.email);
     const row = [p.id, nomAnon, prenomAnon, emailAnon];
-    CAT_COLS.forEach(cat => row.push(p.dossardsParCat[cat] ? formatNumber(p.dossardsParCat[cat]) + '.png' : ''));
+    CAT_COLS.forEach(cat => {
+      if (!p.dossardsParCat[cat]) { row.push(''); return; }
+      const filename = formatNumber(p.dossardsParCat[cat]) + '.png';
+      const folder   = getDossardFolder(p.dossardsParCat[cat]);
+      row.push(folder ? folder + '/' + filename : filename);
+    });
     rows.push(row);
   });
   const csv  = rows.map(r => r.map(c => `"${c}"`).join(';')).join('\n');
