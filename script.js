@@ -540,7 +540,9 @@ function renderDossard(d) {
 
       <!-- Contenu dynamique superposé à la trame -->
       <div class="dossard-overlay">
-        <div class="dossard-number">${num}</div>
+        <div class="dossard-number"
+             title="Double-clic pour corriger le numéro"
+             ondblclick="editDossardNumber('${d.id.replace(/'/g,"\\'")}', '${d.cat.replace(/'/g,"\\'")}', ${d.number})">${num}</div>
         <div class="dossard-badge ${cat.cssClass}">
           <span class="badge-dist">${cat.dist}</span>
           <span class="badge-km">KM</span>
@@ -550,6 +552,7 @@ function renderDossard(d) {
     </div>
 
     <div class="dossard-name">${d.prenom}</div>
+    <div class="dossard-inscription-id">inscr. #${d.id}</div>
 
   </div>`;
 }
@@ -831,6 +834,46 @@ function printList() {
 // ═══════════════════════════════════════════════════════════════════
 // SECTION 9 — EXPORT PNG (avec trame en fond)
 // ═══════════════════════════════════════════════════════════════════
+
+function editDossardNumber(inscriptionId, cat, currentNumber) {
+  const catConf = CATS[cat];
+  if (!catConf) return;
+
+  const d     = allDossards.find(x => x.id === inscriptionId && x.cat === cat);
+  const label = d ? `${d.prenom} ${d.nom}` : `inscription #${inscriptionId}`;
+
+  const input = prompt(
+    `Corriger le numéro — ${label}\nCatégorie : ${cat}\nNuméro actuel : ${formatNumber(currentNumber)}\n\nNouveau numéro (${catConf.start}–${catConf.end}) :`,
+    String(currentNumber)
+  );
+  if (input === null) return;
+
+  const newNum = parseInt(input.trim(), 10);
+  if (isNaN(newNum) || newNum < catConf.start || newNum > catConf.end) {
+    showToast(`⚠️ Numéro invalide — plage : ${formatNumber(catConf.start)}–${formatNumber(catConf.end)}`);
+    return;
+  }
+  if (newNum === currentNumber) return;
+
+  const assignments = loadAssignments();
+  const thisKey     = `${inscriptionId}_${cat}`;
+
+  // Vérification de conflit
+  const conflictEntry = Object.entries(assignments).find(
+    ([k, v]) => k !== thisKey && v === newNum && k.slice(k.indexOf('_') + 1) === cat
+  );
+  if (conflictEntry) {
+    const conflictId = conflictEntry[0].slice(0, conflictEntry[0].indexOf('_'));
+    if (!confirm(`⚠️ Le numéro ${formatNumber(newNum)} est déjà attribué à l'inscription #${conflictId}.\n\nForcer la correction quand même ?`)) return;
+  }
+
+  assignments[thisKey] = newNum;
+  saveAssignments(assignments);
+
+  if (d) d.number = newNum;
+  renderGrid();
+  showToast(`✅ Numéro corrigé : ${formatNumber(newNum)} pour ${label}`);
+}
 
 async function checkMissingDossards() {
   if (!allDossards || allDossards.length === 0) {

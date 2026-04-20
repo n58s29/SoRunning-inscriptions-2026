@@ -517,6 +517,20 @@ header {
   padding: 0 5% 0 6%;
 }
 
+/* ── ID d'inscription (admin uniquement, masqué à l'impression) ── */
+.dossard-inscription-id {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 2px;
+  letter-spacing: 0.03em;
+}
+@media print { .dossard-inscription-id { display: none; } }
+
+/* ── Double-clic pour corriger le numéro ── */
+.dossard-number { cursor: pointer; }
+.dossard-number:hover { opacity: 0.8; }
+
 /* ── Badge type/distance (cercle, positionné en absolu bas-droite) ── */
 .dossard-badge {
   position: absolute;
