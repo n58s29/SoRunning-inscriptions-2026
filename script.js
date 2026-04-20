@@ -535,7 +535,6 @@ function renderDossard(d) {
       <!-- Contenu dynamique superposé à la trame -->
       <div class="dossard-overlay">
         <div class="dossard-number">${num}</div>
-        <div class="dossard-name">${d.prenom}</div>
         <div class="dossard-badge ${cat.cssClass}">
           <span class="badge-dist">${cat.dist}</span>
           <span class="badge-km">KM</span>
@@ -543,6 +542,8 @@ function renderDossard(d) {
         </div>
       </div>
     </div>
+
+    <div class="dossard-name">${d.prenom}</div>
 
   </div>`;
 }
@@ -830,6 +831,7 @@ function cancelExport() {
 // Dimensions : A4 paysage à 150 DPI → 1748 × 1240 px
 const PNG_W = 1748;
 const PNG_H = 1240;
+const PNG_EXPORT_H = PNG_H + 140; // espace supplémentaire pour le prénom sous le dossard
 
 function buildDossardHTMLForExport(d) {
   const num = formatNumber(d.number);
@@ -841,25 +843,25 @@ function buildDossardHTMLForExport(d) {
 
   return `
   <div style="
-    width:${PNG_W}px; height:${PNG_H}px;
+    width:${PNG_W}px; height:${PNG_EXPORT_H}px;
     position:relative; overflow:hidden;
     font-family:'Barlow Condensed',sans-serif;
     background:white;
   ">
-    <!-- Trame de fond -->
+    <!-- Trame de fond (hauteur fixe = bib uniquement) -->
     <img src="${trameSrc}" style="
-      position:absolute; inset:0;
-      width:100%; height:100%;
+      position:absolute; top:0; left:0;
+      width:${PNG_W}px; height:${PNG_H}px;
       object-fit:cover; object-position:center;
       z-index:0;
     ">
 
-    <!-- Contenu dynamique -->
+    <!-- Contenu dynamique superposé au bib -->
     <div style="
-      position:absolute; inset:0; z-index:1;
+      position:absolute; top:0; left:0; right:0; height:${PNG_H}px; z-index:1;
       display:flex; flex-direction:column;
       align-items:flex-start; justify-content:flex-end;
-      padding: 0 72px 200px 80px;
+      padding: 0 72px 310px 80px;
     ">
       <!-- Numéro -->
       <div style="
@@ -867,22 +869,15 @@ function buildDossardHTMLForExport(d) {
         letter-spacing:-10px; color:#000;
         text-shadow:0 2px 20px rgba(255,255,255,0.55);
       ">${num}</div>
-
-      <!-- Trait -->
-      <div style="
-        width:480px; height:6px;
-        background:rgba(0,0,0,0.7);
-        border-radius:4px; margin:18px 0 16px;
-      "></div>
-
-      <!-- Nom du participant -->
-      <div style="
-        font-size:100px; font-weight:700; color:#000;
-        letter-spacing:1px; text-transform:uppercase; line-height:1;
-        text-shadow:0 2px 10px rgba(255,255,255,0.5);
-        max-width:1300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-      ">${d.prenom}</div>
     </div>
+
+    <!-- Prénom sous le dossard -->
+    <div style="
+      position:absolute; top:${PNG_H + 20}px; left:80px; z-index:2;
+      font-size:100px; font-weight:700; color:#000;
+      letter-spacing:1px; text-transform:uppercase; line-height:1;
+      max-width:1600px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    ">${d.prenom}</div>
 
     <!-- Badge type/distance — coin bas-droite -->
     <div style="
@@ -1243,7 +1238,7 @@ async function _runExportPNG(idRange) {
         backgroundColor: '#ffffff',
         logging: false,
         width:  PNG_W,
-        height: PNG_H,
+        height: PNG_EXPORT_H,
       });
 
       const pngBlob   = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
