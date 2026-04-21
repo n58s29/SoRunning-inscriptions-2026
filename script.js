@@ -199,17 +199,22 @@ const TRAME_RES_MIN   = '1240 × 874 px';   // A4 @ ~107 DPI — aperçu correct
 // ─────────────────────────────────────────────
 // CLÉS LOCALSTORAGE
 // ─────────────────────────────────────────────
-const STORAGE_KEY = 'challenge2026_assignments';
-const COUNTER_KEY = 'challenge2026_counters';
+const STORAGE_KEY    = 'challenge2026_assignments';
+const COUNTER_KEY    = 'challenge2026_counters';
+const GITHUB_PAT_KEY = 'challenge2026_github_pat';
+const GITHUB_OWNER   = 'n58s29';
+const GITHUB_REPO    = 'SoRunning-inscriptions-2026';
+const GITHUB_BRANCH  = 'main';
 
 // ─────────────────────────────────────────────
 // ÉTAT GLOBAL
 // ─────────────────────────────────────────────
-let allDossards  = [];        // liste complète des dossards générés
-let currentFilter = 'all';   // filtre catégorie actif
-let trameSrc      = null;     // data-URL de la trame PNG (null = non chargée)
-let trameFilename = null;     // nom du fichier trame
-let exportCancelled = false;  // flag annulation export
+let allDossards        = [];        // liste complète des dossards générés
+let currentFilter      = 'all';     // filtre catégorie actif
+let missingDossardsList = [];       // dossards manquants détectés (pour génération ciblée)
+let trameSrc           = null;      // data-URL de la trame PNG (null = non chargée)
+let trameFilename      = null;      // nom du fichier trame
+let exportCancelled    = false;     // flag annulation export
 
 // ═══════════════════════════════════════════════════════════════════
 // SECTION 1 — PERSISTANCE (localStorage)
@@ -949,6 +954,7 @@ async function checkMissingDossards() {
 
   // Trouver les manquants
   const missing = [];
+  missingDossardsList = [];
   for (const d of allDossards) {
     if (!d.number) continue;
     const filename = formatNumber(d.number) + '.png';
@@ -956,6 +962,7 @@ async function checkMissingDossards() {
     const path     = folder ? folder + '/' + filename : filename;
     if (!existing.has(path)) {
       missing.push({ id: parseInt(d.id), nom: d.nom, prenom: d.prenom, cat: d.cat, path });
+      missingDossardsList.push(d);
     }
   }
 
@@ -1005,6 +1012,12 @@ async function checkMissingDossards() {
         </thead>
         <tbody>${rows}</tbody>
       </table>
+    </div>
+    <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+      <button class="btn-print" onclick="generateMissingDossards(false)">💾 Générer les manquants</button>
+      ${localStorage.getItem(GITHUB_PAT_KEY)
+        ? `<button class="btn-export" onclick="generateMissingDossards(true)">🐙 Générer + Pousser GitHub</button>`
+        : `<span style="font-size:11px;color:var(--muted)">Token GitHub non configuré (voir Paramètres).</span>`}
     </div>`;
 
   overlay.classList.remove('hidden');
@@ -1349,17 +1362,20 @@ function confirmExportSelection() {
 }
 
 // ── Export PNG vers dossier choisi ───────────────────────────────
-async function _runExportPNG(idRange) {
+async function _runExportPNG(idRange, explicitList = null, pushToGitHub = false) {
   // idRange = null (tout) ou { from, to } pour filtrer par ID d'inscription
+  // explicitList = tableau de dossards à générer directement (prioritaire sur idRange)
   let dirHandle;
   try {
     dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
   } catch { return; }
 
-  const toGenerate = [...allDossards]
-    .filter(d => currentFilter === 'all' || d.cat === currentFilter)
-    .filter(d => !idRange || (parseInt(d.id) >= idRange.from && parseInt(d.id) <= idRange.to))
-    .sort((a, b) => a.number - b.number);
+  const toGenerate = explicitList
+    ? [...explicitList].sort((a, b) => a.number - b.number)
+    : [...allDossards]
+        .filter(d => currentFilter === 'all' || d.cat === currentFilter)
+        .filter(d => !idRange || (parseInt(d.id) >= idRange.from && parseInt(d.id) <= idRange.to))
+        .sort((a, b) => a.number - b.number);
 
   if (toGenerate.length === 0) {
     showToast('⚠️ Aucun dossard visible à enregistrer.');
@@ -1383,6 +1399,7 @@ async function _runExportPNG(idRange) {
 
   let done = 0, skipped = 0, errors = 0;
   const total = toGenerate.length;
+  const generatedBlobs = pushToGitHub ? [] : null;
 
   // Conteneur de rendu caché
   const renderContainer = document.createElement('div');
@@ -1436,6 +1453,11 @@ async function _runExportPNG(idRange) {
       await writable.write(pngBlob);
       await writable.close();
 
+      if (generatedBlobs) {
+        const f = getDossardFolder(d.number);
+        generatedBlobs.push({ path: `dossards/${f ? f + '/' : ''}${filename}`, blob: pngBlob });
+      }
+
       done++;
       progressFill.style.width = Math.round((done / total) * 100) + '%';
       progressLabel.innerHTML  = `<strong>${done}</strong> / ${total}` +
@@ -1459,6 +1481,106 @@ async function _runExportPNG(idRange) {
   if (skipped) msg += ` · ${skipped} ignoré(s) (déjà existants)`;
   if (errors)  msg += ` · ⚠️ ${errors} erreur(s)`;
   showToast(msg);
+
+  if (pushToGitHub && generatedBlobs && generatedBlobs.length > 0) {
+    const pat = localStorage.getItem(GITHUB_PAT_KEY);
+    if (!pat) { showToast('⚠️ Token GitHub non configuré (voir Paramètres).'); return; }
+    document.getElementById('exportModalTitle').textContent = '🐙 Envoi vers GitHub…';
+    progressFill.style.width = '0%';
+    progressLabel.innerHTML  = `0 / ${generatedBlobs.length}`;
+    modalSub.textContent     = 'Connexion à l\'API GitHub…';
+    overlay.classList.remove('hidden');
+    try {
+      await pushBlobsToGitHub(generatedBlobs, pat, (i, total, name) => {
+        progressFill.style.width = Math.round((i / total) * 100) + '%';
+        progressLabel.innerHTML  = `<strong>${i}</strong> / ${total}`;
+        modalSub.textContent     = `${name} envoyé…`;
+      });
+      overlay.classList.add('hidden');
+      showToast(`🐙 ${generatedBlobs.length} dossard(s) poussé(s) sur GitHub`);
+    } catch (err) {
+      overlay.classList.add('hidden');
+      showToast(`❌ Erreur GitHub : ${err.message}`);
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// Génération ciblée des dossards manquants
+// ─────────────────────────────────────────────
+async function generateMissingDossards(pushToGitHub = false) {
+  if (!trameSrc) {
+    showToast('⚠️ Charge d\'abord la trame PNG avant de générer.');
+    return;
+  }
+  if (missingDossardsList.length === 0) return;
+  document.getElementById('missingOverlay').classList.add('hidden');
+  await _runExportPNG(null, missingDossardsList, pushToGitHub);
+}
+
+// ─────────────────────────────────────────────
+// GitHub API — push blobs en un commit
+// ─────────────────────────────────────────────
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function pushBlobsToGitHub(blobs, token, onProgress = null) {
+  const base    = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`;
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+
+  const branchRes = await fetch(`${base}/branches/${GITHUB_BRANCH}`, { headers });
+  if (!branchRes.ok) throw new Error(`Auth GitHub échouée (${branchRes.status})`);
+  const branchData = await branchRes.json();
+  const baseCommit = branchData.commit.sha;
+  const baseTree   = branchData.commit.commit.tree.sha;
+
+  const treeItems = [];
+  for (let i = 0; i < blobs.length; i++) {
+    const { path, blob } = blobs[i];
+    const content = await blobToBase64(blob);
+    const res = await fetch(`${base}/git/blobs`, {
+      method: 'POST', headers,
+      body: JSON.stringify({ content, encoding: 'base64' })
+    });
+    if (!res.ok) throw new Error(`Blob échoué pour ${path} (${res.status})`);
+    const { sha } = await res.json();
+    treeItems.push({ path, mode: '100644', type: 'blob', sha });
+    if (onProgress) onProgress(i + 1, blobs.length, path.split('/').pop());
+  }
+
+  const treeRes = await fetch(`${base}/git/trees`, {
+    method: 'POST', headers,
+    body: JSON.stringify({ base_tree: baseTree, tree: treeItems })
+  });
+  if (!treeRes.ok) throw new Error(`Création de l'arbre échouée (${treeRes.status})`);
+  const { sha: newTree } = await treeRes.json();
+
+  const commitRes = await fetch(`${base}/git/commits`, {
+    method: 'POST', headers,
+    body: JSON.stringify({
+      message: `chore(dossards): ajout de ${blobs.length} dossard(s) manquant(s)`,
+      tree: newTree,
+      parents: [baseCommit]
+    })
+  });
+  if (!commitRes.ok) throw new Error(`Création du commit échouée (${commitRes.status})`);
+  const { sha: newCommit } = await commitRes.json();
+
+  const refRes = await fetch(`${base}/git/refs/heads/${GITHUB_BRANCH}`, {
+    method: 'PATCH', headers,
+    body: JSON.stringify({ sha: newCommit })
+  });
+  if (!refRes.ok) throw new Error(`Mise à jour de la branche échouée (${refRes.status})`);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -2382,6 +2504,9 @@ function renderSettingsPanel() {
   const nameInput = document.getElementById('settingsEventName');
   if (nameInput) nameInput.value = currentConfig.eventName;
 
+  const patInput = document.getElementById('settingsGithubPat');
+  if (patInput) patInput.value = localStorage.getItem(GITHUB_PAT_KEY) || '';
+
   const list = document.getElementById('settingsCatsList');
   if (!list) return;
 
@@ -2466,6 +2591,13 @@ function saveSettings() {
   renderGrid();
   if (allDossards.length > 0) {
     updateStats();
+  }
+
+  const patInput = document.getElementById('settingsGithubPat');
+  if (patInput) {
+    const pat = patInput.value.trim();
+    if (pat) localStorage.setItem(GITHUB_PAT_KEY, pat);
+    else localStorage.removeItem(GITHUB_PAT_KEY);
   }
 
   showToast('✅ Configuration sauvegardée !');

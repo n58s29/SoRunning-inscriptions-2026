@@ -266,6 +266,12 @@
       <button class="btn-add-cat" onclick="addSettingsCategory()">+ Ajouter une catégorie</button>
     </div>
 
+    <div class="settings-section">
+      <label class="settings-label">🐙 Token GitHub <span style="font-size:11px;font-weight:400;color:var(--muted)">(Personal Access Token — scope <code>contents:write</code>)</span></label>
+      <input type="password" class="settings-input" id="settingsGithubPat" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Permet de pousser les dossards manquants automatiquement vers GitHub. Stocké uniquement dans ce navigateur.</div>
+    </div>
+
     <div class="settings-actions">
       <button class="btn-print" onclick="saveSettings()">💾 Sauvegarder la configuration</button>
       <button class="btn-reset" onclick="resetSettings()">🔄 Réinitialiser (défaut)</button>

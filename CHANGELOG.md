@@ -5,6 +5,15 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.25.0] — 2026-04-21
+
+### Ajouté
+- **Admin — modale "Dossards manquants"** : bouton "💾 Générer les manquants" pour exporter en PNG uniquement les dossards absents du dossier local, sans passer par la sélection globale.
+- **Admin — modale "Dossards manquants"** : bouton "🐙 Générer + Pousser GitHub" (affiché si token configuré) — génère les PNG localement puis crée un commit GitHub via l'API (blobs → tree → commit → ref update), sans intervention manuelle.
+- **Admin — Paramètres** : champ "Token GitHub (PAT)" pour stocker le Personal Access Token dans le navigateur ; utilisé par le push automatique.
+
+---
+
 ## [1.24.0] — 2026-04-21
 
 ### Supprimé
