@@ -1014,10 +1014,10 @@ async function checkMissingDossards() {
       </table>
     </div>
     <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-      <button class="btn-print" onclick="generateMissingDossards(false)">💾 Générer les manquants</button>
-      ${localStorage.getItem(GITHUB_PAT_KEY)
-        ? `<button class="btn-export" onclick="generateMissingDossards(true)">🐙 Générer + Pousser GitHub</button>`
-        : `<span style="font-size:11px;color:var(--muted)">Token GitHub non configuré (voir Paramètres).</span>`}
+      <button class="btn-print" onclick="generateMissingDossards()">💾 Générer + Pousser GitHub</button>
+      ${!localStorage.getItem(GITHUB_PAT_KEY)
+        ? `<span style="font-size:11px;color:#f59e0b">⚠️ Token GitHub non configuré (voir Paramètres).</span>`
+        : ''}
     </div>`;
 
   overlay.classList.remove('hidden');
@@ -1508,14 +1508,14 @@ async function _runExportPNG(idRange, explicitList = null, pushToGitHub = false)
 // ─────────────────────────────────────────────
 // Génération ciblée des dossards manquants
 // ─────────────────────────────────────────────
-async function generateMissingDossards(pushToGitHub = false) {
+async function generateMissingDossards() {
   if (!trameSrc) {
     showToast('⚠️ Charge d\'abord la trame PNG avant de générer.');
     return;
   }
   if (missingDossardsList.length === 0) return;
   document.getElementById('missingOverlay').classList.add('hidden');
-  await _runExportPNG(null, missingDossardsList, pushToGitHub);
+  await _runExportPNG(null, missingDossardsList, true);
 }
 
 // ─────────────────────────────────────────────
