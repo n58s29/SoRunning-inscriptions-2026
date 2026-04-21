@@ -5,6 +5,16 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.24.0] — 2026-04-21
+
+### Supprimé
+- **Admin — onglet Dossards** : suppression des boutons de filtre par course ("Tous", "Course 5 km", etc.) devenus inutiles.
+- **Admin — onglet Dossards** : suppression du bouton "📧 Email dossards" et de la modale associée (publipostage / liens mailto).
+- **Admin — onglet Dossards** : suppression du bouton "🔄 Réinitialiser les n°".
+- Nettoyage du CSS (`email-overlay`, `email-modal`, etc.) et des fonctions JS correspondantes (`setFilter`, `resetNumbers`, `emailDossards`, `emailSelectMode`, `emailExportCSV`).
+
+---
+
 ## [1.23.0] — 2026-04-21
 
 ### Ajouté

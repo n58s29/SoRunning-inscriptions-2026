@@ -136,17 +136,6 @@
 
     <!-- Barre d'outils -->
     <div class="controls" id="controls">
-      <div class="filter-group">
-        <button class="filter-btn active" data-cat="all"          onclick="setFilter('all', this)">Tous</button>
-        <button class="filter-btn" data-cat="Course 5 km"         onclick="setFilter('Course 5 km', this)">Course 5 km</button>
-        <button class="filter-btn" data-cat="Course 10 km"        onclick="setFilter('Course 10 km', this)">Course 10 km</button>
-        <button class="filter-btn" data-cat="Course 21,1 km"      onclick="setFilter('Course 21,1 km', this)">Course 21,1 km</button>
-        <button class="filter-btn" data-cat="Marche 5 km"         onclick="setFilter('Marche 5 km', this)">Marche 5 km</button>
-        <button class="filter-btn" data-cat="Marche 10 km"        onclick="setFilter('Marche 10 km', this)">Marche 10 km</button>
-        <button class="filter-btn" data-cat="Marche 21,1 km"      onclick="setFilter('Marche 21,1 km', this)">Marche 21,1 km</button>
-      </div>
-      <div class="spacer"></div>
-
       <!-- Bouton trame — état visuel dynamique -->
       <input type="file" id="trameUpload" accept="image/png" style="display:none">
       <button class="btn-trame" id="btnTrame" onclick="document.getElementById('trameUpload').click()">
@@ -155,10 +144,8 @@
       </button>
 
       <button class="btn-export" onclick="downloadBlankTemplate()" title="Télécharger une trame vierge annotée">📐 Trame vierge</button>
-      <button class="btn-export" onclick="emailDossards()" title="Préparer l'envoi des dossards par email">📧 Email dossards</button>
-      <input type="file" id="csvRestoreInput" accept=".csv" style="display:none" onchange="restoreFromCSV(this)">
+<input type="file" id="csvRestoreInput" accept=".csv" style="display:none" onchange="restoreFromCSV(this)">
       <button class="btn-export" onclick="document.getElementById('csvRestoreInput').click()" title="Restaure les numéros attribués depuis le CSV anonymisé exporté">📥 Restaurer depuis CSV</button>
-      <button class="btn-reset" onclick="resetNumbers()" title="Réinitialise les numéros (⚠️ irréversible)">🔄 Réinitialiser les n°</button>
       <button class="btn-print" onclick="saveDossardsPNG()" id="btnExport">💾 Exporter les dossards</button>
       <button class="btn-export" onclick="checkMissingDossards()" title="Vérifier quels dossards PNG sont manquants dans un dossier local">🔍 Dossards manquants</button>
     </div>

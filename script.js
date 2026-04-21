@@ -240,18 +240,6 @@ function saveCounters(c) {
   localStorage.setItem(COUNTER_KEY, JSON.stringify(c));
 }
 
-function resetNumbers() {
-  if (!confirm('⚠️ Cela réinitialisera TOUS les numéros attribués.\nLes prochains participants recommenceront à 0001.\n\nConfirmer ?')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(COUNTER_KEY);
-  allDossards = [];
-  document.getElementById('grid').innerHTML = '';
-  document.getElementById('statsBar').innerHTML = '';
-  document.getElementById('fileLoaded').style.display = 'none';
-  renderGrid();
-  showToast('✅ Numéros réinitialisés. Recharge ton fichier.');
-}
-
 // ═══════════════════════════════════════════════════════════════════
 // SECTION 2 — CHARGEMENT DE LA TRAME PNG
 // ═══════════════════════════════════════════════════════════════════
@@ -620,24 +608,6 @@ function updateStats() {
 // SECTION 6 — FILTRES
 // ═══════════════════════════════════════════════════════════════════
 
-function setFilter(cat, btn) {
-  currentFilter = cat;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.remove('active');
-    b.style.background = '';
-    b.style.color = '';
-  });
-  btn.classList.add('active');
-  // Apply dynamic color
-  if (cat === 'all') {
-    btn.style.background = 'var(--pink-dark)';
-    btn.style.color = 'white';
-  } else if (CATS[cat]) {
-    btn.style.background = CATS[cat].color;
-    btn.style.color = isLightColor(CATS[cat].color) ? '#333' : 'white';
-  }
-  renderGrid();
-}
 
 // ═══════════════════════════════════════════════════════════════════
 // SECTION 7 — ONGLETS
@@ -2520,141 +2490,6 @@ function resetSettings() {
 // SECTION 14 — EMAIL DES DOSSARDS (Feature 4)
 // ═══════════════════════════════════════════════════════════════════
 
-function emailDossards() {
-  if (allDossards.length === 0) {
-    showToast('⚠️ Aucun dossard à envoyer.');
-    return;
-  }
-
-  // Create modal overlay
-  let overlay = document.getElementById('emailOverlay');
-  if (overlay) overlay.remove();
-
-  overlay = document.createElement('div');
-  overlay.id = 'emailOverlay';
-  overlay.className = 'email-overlay';
-
-  const participants = groupByParticipant();
-
-  overlay.innerHTML = `
-    <div class="email-modal">
-      <div class="email-modal-title">📧 Envoyer les dossards par email</div>
-      <div class="email-modal-sub">${participants.length} participant(s) avec dossard(s) attribué(s)</div>
-
-      <div class="email-mode-btns">
-        <button class="email-mode-btn active" onclick="emailSelectMode('export', this)" id="emailModeExport">
-          <span class="email-mode-btn-icon">📋</span>
-          Export pour publipostage
-        </button>
-        <button class="email-mode-btn" onclick="emailSelectMode('mailto', this)" id="emailModeMailto">
-          <span class="email-mode-btn-icon">✉️</span>
-          Liens mailto individuels
-        </button>
-      </div>
-
-      <div id="emailModeContent">
-        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">
-          Génère un fichier CSV enrichi avec un message personnalisé par participant, prêt pour un publipostage (Outlook, Power Automate…).
-        </p>
-        <button class="btn-print" onclick="emailExportCSV()">⬇️ Télécharger le CSV publipostage</button>
-      </div>
-
-      <button class="email-close" onclick="document.getElementById('emailOverlay').remove()">✕ Fermer</button>
-    </div>
-  `;
-
-  document.body.appendChild(overlay);
-}
-
-function emailSelectMode(mode, btn) {
-  document.querySelectorAll('.email-mode-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  const content = document.getElementById('emailModeContent');
-  const participants = groupByParticipant();
-
-  if (mode === 'export') {
-    content.innerHTML = `
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">
-        Génère un fichier CSV enrichi avec un message personnalisé par participant, prêt pour un publipostage (Outlook, Power Automate…).
-      </p>
-      <button class="btn-print" onclick="emailExportCSV()">⬇️ Télécharger le CSV publipostage</button>
-    `;
-  } else {
-    let listHtml = `
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">
-        Cliquez sur « Ouvrir » pour chaque participant afin d'ouvrir votre client mail avec un email pré-rempli.
-      </p>
-      <div style="max-height:300px;overflow-y:auto;">
-    `;
-
-    participants.forEach(p => {
-      if (!p.email) return;
-      const dossards = CAT_COLS
-        .filter(cat => p.dossardsParCat[cat])
-        .map(cat => `${cat} : n°${formatNumber(p.dossardsParCat[cat])}`);
-      if (dossards.length === 0) return;
-
-      const subject = encodeURIComponent(`Tes dossards — ${currentConfig.eventName}`);
-      const body = encodeURIComponent(
-        `Bonjour ${p.prenom},\n\n` +
-        `Voici tes numéros de dossard pour le ${currentConfig.eventName} :\n\n` +
-        dossards.join('\n') + '\n\n' +
-        `À très bientôt sur la ligne de départ !\n` +
-        `L'équipe SoRunning SNCF`
-      );
-      const mailto = `mailto:${p.email}?subject=${subject}&body=${body}`;
-
-      listHtml += `
-        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
-          <div style="flex:1;color:var(--text);font-weight:600;">${p.prenom} ${p.nom}</div>
-          <div style="flex:1;color:var(--muted);font-size:12px;">${p.email}</div>
-          <div style="color:var(--accent);font-size:12px;">${dossards.length} dossard(s)</div>
-          <a href="${mailto}" style="background:var(--accent);color:white;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Ouvrir ✉️</a>
-        </div>
-      `;
-    });
-
-    listHtml += '</div>';
-    content.innerHTML = listHtml;
-  }
-}
-
-function emailExportCSV() {
-  const participants = groupByParticipant();
-  const rows = [
-    ['NOM', 'PRÉNOM', 'EMAIL', 'CATÉGORIE(S)', 'N° DOSSARD(S)', 'MESSAGE_PERSONNALISÉ']
-  ];
-
-  participants.forEach(p => {
-    if (!p.email) return;
-    const dossards = CAT_COLS
-      .filter(cat => p.dossardsParCat[cat])
-      .map(cat => ({ cat, num: formatNumber(p.dossardsParCat[cat]) }));
-    if (dossards.length === 0) return;
-
-    const cats = dossards.map(d => d.cat).join(' ; ');
-    const nums = dossards.map(d => d.num).join(' ; ');
-    const dossardLines = dossards.map(d => `${d.cat} : n°${d.num}`).join(' / ');
-
-    const message =
-      `Bonjour ${p.prenom}, voici tes numéros de dossard pour le ${currentConfig.eventName} : ${dossardLines}. À très bientôt sur la ligne de départ ! L'équipe SoRunning SNCF`;
-
-    rows.push([p.nom, p.prenom, p.email, cats, nums, message]);
-  });
-
-  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = Object.assign(document.createElement('a'), {
-    href: url,
-    download: `publipostage_dossards_${currentConfig.eventName.replace(/\s+/g, '_')}.csv`
-  });
-  a.click();
-  URL.revokeObjectURL(url);
-
-  showToast(`✅ CSV publipostage téléchargé (${rows.length - 1} participants)`);
-}
 
 // ═══════════════════════════════════════════════════════════════════
 // SECTION 15 — INITIALISATION DYNAMIQUE
