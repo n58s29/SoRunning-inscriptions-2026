@@ -5,6 +5,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.23.0] — 2026-04-21
+
+### Ajouté
+- **Page dossards — affichage de l'email** : l'email (anonymisé, issu du CSV) est affiché dans un bloc info après la recherche, dans le même style que la page de vérification.
+- **Page dossards — bandeau d'avertissement** : un encadré ambre "IMPORTANT — DÉPÔT DE PREUVE" rappelle aux participants d'utiliser le numéro de dossard correspondant à chaque course pour déposer leur preuve, et signale la possibilité de scanner le QR Code du dossard pour accéder directement au formulaire.
+
+---
+
 ## [1.22.0] — 2026-04-20
 
 ### Corrigé

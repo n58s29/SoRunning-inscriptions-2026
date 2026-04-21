@@ -216,7 +216,22 @@ async function renderDossards(participant) {
       </div>`;
   }).join('');
 
-  grid.innerHTML = `<div class="db-grid">${cards}</div>${freshness}`;
+  grid.innerHTML = `
+    <div class="vs-info-grid">
+      <div class="vs-info-item vs-info-item--full">
+        <span class="vs-info-label">Email</span>
+        <span class="vs-info-value">${escapeHtml(participant['EMAIL'] || '—')}</span>
+      </div>
+    </div>
+    <div class="db-warning">
+      <div class="db-warning-icon">⚠️</div>
+      <div class="db-warning-body">
+        <div class="db-warning-title">Important — Dépôt de preuve</div>
+        Pour chaque course, utilisez le <strong>numéro de dossard correspondant</strong> lors du dépôt de votre preuve de participation via le formulaire.<br>
+        <span style="display:block; margin-top:6px;">📱 Vous pouvez aussi <strong>scanner le QR Code</strong> présent sur votre dossard pour accéder directement au formulaire de la bonne course.</span>
+      </div>
+    </div>
+    <div class="db-grid">${cards}</div>${freshness}`;
   grid.style.display = 'block';
   grid.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }

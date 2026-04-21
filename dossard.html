@@ -114,6 +114,29 @@
       pointer-events: none;
     }
 
+    /* ─── Warning banner ─── */
+    .db-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 2px solid rgba(245, 158, 11, 0.45);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 1.2rem;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .db-warning-icon { font-size: 26px; flex-shrink: 0; line-height: 1.2; }
+    .db-warning-body { font-size: 14px; line-height: 1.6; color: var(--text); }
+    .db-warning-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #f59e0b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 5px;
+    }
+
     /* ─── Freshness ─── */
     .db-freshness {
       font-size: 11px;
