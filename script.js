@@ -534,8 +534,8 @@ function renderDossard(d) {
       <!-- Contenu dynamique superposé à la trame -->
       <div class="dossard-overlay">
         <div class="dossard-number"
-             title="Double-clic pour corriger le numéro"
-             ondblclick="editDossardNumber('${d.id.replace(/'/g,"\\'")}', '${d.cat.replace(/'/g,"\\'")}', ${d.number})">${num}</div>
+             title="${d.id ? 'Double-clic pour corriger le numéro' : ''}"
+             ${d.id ? `ondblclick="editDossardNumber('${d.id.replace(/'/g,"\\'")}', '${d.cat.replace(/'/g,"\\'")}', ${d.number})"` : ''}>${num}</div>
         <div class="dossard-badge ${cat.cssClass}">
           <span class="badge-dist">${cat.dist}</span>
           <span class="badge-km">KM</span>
@@ -544,8 +544,8 @@ function renderDossard(d) {
       </div>
     </div>
 
-    <div class="dossard-name">${d.prenom}</div>
-    <div class="dossard-inscription-id">inscr. #${d.id}</div>
+    <div class="dossard-name">${d.prenom || d.name || ''}</div>
+    ${d.id ? `<div class="dossard-inscription-id">inscr. #${d.id}</div>` : ''}
 
   </div>`;
 }
