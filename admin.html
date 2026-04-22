@@ -308,6 +308,15 @@
                onclick="document.getElementById('exportScopeRange').checked=true">
       </label>
     </div>
+    <div class="export-github-option">
+      <label class="export-select-opt">
+        <input type="checkbox" id="exportPushGithub">
+        📤 Écrire dans les sous-dossiers du repo &amp; pousser sur GitHub
+      </label>
+      <div id="exportGithubWarn" style="display:none;font-size:11px;color:#e67e22;margin-top:4px">
+        ⚠️ Token GitHub non configuré — configure-le dans les Paramètres.
+      </div>
+    </div>
     <div class="export-select-actions">
       <button class="export-btn-confirm" onclick="confirmExportSelection()">Exporter</button>
       <button class="export-btn-cancel" onclick="document.getElementById('exportSelectOverlay').classList.add('hidden')">Annuler</button>
@@ -342,5 +351,6 @@
 </div>
 
 <script src="script.js"></script>
+<footer style="text-align:center;padding:12px;font-size:0.75rem;opacity:0.45;user-select:none;">v1.25.0</footer>
 </body>
 </html>
