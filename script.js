@@ -841,7 +841,10 @@ async function restoreFromCSV(input) {
     // Colonnes catégories = tout ce qui est après EMAIL (index 4+)
     const catHeaders = headers.slice(4);
 
-    const assignments = loadAssignments();
+    // Le CSV fait autorité : on repart de zéro pour éviter que des numéros "frais"
+    // attribués lors d'un chargement Excel antérieur ne persistent et entrent en
+    // collision avec les bibs du CSV pour les nouveaux inscrits absents du CSV.
+    const assignments = {};
     let restored = 0;
 
     for (let i = 1; i < lines.length; i++) {
@@ -864,13 +867,13 @@ async function restoreFromCSV(input) {
 
     saveAssignments(assignments);
 
-    // Mettre à jour les compteurs pour qu'ils soient au-delà des numéros restaurés
-    const counters = loadCounters();
+    // Compteurs recalés sur le CSV : on repart de start puis on avance au-delà du max restauré.
+    const counters = {};
     Object.keys(CATS).forEach(cat => {
       const maxForCat = Object.entries(assignments)
         .filter(([k]) => k.endsWith('_' + cat))
         .reduce((max, [, v]) => Math.max(max, v), CATS[cat].start - 1);
-      if (maxForCat >= counters[cat]) counters[cat] = maxForCat + 1;
+      counters[cat] = maxForCat + 1;
     });
     saveCounters(counters);
 
