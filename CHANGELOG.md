@@ -5,6 +5,23 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.26.0] — 2026-05-01
+
+### Modifié
+- **Page résultats (`resultats.html`)** : refonte complète en page d'**affichage uniquement** à partir de CSV pré-validés dans `data/`. Plus d'upload, plus de tirage au sort live, plus de mot de passe — la page lit jusqu'à 4 CSV (`resultats_course_5km.csv`, `resultats_course_10km.csv`, `resultats_course_21km.csv`, `recap_gagnants.csv`) et affiche les onglets correspondants.
+- **Onglet "🏆 Récap gagnants"** : nouvelle section synthétique regroupant les gagnants des courses, du tirage au sort marche et du concours photos (catégorisation via la colonne `categorie` du CSV : `course` / `marche` / `photo`).
+- **Format CSV unifié** : séparateur `;` (compatible Excel FR), ordre des lignes respecté tel quel (pas de tri côté page).
+- **Message d'attente** : si aucun CSV n'est présent, affichage d'un écran "Résultats à venir" avec lien d'inscription FER-PLAY pour le direct Teams du 12 mai.
+
+### Supprimé
+- Mot de passe d'accès à la page résultats.
+- Logique de chargement de fichiers CSV par l'utilisateur (`loadResults`, `loadParticipants`).
+- Tirage au sort animé des marcheurs et confettis (les gagnants sont désormais saisis directement dans `recap_gagnants.csv`).
+- Détection d'alertes (dossard inconnu, hors plage, initiales incorrectes) et calcul des catégories d'âge — déplacés en amont, validés hors-ligne avant publication des CSV.
+- Dépendance au flag `resultatsOpen` de `config.json` : la page est désormais publique en permanence, l'affichage est piloté par la présence des CSV.
+
+---
+
 ## [1.25.0] — 2026-04-21
 
 ### Ajouté

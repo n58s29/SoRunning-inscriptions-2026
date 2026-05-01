@@ -47,7 +47,7 @@ Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 | 1 | S'inscrire au Challenge | `inscription.html` | Libre |
 | 2 | Vérifier mon inscription | `verify.html` | Libre |
 | 3 | Déposer ma preuve | `depot.html` | Contrôlé par `config.json` (`depotOpen`) |
-| — | Résultats | `resultats.html` | Contrôlé par `config.json` (`resultatsOpen`) |
+| — | Résultats | `resultats.html` | Public — affichage à partir des CSV du repo |
 | — | T-shirts | `tshirt.html` | Accès restreint (espace ambassadeurs) |
 | — | FAQ | `FAQ.html` | Libre |
 
@@ -146,18 +146,56 @@ Si les numéros attribués semblent incorrects après un changement de navigateu
 
 ## Page résultats (`resultats.html`)
 
-Activée via `config.json` (`resultatsOpen: true`). Chargement de deux fichiers CSV :
+Page publique d'**affichage uniquement** (pas de traitement, pas d'upload, pas de mot de passe). Lit automatiquement jusqu'à 4 CSV pré-validés dans `data/` et affiche le contenu tel quel — l'ordre des lignes du CSV est respecté.
 
-| Fichier | Format | Source |
-|---|---|---|
-| Résultats | CSV virgule | Export Tally |
-| Participants | CSV point-virgule | Export admin |
+### Comportement
 
-Fonctionnalités :
-- Classements par épreuve (Course 5/10/21,1 km) triés au temps
-- Catégories d'âge et genre (ESP/SEN/M0…M4+, H/F)
-- Détection d'alertes : dossard inconnu, hors plage, initiales incorrectes
-- Tirage au sort animé pour les marcheurs (avec confettis)
+- **Aucun CSV présent** → message d'attente avec lien d'inscription FER-PLAY pour le direct Teams.
+- **Au moins un CSV présent** → affichage par onglets. Les onglets dont le CSV est absent sont automatiquement masqués (publication progressive possible : courses d'abord, récap ensuite).
+
+### Fichiers attendus dans `data/`
+
+| Fichier | Onglet |
+|---|---|
+| `resultats_course_5km.csv` | 5 km |
+| `resultats_course_10km.csv` | 10 km |
+| `resultats_course_21km.csv` | 21,1 km |
+| `recap_gagnants.csv` | 🏆 Récap gagnants |
+
+Tous au format CSV avec **`;`** comme séparateur (compatible Excel FR).
+
+### Format des classements course
+
+```csv
+position;dossard;prenom;nom;sexe;categorie;temps
+1;1234;Marie;Dupont;F;SEN F;00:22:15
+2;1056;Paul;Martin;H;M1 H;00:23:48
+```
+
+- `sexe` = `F` ou `H` (utilisé pour le tag de couleur)
+- L'ordre du CSV est respecté tel quel (pas de tri)
+
+### Format du récap gagnants
+
+```csv
+categorie;position;prenom;nom;detail
+course;1;Marie;Dupont;5 km — 00:22:15
+marche;1;Anne;Dubois;Marche 5 km
+photo;1;Camille;Garcia;Plus belle photo de groupe
+```
+
+- `categorie` doit être exactement `course`, `marche` ou `photo` (en minuscules)
+- Positions 1/2/3 affichées avec couleurs or/argent/bronze
+- `detail` = texte libre affiché sous le nom
+
+### Mise à disposition des résultats
+
+```
+1. Préparer les CSV depuis l'export Tally / sources officielles
+2. Valider l'ordre et le contenu hors-ligne (Excel)
+3. Déposer les fichiers dans data/ avec les noms attendus
+4. Commiter et pousser sur GitHub
+```
 
 ---
 
@@ -200,9 +238,10 @@ Les deux pages suivent la charte graphique du site (dark/light mode, Barlow Cond
 Pour ouvrir une page, modifier le flag correspondant à `true` directement sur GitHub (interface web) et pousser. La modification est effective dès le déploiement GitHub Pages (quelques secondes).
 
 - `depotOpen: true` → active la page de dépôt de preuve
-- `resultatsOpen: true` → active la page des résultats
 
-Tant qu'un flag est à `false`, la page affiche un écran **"Pas encore disponible"** si on accède directement à son URL.
+Tant que `depotOpen` est à `false`, la page affiche un écran **"Pas encore disponible"** si on accède directement à son URL.
+
+> La page `resultats.html` ne dépend plus de `config.json` : son affichage est piloté uniquement par la présence des CSV dans `data/`.
 
 ---
 
