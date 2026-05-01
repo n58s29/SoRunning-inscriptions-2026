@@ -175,16 +175,20 @@ position;dossard;prenom;nom;sexe;categorie;temps
 - `sexe` = `F` ou `H` (utilisé pour le tag de couleur)
 - L'ordre du CSV est respecté tel quel (pas de tri)
 
-### Format du récap gagnants
+### Format du récap gagnant.e.s
 
 ```csv
-categorie;position;prenom;nom;detail
-course;1;Marie;Dupont;5 km — 00:22:15
-marche;1;Anne;Dubois;Marche 5 km
-photo;1;Camille;Garcia;Plus belle photo de groupe
+categorie;position;prenom;nom;sexe;detail
+course;1;Marie;Dupont;F;5 km — 00:22:15
+course;1;Léa;Bernard;F;10 km — 00:45:30
+course;1;Paul;Martin;H;5 km — 00:20:30
+course;1;Jean;Durand;H;10 km — 00:42:15
+marche;1;Anne;Dubois;;Marche 5 km
+photo;1;Camille;Garcia;;Plus belle photo de groupe
 ```
 
 - `categorie` doit être exactement `course`, `marche` ou `photo` (en minuscules)
+- `sexe` = `F` ou `H` pour les **courses** (split en 2 colonnes ♀ Femmes / ♂ Hommes dans l'affichage). Vide ou ignoré pour `marche` et `photo`.
 - Positions 1/2/3 affichées avec couleurs or/argent/bronze
 - `detail` = texte libre affiché sous le nom
 

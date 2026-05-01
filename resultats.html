@@ -138,6 +138,38 @@
     }
     .recap-row-text { flex: 1; min-width: 0; }
 
+    /* ─── Récap courses : 2 colonnes H/F ─── */
+    .recap-courses-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .recap-courses-grid { grid-template-columns: 1fr; }
+    }
+    .recap-col {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .recap-col .recap-list {
+      border: none;
+      border-radius: 0;
+    }
+    .recap-col-header {
+      padding: 12px 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .recap-col-header.fem { color: var(--accent); }
+    .recap-col-header.hom { color: #2e86de; }
+
     .empty {
       text-align: center;
       padding: 48px 16px;
@@ -349,37 +381,79 @@ function renderClassement(rows) {
   return html;
 }
 
+function recapItemHTML(r) {
+  const pos = parseInt(r.position) || 0;
+  let posClass = '';
+  if (pos === 1) posClass = ' gold';
+  else if (pos === 2) posClass = ' silver';
+  else if (pos === 3) posClass = ' bronze';
+  const posLabel = pos ? '#' + pos : '';
+  return `<li>
+    <div class="recap-pos${posClass}">${posLabel}</div>
+    <div class="recap-row-text">
+      <div class="recap-name">${r.prenom || ''} ${r.nom || ''}</div>
+      ${r.detail ? `<div class="recap-detail">${r.detail}</div>` : ''}
+    </div>
+  </li>`;
+}
+
 function renderRecap(rows) {
   if (!rows || !rows.length) {
     return '<div class="empty">Aucun gagnant à afficher</div>';
   }
-  const sections = [
-    { key: 'course', title: '🏃‍♀️ Gagnants des courses' },
-    { key: 'marche', title: '🚶‍♀️ Tirage au sort — Marcheurs' },
-    { key: 'photo',  title: '📸 Concours photos' },
-  ];
   let html = '';
-  sections.forEach(s => {
-    const items = rows.filter(r => (r.categorie || '').toLowerCase() === s.key);
-    if (!items.length) return;
-    html += `<div class="recap-section"><h2>${s.title}</h2><ul class="recap-list">`;
-    items.forEach(r => {
-      const pos = parseInt(r.position) || 0;
-      let posClass = '';
-      if (pos === 1) posClass = ' gold';
-      else if (pos === 2) posClass = ' silver';
-      else if (pos === 3) posClass = ' bronze';
-      const posLabel = pos ? '#' + pos : '';
-      html += `<li>
-        <div class="recap-pos${posClass}">${posLabel}</div>
-        <div class="recap-row-text">
-          <div class="recap-name">${r.prenom || ''} ${r.nom || ''}</div>
-          ${r.detail ? `<div class="recap-detail">${r.detail}</div>` : ''}
-        </div>
-      </li>`;
+
+  // ─── Courses : split H/F ───
+  const coursesAll = rows.filter(r => (r.categorie || '').toLowerCase() === 'course');
+  if (coursesAll.length) {
+    const fem = coursesAll.filter(r => (r.sexe || '').trim().toUpperCase() === 'F');
+    const hom = coursesAll.filter(r => (r.sexe || '').trim().toUpperCase() === 'H');
+    const noSex = coursesAll.filter(r => {
+      const s = (r.sexe || '').trim().toUpperCase();
+      return s !== 'F' && s !== 'H';
     });
-    html += `</ul></div>`;
-  });
+
+    html += `<div class="recap-section"><h2>🏃‍♀️ Gagnant.e.s des courses</h2>`;
+    if (fem.length || hom.length) {
+      html += `<div class="recap-courses-grid">`;
+      if (fem.length) {
+        html += `<div class="recap-col">
+          <div class="recap-col-header fem">♀ Femmes</div>
+          <ul class="recap-list">${fem.map(recapItemHTML).join('')}</ul>
+        </div>`;
+      }
+      if (hom.length) {
+        html += `<div class="recap-col">
+          <div class="recap-col-header hom">♂ Hommes</div>
+          <ul class="recap-list">${hom.map(recapItemHTML).join('')}</ul>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+    if (noSex.length) {
+      html += `<ul class="recap-list" style="margin-top:16px;">${noSex.map(recapItemHTML).join('')}</ul>`;
+    }
+    html += `</div>`;
+  }
+
+  // ─── Marche ───
+  const marche = rows.filter(r => (r.categorie || '').toLowerCase() === 'marche');
+  if (marche.length) {
+    html += `<div class="recap-section">
+      <h2>🚶‍♀️ Tirage au sort — Marcheur.se.s</h2>
+      <ul class="recap-list">${marche.map(recapItemHTML).join('')}</ul>
+    </div>`;
+  }
+
+  // ─── Photos ───
+  const photo = rows.filter(r => (r.categorie || '').toLowerCase() === 'photo');
+  if (photo.length) {
+    html += `<div class="recap-section">
+      <h2>📸 Concours photos</h2>
+      <ul class="recap-list">${photo.map(recapItemHTML).join('')}</ul>
+    </div>`;
+  }
+
   return html || '<div class="empty">Aucun gagnant à afficher</div>';
 }
 
@@ -388,7 +462,7 @@ function render() {
   const contentEl = document.getElementById('content');
   const availableTabs = [];
   COURSES.forEach(c => { if (datasets[c.key]) availableTabs.push({ key: c.key, label: c.label }); });
-  if (datasets.recap) availableTabs.push({ key: 'recap', label: '🏆 Récap gagnants' });
+  if (datasets.recap) availableTabs.push({ key: 'recap', label: '🏆 Récap gagnant.e.s' });
 
   if (!availableTabs.length) return false;
 

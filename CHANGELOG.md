@@ -5,6 +5,18 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.27.0] — 2026-05-01
+
+### Ajouté
+- **Page résultats — onglet Récap** : distinction Femmes / Hommes pour les gagnant.e.s des courses (mise en page 2 colonnes ♀ / ♂ avec couleurs distinctes — rose accent pour les femmes, bleu pour les hommes ; empilement vertical sur mobile).
+- **CSV `recap_gagnants.csv`** : nouvelle colonne `sexe` (`F` ou `H`) utilisée uniquement pour la catégorie `course`. Vide pour `marche` et `photo`.
+
+### Modifié
+- **Onglet Récap** renommé en "🏆 Récap gagnant.e.s" (écriture inclusive).
+- **Section "Tirage au sort"** renommée "Tirage au sort — Marcheur.se.s".
+
+---
+
 ## [1.26.0] — 2026-05-01
 
 ### Modifié
