@@ -5,6 +5,17 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.30.0] — 2026-05-02
+
+### Modifié
+- **Page d'accueil — header** : la jauge d'inscrit.e.s (1 254 / 1 000) et le pavé FAQ remontent dans le header en versions compactes (pill rose + bouton FAQ). Affichage d'un ✓ vert quand l'objectif est atteint. Le `/ 1 000 inscrit.e.s` et le label `FAQ` sont masqués sur mobile (≤ 600 px) pour conserver le chiffre et l'icône uniquement.
+
+### Supprimé
+- **Bloc `.gauge-faq-row`** en haut de la home (gros compteur + carte FAQ pleine largeur) : devenu redondant maintenant que l'objectif est atteint, l'info passe en bandeau permanent dans le header.
+- CSS associé à l'ancien bloc (`.gauge-card`, `.gauge-bar`, `.gauge-ticks`, `.faq-card`, etc.) — environ 165 lignes nettoyées.
+
+---
+
 ## [1.29.0] — 2026-05-02
 
 ### Modifié

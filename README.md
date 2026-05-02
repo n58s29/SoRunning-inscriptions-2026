@@ -51,11 +51,9 @@ Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 | — | T-shirts | `tshirt.html` | Accès restreint (espace ambassadeurs) |
 | — | FAQ | `FAQ.html` | Libre |
 
-Affiche une **rangée jauge + FAQ** en haut de page : la jauge (2/3 de largeur) montre le nombre d'inscrits (issu du CSV anonymisé) / objectif 1 000 avec compteur animé, barre de progression et badge contextuel ; le pavé FAQ (1/3) renvoie vers `FAQ.html`. Sur mobile les deux s'empilent verticalement.
+**Header compact** : un pill rose `1 254 / 1 000 inscrit.e.s ✓` (compteur animé issu du CSV anonymisé, ✓ vert affiché dès que l'objectif est atteint) et un bouton **FAQ** sont placés dans le header à gauche du toggle thème. Sur mobile, le suffixe `/ 1 000 inscrit.e.s` et le label `FAQ` sont masqués pour conserver de la place — il ne reste que le chiffre et l'icône `❓`.
 
 Les **cartes Étapes 1, 2 et 3** ont toutes un fond rose dégradé (28→14 % accent). La bulle `.step-num` est en blanc pour éviter le rose sur rose. La carte Étape 1 (Inscription) est en plus mise en avant : bordure 2 px, glow permanent.
-
-La **jauge** n'affiche plus que le nombre d'inscrits et la barre de progression (label, badge et message d'encouragement supprimés).
 
 ### Standard bouton retour
 
