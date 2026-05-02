@@ -2182,16 +2182,68 @@ updateStats = function() {
   const parts = new Set(allDossards.map(d => d.id)).size;
   const el = document.getElementById('tabCountStats');
   if (el) el.textContent = parts;
-  // Mise à jour badge doublons
+  // Mise à jour badge doublons (hors anomalies marquées OK)
+  const ignored = getIgnoredAnomalies();
   const dupes = detectDuplicates();
-  const totalDupes = dupes.exact.length + dupes.sameName.length + dupes.sameEmail.length;
-  const totalNonPro = detectNonProEmails().length;
+  const filterGroups = (groups, type) =>
+    groups.filter(g => !ignored.has(anomalySignature(type, g.entries.map(e => e.id))));
+  const totalDupes =
+    filterGroups(dupes.exact,     'exact').length +
+    filterGroups(dupes.sameName,  'sameName').length +
+    filterGroups(dupes.sameEmail, 'sameEmail').length;
+  const totalNonPro = detectNonProEmails()
+    .filter(d => !ignored.has(anomalySignature('nonpro', d.id))).length;
   const totalAnomalies = totalDupes + totalNonPro;
   const elD = document.getElementById('tabCountDoublons');
   if (elD) {
     elD.textContent = totalAnomalies;
     elD.classList.toggle('has-warn', totalAnomalies > 0);
   }
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// SECTION 10.5 — Anomalies marquées "OK" (localStorage)
+// ═══════════════════════════════════════════════════════════════════
+
+const IGNORED_ANOMALIES_KEY = 'cc2026_ignored_anomalies';
+
+function getIgnoredAnomalies() {
+  try {
+    const raw = localStorage.getItem(IGNORED_ANOMALIES_KEY);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw));
+  } catch { return new Set(); }
+}
+function saveIgnoredAnomalies(set) {
+  try { localStorage.setItem(IGNORED_ANOMALIES_KEY, JSON.stringify([...set])); } catch {}
+}
+function anomalySignature(type, idsOrId) {
+  if (Array.isArray(idsOrId)) {
+    return `${type}:${[...idsOrId].map(String).sort().join(',')}`;
+  }
+  return `${type}:${idsOrId}`;
+}
+function isAnomalyIgnored(sig) { return getIgnoredAnomalies().has(sig); }
+
+window.ignoreAnomaly = function(sig) {
+  const set = getIgnoredAnomalies();
+  set.add(sig);
+  saveIgnoredAnomalies(set);
+  renderDoublons();
+  if (typeof updateStats === 'function') updateStats();
+};
+window.restoreAnomaly = function(sig) {
+  const set = getIgnoredAnomalies();
+  set.delete(sig);
+  saveIgnoredAnomalies(set);
+  renderDoublons();
+  if (typeof updateStats === 'function') updateStats();
+};
+window.clearIgnoredAnomalies = function() {
+  if (!confirm('Restaurer toutes les anomalies marquées OK ?')) return;
+  saveIgnoredAnomalies(new Set());
+  renderDoublons();
+  if (typeof updateStats === 'function') updateStats();
 };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -2373,20 +2425,36 @@ function renderDoublons() {
     return;
   }
 
-  const dupes = detectDuplicates();
-  const nonProList = detectNonProEmails();
-  const totalDupes = dupes.exact.length + dupes.sameName.length + dupes.sameEmail.length;
-  const totalAnomalies = totalDupes + nonProList.length;
+  const ignored = getIgnoredAnomalies();
 
-  if (totalAnomalies === 0) {
-    container.innerHTML = `
-      <div class="doublons-clean">
-        <div class="doublons-clean-icon">✅</div>
-        <div class="doublons-clean-title">Aucune anomalie détectée</div>
-        <div class="doublons-clean-sub">Les ${new Set(allDossards.map(d => d.id)).size} inscriptions sont toutes uniques et avec des emails professionnels.</div>
-      </div>`;
-    return;
-  }
+  const dupesAll      = detectDuplicates();
+  const nonProListAll = detectNonProEmails();
+
+  // Filtrage : on retire les anomalies marquées OK
+  const filterGroups = (groups, type) => groups.map(g => {
+    const sig = anomalySignature(type, g.entries.map(e => e.id));
+    return { ...g, _sig: sig, _ignored: ignored.has(sig) };
+  });
+  const dupes = {
+    exact     : filterGroups(dupesAll.exact,     'exact'),
+    sameName  : filterGroups(dupesAll.sameName,  'sameName'),
+    sameEmail : filterGroups(dupesAll.sameEmail, 'sameEmail'),
+  };
+  const nonProList = nonProListAll.map(d => {
+    const sig = anomalySignature('nonpro', d.id);
+    return { ...d, _sig: sig, _ignored: ignored.has(sig) };
+  });
+
+  const visibleExact     = dupes.exact.filter(g => !g._ignored);
+  const visibleSameName  = dupes.sameName.filter(g => !g._ignored);
+  const visibleSameEmail = dupes.sameEmail.filter(g => !g._ignored);
+  const visibleNonPro    = nonProList.filter(d => !d._ignored);
+
+  const totalAnomalies = visibleExact.length + visibleSameName.length +
+                         visibleSameEmail.length + visibleNonPro.length;
+  const totalIgnored = [...dupes.exact, ...dupes.sameName, ...dupes.sameEmail, ...nonProList]
+                         .filter(x => x._ignored).length;
+  const totalParticipants = new Set(allDossards.map(d => d.id)).size;
 
   // Helper : rendu d'un groupe de doublons
   function renderGroup(group, severity) {
@@ -2412,6 +2480,7 @@ function renderDoublons() {
           <span class="dupe-reason">${group.reason}</span>
           <span class="dupe-count">${group.entries.length} inscriptions</span>
           <a class="btn-mailto" href="${mailto}">✉️ Envoyer un mail</a>
+          <button class="btn-ignore" onclick="ignoreAnomaly('${group._sig}')" title="Marquer cette anomalie comme OK">✓ OK</button>
         </div>
         <div class="dupe-table">
           <div class="dupe-row dupe-row-head">
@@ -2425,75 +2494,120 @@ function renderDoublons() {
       </div>`;
   }
 
-  const totalParticipants = new Set(allDossards.map(d => d.id)).size;
-  let html = `
-    <div class="doublons-summary">
-      <div class="doublons-summary-icon">⚠️</div>
-      <div class="doublons-summary-text">
-        <strong>${totalAnomalies} anomalie${totalAnomalies > 1 ? 's' : ''}</strong> détectée${totalAnomalies > 1 ? 's' : ''}
-        parmi ${totalParticipants} inscriptions.
-        <br>Vérifie ces entrées dans le Forms et corrige si nécessaire.
-      </div>
-    </div>`;
+  let html = '';
 
-  // Exacts d'abord (critique)
-  if (dupes.exact.length > 0) {
-    html += `<div class="dupe-section">
-      <div class="dupe-section-title">🔴 Doublons exacts <span class="dupe-section-count">${dupes.exact.length}</span></div>
-      <div class="dupe-section-desc">Même nom, prénom et email — très probablement une double inscription.</div>
-      ${dupes.exact.map(g => renderGroup(g, 'high')).join('')}
-    </div>`;
-  }
-
-  // Même nom (attention)
-  if (dupes.sameName.length > 0) {
-    html += `<div class="dupe-section">
-      <div class="dupe-section-title">🟡 Mêmes nom et prénom <span class="dupe-section-count">${dupes.sameName.length}</span></div>
-      <div class="dupe-section-desc">Même identité mais emails différents — homonymes ou erreur de saisie ?</div>
-      ${dupes.sameName.map(g => renderGroup(g, 'medium')).join('')}
-    </div>`;
-  }
-
-  // Même email (info)
-  if (dupes.sameEmail.length > 0) {
-    html += `<div class="dupe-section">
-      <div class="dupe-section-title">🔵 Même email, noms différents <span class="dupe-section-count">${dupes.sameEmail.length}</span></div>
-      <div class="dupe-section-desc">Même adresse email mais identités différentes — compte partagé ?</div>
-      ${dupes.sameEmail.map(g => renderGroup(g, 'low')).join('')}
-    </div>`;
-  }
-
-  // Emails non professionnels
-  if (nonProList.length > 0) {
-    const rows = nonProList.map(d => {
-      const challenges = allDossards.filter(dd => dd.id === d.id).map(dd => dd.cat).join(', ');
-      const mailto = buildMailtoAnomalie('nonpro', d);
-      return `
-        <div class="dupe-row dupe-row--with-action">
-          <div class="dupe-cell dupe-id">ID ${d.id}</div>
-          <div class="dupe-cell dupe-name">${d.prenom} ${d.nom}</div>
-          <div class="dupe-cell dupe-email">${d.email || '—'}</div>
-          <div class="dupe-cell dupe-challenges">${challenges || '—'}</div>
-          <div class="dupe-cell dupe-action"><a class="btn-mailto" href="${mailto}">✉️ Envoyer</a></div>
-        </div>`;
-    }).join('');
-
-    html += `<div class="dupe-section">
-      <div class="dupe-section-title">📧 Emails non professionnels <span class="dupe-section-count">${nonProList.length}</span></div>
-      <div class="dupe-section-desc">Ces participants ont utilisé une adresse personnelle (Gmail, Yahoo, Hotmail…) au lieu d'un email professionnel.</div>
-      <div class="dupe-group dupe-medium">
-        <div class="dupe-table">
-          <div class="dupe-row dupe-row-head dupe-row--with-action">
-            <div class="dupe-cell dupe-id">ID Forms</div>
-            <div class="dupe-cell dupe-name">Participant</div>
-            <div class="dupe-cell dupe-email">Email</div>
-            <div class="dupe-cell dupe-challenges">Challenge(s)</div>
-            <div class="dupe-cell dupe-action"></div>
-          </div>
-          ${rows}
+  if (totalAnomalies === 0) {
+    html += `
+      <div class="doublons-clean">
+        <div class="doublons-clean-icon">✅</div>
+        <div class="doublons-clean-title">Aucune anomalie à traiter</div>
+        <div class="doublons-clean-sub">Les ${totalParticipants} inscriptions sont toutes uniques et avec des emails professionnels${totalIgnored > 0 ? ` (${totalIgnored} marquée${totalIgnored > 1 ? 's' : ''} OK ci-dessous)` : ''}.</div>
+      </div>`;
+  } else {
+    html += `
+      <div class="doublons-summary">
+        <div class="doublons-summary-icon">⚠️</div>
+        <div class="doublons-summary-text">
+          <strong>${totalAnomalies} anomalie${totalAnomalies > 1 ? 's' : ''}</strong> à traiter
+          parmi ${totalParticipants} inscriptions.
+          <br>Vérifie ces entrées dans le Forms et corrige si nécessaire.
         </div>
-      </div>
-    </div>`;
+      </div>`;
+
+    if (visibleExact.length > 0) {
+      html += `<div class="dupe-section">
+        <div class="dupe-section-title">🔴 Doublons exacts <span class="dupe-section-count">${visibleExact.length}</span></div>
+        <div class="dupe-section-desc">Même nom, prénom et email — très probablement une double inscription.</div>
+        ${visibleExact.map(g => renderGroup(g, 'high')).join('')}
+      </div>`;
+    }
+
+    if (visibleSameName.length > 0) {
+      html += `<div class="dupe-section">
+        <div class="dupe-section-title">🟡 Mêmes nom et prénom <span class="dupe-section-count">${visibleSameName.length}</span></div>
+        <div class="dupe-section-desc">Même identité mais emails différents — homonymes ou erreur de saisie ?</div>
+        ${visibleSameName.map(g => renderGroup(g, 'medium')).join('')}
+      </div>`;
+    }
+
+    if (visibleSameEmail.length > 0) {
+      html += `<div class="dupe-section">
+        <div class="dupe-section-title">🔵 Même email, noms différents <span class="dupe-section-count">${visibleSameEmail.length}</span></div>
+        <div class="dupe-section-desc">Même adresse email mais identités différentes — compte partagé ?</div>
+        ${visibleSameEmail.map(g => renderGroup(g, 'low')).join('')}
+      </div>`;
+    }
+
+    if (visibleNonPro.length > 0) {
+      const rows = visibleNonPro.map(d => {
+        const challenges = allDossards.filter(dd => dd.id === d.id).map(dd => dd.cat).join(', ');
+        const mailto = buildMailtoAnomalie('nonpro', d);
+        return `
+          <div class="dupe-row dupe-row--with-action">
+            <div class="dupe-cell dupe-id">ID ${d.id}</div>
+            <div class="dupe-cell dupe-name">${d.prenom} ${d.nom}</div>
+            <div class="dupe-cell dupe-email">${d.email || '—'}</div>
+            <div class="dupe-cell dupe-challenges">${challenges || '—'}</div>
+            <div class="dupe-cell dupe-action">
+              <a class="btn-mailto" href="${mailto}">✉️ Envoyer</a>
+              <button class="btn-ignore" onclick="ignoreAnomaly('${d._sig}')" title="Marquer cette anomalie comme OK">✓ OK</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      html += `<div class="dupe-section">
+        <div class="dupe-section-title">📧 Emails non professionnels <span class="dupe-section-count">${visibleNonPro.length}</span></div>
+        <div class="dupe-section-desc">Ces participants ont utilisé une adresse personnelle (Gmail, Yahoo, Hotmail…) au lieu d'un email professionnel.</div>
+        <div class="dupe-group dupe-medium">
+          <div class="dupe-table">
+            <div class="dupe-row dupe-row-head dupe-row--with-action">
+              <div class="dupe-cell dupe-id">ID Forms</div>
+              <div class="dupe-cell dupe-name">Participant</div>
+              <div class="dupe-cell dupe-email">Email</div>
+              <div class="dupe-cell dupe-challenges">Challenge(s)</div>
+              <div class="dupe-cell dupe-action"></div>
+            </div>
+            ${rows}
+          </div>
+        </div>
+      </div>`;
+    }
+  }
+
+  // ─── Section "Anomalies marquées OK" ───
+  if (totalIgnored > 0) {
+    const ignoredItems = [];
+    const pushGroup = (g, type, typeLabel) => {
+      if (!g._ignored) return;
+      const names = g.entries.map(e => `${e.prenom || '?'} ${e.nom || '?'} (#${e.id})`).join(', ');
+      ignoredItems.push({ sig: g._sig, label: `${typeLabel} — ${names}` });
+    };
+    dupes.exact.forEach(g     => pushGroup(g, 'exact',     'Doublon exact'));
+    dupes.sameName.forEach(g  => pushGroup(g, 'sameName',  'Mêmes nom/prénom'));
+    dupes.sameEmail.forEach(g => pushGroup(g, 'sameEmail', 'Même email'));
+    nonProList.forEach(d => {
+      if (!d._ignored) return;
+      ignoredItems.push({
+        sig: d._sig,
+        label: `Email non pro — ${d.prenom || '?'} ${d.nom || '?'} (#${d.id}) ${d.email || ''}`
+      });
+    });
+
+    html += `
+      <div class="ignored-section">
+        <div class="ignored-section-header">
+          <div class="ignored-section-title">✅ ${totalIgnored} anomalie${totalIgnored > 1 ? 's' : ''} marquée${totalIgnored > 1 ? 's' : ''} OK</div>
+          <button class="btn-restore" onclick="clearIgnoredAnomalies()">↩ Tout restaurer</button>
+        </div>
+        <div class="ignored-list">
+          ${ignoredItems.map(it => `
+            <div class="ignored-item">
+              <div class="ignored-item-label">${it.label}</div>
+              <button class="btn-restore" onclick="restoreAnomaly('${it.sig}')">↩ Restaurer</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
   }
 
   container.innerHTML = html;

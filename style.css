@@ -1498,6 +1498,98 @@ header {
 }
 .btn-mailto:hover { opacity: .82; }
 
+/* Bouton "✓ OK, ignorer" sur chaque anomalie */
+.btn-ignore {
+  display: inline-block;
+  padding: 5px 10px;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.btn-ignore:hover {
+  background: var(--surface);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+/* Cellule action : peut contenir 2 boutons côte à côte */
+.dupe-action {
+  text-align: right;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.dupe-row--with-action {
+  grid-template-columns: 80px 1fr 1.2fr 1fr 180px;
+}
+
+/* Section "Anomalies marquées OK" */
+.ignored-section {
+  margin-top: 24px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.ignored-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+.ignored-section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.ignored-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ignored-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border-radius: 6px;
+  font-size: 13px;
+}
+.ignored-item-label {
+  flex: 1;
+  color: var(--muted);
+  word-break: break-word;
+}
+.btn-restore {
+  display: inline-block;
+  padding: 4px 10px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.btn-restore:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
 @media (max-width: 700px) {
   .dupe-row {
     grid-template-columns: 60px 1fr;

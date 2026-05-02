@@ -295,7 +295,7 @@ Réservé aux organisateurs. L'accès est protégé par un mot de passe demandé
 | **Dossards** | Visualisation et export PNG des dossards (prénom seul affiché — RGPD), sélection par plage d'IDs d'inscription à l'export, application d'une trame personnalisée, envoi par email, correction manuelle d'un numéro (double-clic), restauration des assignments depuis CSV, détection des PNG manquants |
 | **Liste des participants** | Recherche, export CSV complet, export CSV anonymisé RGPD (avec chemin des PNG) |
 | **Statistiques** | KPIs (dont total km cumulés — dossards × distances, affiché en macaron doré), répartition par catégorie, sexe, âge, région, société |
-| **Doublons** | Détection automatique d'inscriptions dupliquées |
+| **Doublons** | Détection automatique d'inscriptions dupliquées et d'emails non professionnels, avec possibilité de **marquer une anomalie comme OK** (persisté en `localStorage`) — les anomalies validées disparaissent de la liste et du badge, restaurables à tout moment depuis la section "Anomalies marquées OK" |
 | **Paramètres** | Nom de l'événement, catégories, plages de numéros de dossards |
 
 ### Numérotation des dossards

@@ -5,6 +5,19 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.28.0] — 2026-05-02
+
+### Ajouté
+- **Admin — onglet Anomalies** : bouton "✓ OK" sur chaque doublon ou email non pro pour **marquer l'anomalie comme validée**. Stockage en `localStorage` (clé `cc2026_ignored_anomalies`) sous forme de signatures stables (`<type>:<ids triés>`), donc persistant entre sessions sur le même navigateur.
+- **Admin — section "Anomalies marquées OK"** : liste les anomalies validées en bas de l'onglet, avec bouton "↩ Restaurer" individuel et "↩ Tout restaurer" global.
+- **Badge onglet Anomalies** : décompte automatiquement les anomalies marquées OK — le compteur ne montre que les anomalies à traiter.
+
+### Notes
+- Les signatures sont basées sur les IDs Forms : si tu réimportes un Excel et que les IDs ont changé, l'anomalie réapparaît (comportement attendu — re-validation manuelle requise).
+- Si une anomalie est résolue dans le Forms (modification réelle), elle disparaît naturellement de la détection ; sa signature résiduelle dans `localStorage` est inoffensive.
+
+---
+
 ## [1.27.0] — 2026-05-01
 
 ### Ajouté
