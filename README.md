@@ -47,7 +47,7 @@ Portail d'entrée du site. Parcours guidé en 3 étapes numérotées :
 | 1 | S'inscrire au Challenge | `inscription.html` | Libre |
 | 2 | Vérifier mon inscription | `verify.html` | Libre |
 | 3 | Déposer ma preuve | `depot.html` | Contrôlé par `config.json` (`depotOpen`) |
-| — | Résultats | `resultats.html` | Public — affichage à partir des CSV du repo |
+| — | Résultats | `resultats.html` | Public — carte affichée sous les Étapes 2 et 3 ; affichage à partir des CSV du repo |
 | — | T-shirts | `tshirt.html` | Accès restreint (espace ambassadeurs) |
 | — | FAQ | `FAQ.html` | Libre |
 

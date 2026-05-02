@@ -76,6 +76,18 @@
       margin-bottom: 0;
       flex-shrink: 0;
     }
+    .user-card--row {
+      flex-direction: row;
+      text-align: left;
+      padding: 24px 28px;
+      gap: 20px;
+      align-items: center;
+    }
+    .user-card--row .user-card-icon {
+      font-size: 36px;
+      margin-bottom: 0;
+      flex-shrink: 0;
+    }
     .user-card--primary {
       box-shadow: 0 4px 24px rgba(247, 115, 180, 0.18);
       border-width: 2px;
@@ -605,6 +617,15 @@
 
   </div>
 
+  <!-- Carte résultats (pleine largeur, accessible à tous) -->
+  <a href="resultats.html" class="user-card user-card--row">
+    <div class="user-card-icon">🏆</div>
+    <div>
+      <div class="user-card-title">Résultats du Challenge</div>
+      <div class="user-card-desc">Classements officiels des courses 5/10/21,1 km et récap des gagnant.e.s — disponibles après le direct Teams du 12 mai à 12h00.</div>
+    </div>
+  </a>
+
   <!-- Séparateur -->
   <div class="admin-separator">🔒 Espace organisateurs</div>
 
@@ -614,11 +635,6 @@
     <a href="admin.html" class="admin-card">
       <span class="admin-card-icon">⚙️</span>
       <span>Administration</span>
-    </a>
-
-    <a href="resultats.html" class="admin-card" id="card-resultats">
-      <span class="admin-card-icon">🏆</span>
-      <span>Résultats</span>
     </a>
 
     <a href="tshirt.html" class="admin-card">
@@ -744,14 +760,6 @@ function toggleTheme() {
     badge.className = 'user-card-badge';
     badge.textContent = '🔒';
     card.insertBefore(badge, card.firstChild);
-  }
-
-  if (!cfg.resultatsOpen) {
-    const card = document.getElementById('card-resultats');
-    card.removeAttribute('href');
-    card.style.opacity = '0.4';
-    card.style.cursor = 'not-allowed';
-    card.style.pointerEvents = 'none';
   }
 })();
 </script>

@@ -5,6 +5,14 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
 ---
 
+## [1.29.0] — 2026-05-02
+
+### Modifié
+- **Page d'accueil** : la carte **🏆 Résultats** sort de l'espace organisateurs et passe en accès public, affichée en pleine largeur sous les Étapes 2 et 3 (style row, icône + titre + description). Le wording mentionne le direct Teams du 12 mai.
+- **`config.json`** : suppression du flag `resultatsOpen` (la page résultats gère elle-même l'affichage en fonction de la présence des CSV dans `data/`).
+
+---
+
 ## [1.28.0] — 2026-05-02
 
 ### Ajouté
