@@ -1660,6 +1660,33 @@ function setChartBody(bodyId, html, emptyLabel = '') {
 }
 
 /* ─────────────────────────────────────────────
+   HELPER : barres horizontales (label | track | count)
+   Utilisé pour les charts âges et sociétés.
+───────────────────────────────────────────── */
+function renderHBarChart(bodyId, items, opts = {}) {
+  const { cssPrefix, truncate = 0, withTitle = false } = opts;
+  const max = Math.max(...items.map(([, v]) => v), 1);
+  const html = `<div class="${cssPrefix}-chart-wrap">${
+    items.map(([label, count]) => {
+      const pct = Math.round(count / max * 100);
+      const display = (truncate > 0 && label.length > truncate)
+        ? label.slice(0, truncate - 2) + '…'
+        : label;
+      const titleAttr = withTitle ? ` title="${label}"` : '';
+      return `
+        <div class="${cssPrefix}-bar-item">
+          <div class="${cssPrefix}-bar-label"${titleAttr}>${display}</div>
+          <div class="${cssPrefix}-bar-track">
+            <div class="${cssPrefix}-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="${cssPrefix}-bar-count">${count}</div>
+        </div>`;
+    }).join('')
+  }</div>`;
+  setChartBody(bodyId, html);
+}
+
+/* ─────────────────────────────────────────────
    CARTE DE FRANCE — polygones simplifiés
    ViewBox: 0 0 470 540
 ───────────────────────────────────────────── */
@@ -2024,28 +2051,12 @@ function renderSexeDonut(bySexe, total) {
    BARRES ÂGES
 ───────────────────────────────────────────── */
 function renderAgeBars(ageBuckets) {
-  const maxVal = Math.max(...Object.values(ageBuckets), 1);
-  const entries = Object.entries(ageBuckets).filter(([, v]) => v > 0);
-
-  if (entries.length === 0) {
+  const entries = Object.entries(ageBuckets);
+  if (!entries.some(([, v]) => v > 0)) {
     setChartBody('chartAgesBody', null, 'âge');
     return;
   }
-
-  const html = `<div class="age-chart-wrap">${
-    Object.entries(ageBuckets).map(([label, count]) => {
-      const pct = Math.round(count / maxVal * 100);
-      return `
-        <div class="age-bar-item">
-          <div class="age-bar-label">${label}</div>
-          <div class="age-bar-track">
-            <div class="age-bar-fill" style="width:${pct}%"></div>
-          </div>
-          <div class="age-bar-count">${count}</div>
-        </div>`;
-    }).join('')
-  }</div>`;
-  setChartBody('chartAgesBody', html);
+  renderHBarChart('chartAgesBody', entries, { cssPrefix: 'age' });
 }
 
 /* ─────────────────────────────────────────────
@@ -2123,22 +2134,11 @@ function renderSocieteBars(topSocietes) {
     setChartBody('chartSocietesBody', null, 'société');
     return;
   }
-  const max = topSocietes[0][1];
-  const html = `<div class="societe-chart-wrap">${
-    topSocietes.map(([name, count]) => {
-      const pct = Math.round(count / max * 100);
-      const label = name.length > 40 ? name.slice(0, 38) + '…' : name;
-      return `
-        <div class="societe-bar-item">
-          <div class="societe-bar-label" title="${name}">${label}</div>
-          <div class="societe-bar-track">
-            <div class="societe-bar-fill" style="width:${pct}%"></div>
-          </div>
-          <div class="societe-bar-count">${count}</div>
-        </div>`;
-    }).join('')
-  }</div>`;
-  setChartBody('chartSocietesBody', html);
+  renderHBarChart('chartSocietesBody', topSocietes, {
+    cssPrefix: 'societe',
+    truncate: 40,
+    withTitle: true,
+  });
 }
 
 /* ─────────────────────────────────────────────
