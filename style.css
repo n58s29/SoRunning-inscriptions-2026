@@ -927,12 +927,28 @@ header {
 .btn-capture:active { transform: translateY(0); }
 
 /* ── Header marketing (infographie A4) ── */
+/* .stats-capture : conteneur au format A4 portrait (210×297mm), centré.
+   Le contenu interne est compacté pour rentrer dans la hauteur d'une page. */
 .stats-capture {
+  width: 210mm;
+  margin: 0 auto;
   background: var(--surface);
   border-radius: 14px;
-  padding: 24px;
+  padding: 12mm;
   box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  box-sizing: border-box;
 }
+
+/* Compactage du contenu interne pour viser 297mm de haut */
+.stats-capture .stats-kpis      { gap: 10px; margin-bottom: 14px; }
+.stats-capture .kpi-card        { padding: 12px 16px; gap: 4px; }
+.stats-capture .kpi-icon        { font-size: 22px; }
+.stats-capture .kpi-value       { font-size: 30px; }
+.stats-capture .kpi-label       { font-size: 11px; }
+.stats-capture .kpi-sub         { font-size: 10px; }
+.stats-capture .stats-charts-row { gap: 12px; margin-bottom: 12px; }
+.stats-capture .stat-card       { padding: 12px 16px; }
+.stats-capture .stat-card-title { font-size: 14px; margin-bottom: 10px; }
 .stats-header {
   display: flex;
   align-items: center;
