@@ -1,2 +1,5 @@
 # macOS
 .DS_Store
+
+# LibreOffice/Excel lock files
+.~lock.*#
