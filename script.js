@@ -1847,15 +1847,22 @@ function computeStats(participants, dossards) {
   });
 
   // par société (participants uniques)
+  // Détail individuel pour les sociétés > 15 participants ;
+  // les autres sont agrégées dans un bucket « Autres (N entreprises) ».
   const bySociete = {};
   participants.forEach(p => {
     const s = (p.societe || '').trim();
     if (!s) return;
     bySociete[s] = (bySociete[s] || 0) + 1;
   });
-  const topSocietes = Object.entries(bySociete)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 15);
+  const sortedSocietes = Object.entries(bySociete).sort((a, b) => b[1] - a[1]);
+  const mobilisees = sortedSocietes.filter(([, c]) => c > 15);
+  const petites    = sortedSocietes.filter(([, c]) => c <= 15);
+  const otherTotal = petites.reduce((sum, [, c]) => sum + c, 0);
+  const displaySocietes = petites.length > 0
+    ? [...mobilisees, [`Autres (${petites.length} entreprise${petites.length > 1 ? 's' : ''})`, otherTotal]]
+    : mobilisees;
+  const nbEntreprisesMobilisees = mobilisees.length;
 
   // Âge moyen
   const ages = participants.map(p => parseInt(p.age, 10)).filter(a => !isNaN(a));
@@ -1876,7 +1883,8 @@ function computeStats(participants, dossards) {
     ageBuckets,
     byRegion,
     bySociete,
-    topSocietes,
+    displaySocietes,
+    nbEntreprisesMobilisees,
     ageMoy,
     totalKm,
   };
@@ -1900,24 +1908,24 @@ function renderStats() {
   const participants = groupByParticipant();
   const s = computeStats(participants, allDossards);
 
-  renderKPIs(s.totalDossards, s.totalParticipants, s.byCat, s.bySexe, s.ageMoy, Object.keys(s.bySociete).length, s.totalKm);
+  renderKPIs(s.totalDossards, s.totalParticipants, s.byCat, s.bySexe, s.ageMoy, s.nbEntreprisesMobilisees, s.totalKm);
   renderCatBars(s.byCat);
   renderSexeDonut(s.bySexe, s.totalParticipants);
   renderAgeBars(s.ageBuckets);
   renderFranceMap(s.byRegion);
-  renderSocieteBars(s.topSocietes);
+  renderSocieteBars(s.displaySocietes);
 }
 
 /* ─────────────────────────────────────────────
    KPI CARDS
 ───────────────────────────────────────────── */
-function renderKPIs(totalDossards, totalPart, byCat, bySexe, ageMoy, nbSocietes, totalKm) {
+function renderKPIs(totalDossards, totalPart, byCat, bySexe, ageMoy, nbEntreprisesMobilisees, totalKm) {
   const H = bySexe['H'] || bySexe['M'] || bySexe['Homme'] || bySexe['Masculin'] || 0;
   const F = bySexe['F'] || bySexe['Femme'] || bySexe['Féminin'] || 0;
   const totalCourses = (byCat['Course 5 km'] || 0) + (byCat['Course 10 km'] || 0) + (byCat['Course 21,1 km'] || 0);
   const totalMarches = (byCat['Marche 5 km'] || 0) + (byCat['Marche 10 km'] || 0) + (byCat['Marche 21,1 km'] || 0);
 
-  const ratioHF = (H + F > 0) ? `${Math.round(H/(H+F)*100)} % H` : '—';
+  const ratioFH = (H + F > 0) ? `${Math.round(F/(H+F)*100)} % F` : '—';
   const totalKmFmt = Math.round(totalKm || 0).toLocaleString('fr-FR');
 
   document.getElementById('statsKpis').innerHTML = `
@@ -1939,9 +1947,9 @@ function renderKPIs(totalDossards, totalPart, byCat, bySexe, ageMoy, nbSocietes,
     </div>
     <div class="kpi-card kpi-card--orange">
       <div class="kpi-icon">⚧</div>
-      <div class="kpi-value">${ratioHF}</div>
-      <div class="kpi-label">Ratio H/F</div>
-      <div class="kpi-sub">${H} H · ${F} F</div>
+      <div class="kpi-value">${ratioFH}</div>
+      <div class="kpi-label">Ratio F/H</div>
+      <div class="kpi-sub">${F} F · ${H} H</div>
     </div>
     <div class="kpi-card kpi-card--purple">
       <div class="kpi-icon">🎂</div>
@@ -1951,8 +1959,9 @@ function renderKPIs(totalDossards, totalPart, byCat, bySexe, ageMoy, nbSocietes,
     </div>
     <div class="kpi-card kpi-card--teal">
       <div class="kpi-icon">🏢</div>
-      <div class="kpi-value">${nbSocietes}</div>
-      <div class="kpi-label">Sociétés</div>
+      <div class="kpi-value">${nbEntreprisesMobilisees}</div>
+      <div class="kpi-label">Entreprises mobilisées</div>
+      <div class="kpi-sub">> 15 participants</div>
     </div>
     <div class="kpi-card kpi-card--gold">
       <div class="kpi-medal-badge">🗺️</div>
@@ -2091,10 +2100,10 @@ function renderFranceMap(byRegion) {
             >${count}</text>` : ''}`;
   }).join('');
 
-  // Légende régions avec participants (top 8)
-  const sortedRegions = Object.entries(byRegion)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8);
+  // Légende régions : les 13 régions, triées par count desc, count = 0 fallback
+  const sortedRegions = FRANCE_REGIONS_MAP
+    .map(reg => [reg.name, byRegion[reg.name] || 0])
+    .sort((a, b) => b[1] - a[1]);
 
   const legendItems = sortedRegions.map(([name, count]) => {
     const fill = regionFill(name);
