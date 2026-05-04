@@ -1749,29 +1749,15 @@ function normalizeRegion(raw) {
 }
 
 /* ─────────────────────────────────────────────
-   POINT D'ENTRÉE PRINCIPAL
+   AGRÉGATION DES DONNÉES (pure)
 ───────────────────────────────────────────── */
-function renderStats() {
-  const empty = document.getElementById('statsEmpty');
-
-  if (!allDossards || allDossards.length === 0) {
-    empty.style.display = 'block';
-    document.getElementById('statsKpis').innerHTML = '';
-    ['chartCatsBody','chartSexeBody','chartAgesBody','chartRegionsBody','chartSocietesBody']
-      .forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
-    return;
-  }
-  empty.style.display = 'none';
-
-  // Données de base
-  const participants = groupByParticipant(); // groupByParticipant déjà défini en section 8
+function computeStats(participants, dossards) {
   const N = participants.length;
 
-  // ── Comptages ──────────────────────────────────────────────────
   // par catégorie (dossards)
   const byCat = {};
   Object.keys(CATS).forEach(c => byCat[c] = 0);
-  allDossards.forEach(d => { if (byCat[d.cat] !== undefined) byCat[d.cat]++; });
+  dossards.forEach(d => { if (byCat[d.cat] !== undefined) byCat[d.cat]++; });
 
   // par sexe (participants uniques)
   const bySexe = {};
@@ -1799,14 +1785,13 @@ function renderStats() {
 
   // par région (participants uniques)
   const byRegion = {};
-  let noRegion = 0;
   participants.forEach(p => {
     const r = normalizeRegion(p.region) || p.region?.trim() || '';
-    if (!r) { noRegion++; return; }
+    if (!r) return;
     byRegion[r] = (byRegion[r] || 0) + 1;
   });
 
-  // par société (participants uniques — top 15)
+  // par société (participants uniques)
   const bySociete = {};
   participants.forEach(p => {
     const s = (p.societe || '').trim();
@@ -1828,13 +1813,44 @@ function renderStats() {
     totalKm += dist * count;
   });
 
-  // ── Render ─────────────────────────────────────────────────────
-  renderKPIs(allDossards.length, N, byCat, bySexe, ageMoy, Object.keys(bySociete).length, totalKm);
-  renderCatBars(byCat);
-  renderSexeDonut(bySexe, N);
-  renderAgeBars(ageBuckets);
-  renderFranceMap(byRegion);
-  renderSocieteBars(topSocietes);
+  return {
+    totalDossards: dossards.length,
+    totalParticipants: N,
+    byCat,
+    bySexe,
+    ageBuckets,
+    byRegion,
+    bySociete,
+    topSocietes,
+    ageMoy,
+    totalKm,
+  };
+}
+
+/* ─────────────────────────────────────────────
+   POINT D'ENTRÉE PRINCIPAL
+───────────────────────────────────────────── */
+function renderStats() {
+  const empty = document.getElementById('statsEmpty');
+
+  if (!allDossards || allDossards.length === 0) {
+    empty.style.display = 'block';
+    document.getElementById('statsKpis').innerHTML = '';
+    ['chartCatsBody','chartSexeBody','chartAgesBody','chartRegionsBody','chartSocietesBody']
+      .forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+    return;
+  }
+  empty.style.display = 'none';
+
+  const participants = groupByParticipant();
+  const s = computeStats(participants, allDossards);
+
+  renderKPIs(s.totalDossards, s.totalParticipants, s.byCat, s.bySexe, s.ageMoy, Object.keys(s.bySociete).length, s.totalKm);
+  renderCatBars(s.byCat);
+  renderSexeDonut(s.bySexe, s.totalParticipants);
+  renderAgeBars(s.ageBuckets);
+  renderFranceMap(s.byRegion);
+  renderSocieteBars(s.topSocietes);
 }
 
 /* ─────────────────────────────────────────────
