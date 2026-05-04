@@ -1996,11 +1996,18 @@ function renderSexeDonut(bySexe, total) {
     counts[norm] = (counts[norm] || 0) + v;
   });
 
-  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  // Femmes d'abord (slice à 12h), puis Hommes, puis le reste par count desc
+  const sortKey = (label) => label === 'Femmes' ? 0 : label === 'Hommes' ? 1 : 2;
+  const entries = Object.entries(counts).sort((a, b) => {
+    const k = sortKey(a[0]) - sortKey(b[0]);
+    return k !== 0 ? k : b[1] - a[1];
+  });
   if (entries.length === 0) {
     setChartBody('chartSexeBody', null, 'sexe');
     return;
   }
+
+  const fPct = Math.round(((counts['Femmes'] || 0) / total) * 100);
 
   // SVG donut
   const R = 70, r = 42, cx = 80, cy = 80;
@@ -2036,10 +2043,10 @@ function renderSexeDonut(bySexe, total) {
     <div class="sexe-donut-wrap">
       <svg viewBox="0 0 160 160" width="160" height="160">
         ${slices}
-        <text x="${cx}" y="${cy - 10}" text-anchor="middle" fill="var(--text)"
-              font-family="Barlow Condensed,sans-serif" font-size="22" font-weight="900">${total}</text>
-        <text x="${cx}" y="${cy + 14}" text-anchor="middle" fill="var(--muted)"
-              font-family="Barlow,sans-serif" font-size="11">participants</text>
+        <text x="${cx}" y="${cy - 4}" text-anchor="middle" fill="var(--accent)"
+              font-family="Barlow Condensed,sans-serif" font-size="32" font-weight="900">${fPct} %</text>
+        <text x="${cx}" y="${cy + 16}" text-anchor="middle" fill="var(--muted)"
+              font-family="Barlow,sans-serif" font-size="11" letter-spacing="0.5">DE FEMMES</text>
       </svg>
       <div class="sexe-legend">${legendItems}</div>
     </div>`);
