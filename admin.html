@@ -182,13 +182,22 @@
   <div class="tab-panel" id="panel-stats">
 
     <div class="stats-toolbar">
-      <div class="stats-toolbar-title">
-        📊 Tableau de bord — Challenge Connecté 2026
-      </div>
       <button class="btn-capture" id="btnCapture" onclick="captureStats()">
         📸 Capturer le tableau de bord
       </button>
     </div>
+
+    <!-- Conteneur capturé (logo + titre + KPIs + charts) -->
+    <div class="stats-capture" id="statsCapture">
+
+      <!-- Header marketing -->
+      <div class="stats-header">
+        <div class="stats-header-logo" role="img" aria-label="SoRunning"></div>
+        <div class="stats-header-text">
+          <div class="stats-header-title">Challenge Connecté 2026</div>
+          <div class="stats-header-tagline">Le tableau de bord en temps réel</div>
+        </div>
+      </div>
 
     <!-- KPIs -->
     <div class="stats-kpis" id="statsKpis"></div>
@@ -224,6 +233,8 @@
         <div class="stat-card-body" id="chartCatsBody"></div>
       </div>
     </div>
+
+    </div><!-- /stats-capture -->
 
     <div class="stats-empty-state" id="statsEmpty" style="display:none">
       <h2>Aucune donnée disponible</h2>
