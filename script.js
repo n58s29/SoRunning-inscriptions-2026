@@ -1629,6 +1629,23 @@ function getCatColors() {
 }
 
 /* ─────────────────────────────────────────────
+   CONSTANTES GRAPHIQUES
+───────────────────────────────────────────── */
+const SEXE_NORM = {
+  'H': 'Hommes', 'M': 'Hommes', 'Homme': 'Hommes', 'Masculin': 'Hommes', 'h': 'Hommes', 'm': 'Hommes',
+  'F': 'Femmes', 'Femme': 'Femmes', 'Féminin': 'Femmes', 'f': 'Femmes',
+};
+
+const SEXE_COLORS = {
+  'Hommes': '#5b8dee',
+  'Femmes': '#f773b4',
+  'Autre':  '#a78bfa',
+  '?':      'var(--muted)',
+};
+
+const AGE_BUCKETS = ['< 20', '20–29', '30–39', '40–49', '50–59', '60–69', '70+', 'N/A'];
+
+/* ─────────────────────────────────────────────
    CARTE DE FRANCE — polygones simplifiés
    ViewBox: 0 0 470 540
 ───────────────────────────────────────────── */
@@ -1767,10 +1784,7 @@ function computeStats(participants, dossards) {
   });
 
   // par âge (participants uniques)
-  const ageBuckets = {
-    '< 20': 0, '20–29': 0, '30–39': 0, '40–49': 0,
-    '50–59': 0, '60–69': 0, '70+': 0, 'N/A': 0,
-  };
+  const ageBuckets = Object.fromEntries(AGE_BUCKETS.map(k => [k, 0]));
   participants.forEach(p => {
     const a = parseInt(p.age, 10);
     if (isNaN(a)) ageBuckets['N/A']++;
@@ -1940,21 +1954,10 @@ function renderSexeDonut(bySexe, total) {
 
   // Normalise les clés
   const counts = {};
-  const SEXE_NORM = {
-    'H': 'Hommes', 'M': 'Hommes', 'Homme': 'Hommes', 'Masculin': 'Hommes', 'h': 'Hommes', 'm': 'Hommes',
-    'F': 'Femmes', 'Femme': 'Femmes', 'Féminin': 'Femmes', 'f': 'Femmes',
-  };
   Object.entries(bySexe).forEach(([k, v]) => {
     const norm = SEXE_NORM[k] || k;
     counts[norm] = (counts[norm] || 0) + v;
   });
-
-  const SEXE_COLORS = {
-    'Hommes': '#5b8dee',
-    'Femmes': '#f773b4',
-    'Autre': '#a78bfa',
-    '?': 'var(--muted)',
-  };
 
   const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   if (entries.length === 0) {
