@@ -2151,9 +2151,9 @@ function renderSocieteBars(topSocietes) {
 ───────────────────────────────────────────── */
 async function captureStats() {
   const btn = document.getElementById('btnCapture');
-  const panel = document.getElementById('panel-stats');
+  const target = document.getElementById('statsCapture');
 
-  if (!panel || allDossards.length === 0) {
+  if (!target || allDossards.length === 0) {
     showToast('⚠️ Aucune statistique à capturer.');
     return;
   }
@@ -2168,11 +2168,10 @@ async function captureStats() {
   setTimeout(() => flash.remove(), 700);
 
   try {
-    const canvas = await html2canvas(panel, {
+    const canvas = await html2canvas(target, {
       scale: 2,
       useCORS: true,
-      backgroundColor: getComputedStyle(document.documentElement)
-        .getPropertyValue('--bg').trim() || '#0f1117',
+      backgroundColor: getComputedStyle(target).backgroundColor || '#1a1d27',
       logging: false,
       scrollX: 0,
       scrollY: -window.scrollY,
