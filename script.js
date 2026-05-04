@@ -1646,6 +1646,20 @@ const SEXE_COLORS = {
 const AGE_BUCKETS = ['< 20', '20–29', '30–39', '40–49', '50–59', '60–69', '70+', 'N/A'];
 
 /* ─────────────────────────────────────────────
+   HELPER : injection HTML + cas vide uniforme
+───────────────────────────────────────────── */
+function setChartBody(bodyId, html, emptyLabel = '') {
+  const el = document.getElementById(bodyId);
+  if (!el) return;
+  if (!html) {
+    const msg = emptyLabel ? `Aucune donnée ${emptyLabel}` : 'Aucune donnée';
+    el.innerHTML = `<div class="france-no-data">${msg}</div>`;
+    return;
+  }
+  el.innerHTML = html;
+}
+
+/* ─────────────────────────────────────────────
    CARTE DE FRANCE — polygones simplifiés
    ViewBox: 0 0 470 540
 ───────────────────────────────────────────── */
@@ -1927,7 +1941,7 @@ function renderKPIs(totalDossards, totalPart, byCat, bySexe, ageMoy, nbSocietes,
 ───────────────────────────────────────────── */
 function renderCatBars(byCat) {
   const total = Object.values(byCat).reduce((s, v) => s + v, 0);
-  if (total === 0) { document.getElementById('chartCatsBody').innerHTML = '<div class="france-no-data">Aucune donnée</div>'; return; }
+  if (total === 0) { setChartBody('chartCatsBody', null); return; }
 
   const html = Object.entries(byCat).map(([cat, count]) => {
     const pct = total > 0 ? Math.round(count / total * 100) : 0;
@@ -1943,15 +1957,13 @@ function renderCatBars(byCat) {
         </div>
       </div>`;
   }).join('');
-  document.getElementById('chartCatsBody').innerHTML = html;
+  setChartBody('chartCatsBody', html);
 }
 
 /* ─────────────────────────────────────────────
    DONUT H/F (SVG)
 ───────────────────────────────────────────── */
 function renderSexeDonut(bySexe, total) {
-  const body = document.getElementById('chartSexeBody');
-
   // Normalise les clés
   const counts = {};
   Object.entries(bySexe).forEach(([k, v]) => {
@@ -1961,7 +1973,7 @@ function renderSexeDonut(bySexe, total) {
 
   const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   if (entries.length === 0) {
-    body.innerHTML = '<div class="france-no-data">Aucune donnée sexe</div>';
+    setChartBody('chartSexeBody', null, 'sexe');
     return;
   }
 
@@ -1995,7 +2007,7 @@ function renderSexeDonut(bySexe, total) {
     </div>`;
   }).join('');
 
-  body.innerHTML = `
+  setChartBody('chartSexeBody', `
     <div class="sexe-donut-wrap">
       <svg viewBox="0 0 160 160" width="160" height="160">
         ${slices}
@@ -2005,7 +2017,7 @@ function renderSexeDonut(bySexe, total) {
               font-family="Barlow,sans-serif" font-size="11">participants</text>
       </svg>
       <div class="sexe-legend">${legendItems}</div>
-    </div>`;
+    </div>`);
 }
 
 /* ─────────────────────────────────────────────
@@ -2016,7 +2028,7 @@ function renderAgeBars(ageBuckets) {
   const entries = Object.entries(ageBuckets).filter(([, v]) => v > 0);
 
   if (entries.length === 0) {
-    document.getElementById('chartAgesBody').innerHTML = '<div class="france-no-data">Aucune donnée âge</div>';
+    setChartBody('chartAgesBody', null, 'âge');
     return;
   }
 
@@ -2033,7 +2045,7 @@ function renderAgeBars(ageBuckets) {
         </div>`;
     }).join('')
   }</div>`;
-  document.getElementById('chartAgesBody').innerHTML = html;
+  setChartBody('chartAgesBody', html);
 }
 
 /* ─────────────────────────────────────────────
@@ -2107,9 +2119,8 @@ function renderFranceMap(byRegion) {
    BARRES SOCIÉTÉS
 ───────────────────────────────────────────── */
 function renderSocieteBars(topSocietes) {
-  const body = document.getElementById('chartSocietesBody');
   if (!topSocietes.length) {
-    body.innerHTML = '<div class="france-no-data">Aucune donnée société</div>';
+    setChartBody('chartSocietesBody', null, 'société');
     return;
   }
   const max = topSocietes[0][1];
@@ -2127,7 +2138,7 @@ function renderSocieteBars(topSocietes) {
         </div>`;
     }).join('')
   }</div>`;
-  body.innerHTML = html;
+  setChartBody('chartSocietesBody', html);
 }
 
 /* ─────────────────────────────────────────────
