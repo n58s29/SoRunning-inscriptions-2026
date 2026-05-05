@@ -1645,6 +1645,27 @@ const SEXE_COLORS = {
 
 const AGE_BUCKETS = ['< 20', '20–29', '30–39', '40–49', '50–59', '60–69', '70+', 'N/A'];
 
+// Témoignages affichés sous le bar chart Top sociétés (illustration promo).
+// Fictifs : prénoms uniquement, longueurs variées pour le dynamisme visuel.
+const VERBATIMS = [
+  { quote: "Marcher chaque semaine, c'est devenu mon moment à moi. Et savoir qu'on est plusieurs milliers à le faire, ça motive.",
+    author: 'Karima',  entity: 'SNCF Réseau',     region: 'Île-de-France' },
+  { quote: "J'ai osé m'inscrire au 21 km. Jamais je n'aurais cru en être capable.",
+    author: 'Émilie',  entity: 'SNCF Voyageurs',  region: 'Nouvelle-Aquitaine' },
+  { quote: "Mes collègues et moi, on s'envoie nos km tous les soirs. C'est devenu un rituel.",
+    author: 'Bruno',   entity: 'Geodis',          region: 'Hauts-de-France' },
+  { quote: "Le Challenge, c'est mille petites victoires partagées. Et le rose, ça pique un peu, mais ça réveille !",
+    author: 'Sophie',  entity: 'Keolis',          region: 'Auvergne-Rhône-Alpes' },
+  { quote: "Ma première course. Et pas la dernière.",
+    author: 'Léa',     entity: "Optim'Services",  region: 'Bretagne' },
+  { quote: "Courir, c'est mon temps. Ma respiration.",
+    author: 'Marion',  entity: 'SNCF Holding',    region: 'Occitanie' },
+  { quote: "Reprendre le sport à 50 ans, je n'osais plus. SoRunning m'a remis en marche.",
+    author: 'Nathalie',entity: 'SNCF Voyageurs',  region: 'Grand-Est' },
+  { quote: "Au bureau on est trois à se motiver. Le matin on partage nos parcours, ça met du sourire avant la journée.",
+    author: 'David',   entity: 'SNCF Réseau',     region: "Provence-Alpes-Côte d'Azur" },
+];
+
 /* ─────────────────────────────────────────────
    HELPER : injection HTML + cas vide uniforme
 ───────────────────────────────────────────── */
@@ -2144,6 +2165,18 @@ function renderSocieteBars(topSocietes) {
     truncate: 40,
     withTitle: true,
   });
+  // Bloc verbatims sous le bar chart (remplit l'espace, illustre la promo)
+  const body = document.getElementById('chartSocietesBody');
+  if (body) {
+    const verbHtml = `<div class="verbatims">${
+      VERBATIMS.map(v => `
+        <blockquote class="verbatim">
+          <p>« ${v.quote} »</p>
+          <cite>${v.author} · ${v.entity} · ${v.region}</cite>
+        </blockquote>`).join('')
+    }</div>`;
+    body.insertAdjacentHTML('beforeend', verbHtml);
+  }
 }
 
 /* ─────────────────────────────────────────────
