@@ -105,10 +105,7 @@
   <!-- Tabs nav (visible after Excel loaded) -->
   <div class="tabs-nav" id="tabsNav">
     <button class="tab-btn active" onclick="switchTab('dossards', this)">
-      🏅 Dossards <span class="tab-count" id="tabCountDossards">0</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab('liste', this)">
-      📋 Liste des participants <span class="tab-count" id="tabCountListe">0</span>
+      🏅 Dossards &amp; participants <span class="tab-count" id="tabCountDossards">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('stats', this)">
       📊 Statistiques <span class="tab-count" id="tabCountStats">0</span>
@@ -121,7 +118,7 @@
     </button>
   </div>
 
-  <!-- ═══ ONGLET DOSSARDS ═══ -->
+  <!-- ═══ ONGLET DOSSARDS & PARTICIPANTS ═══ -->
   <div class="tab-panel active" id="panel-dossards">
 
     <!-- Légende couleurs -->
@@ -134,20 +131,15 @@
       <div class="legend-item"><div class="legend-dot" style="background:var(--m21)"></div> Marche 21,1 km (5001–5999)</div>
     </div>
 
-    <!-- Barre d'outils -->
+    <!-- Barre d'outils unifiée -->
     <div class="controls" id="controls">
-      <!-- Bouton trame — état visuel dynamique -->
       <input type="file" id="trameUpload" accept="image/png" style="display:none">
-      <button class="btn-trame" id="btnTrame" onclick="document.getElementById('trameUpload').click()">
-        <span id="btnTrameIcon">🖼️</span>
-        <span id="btnTrameLabel">Charger la trame</span>
-      </button>
-
+      <input class="list-search" type="text" id="listSearch"
+             placeholder="🔍 Rechercher un participant…" oninput="filterList(this.value)">
+      <div class="spacer" style="flex:1"></div>
       <button class="btn-export" onclick="downloadBlankTemplate()" title="Télécharger une trame vierge annotée">📐 Trame vierge</button>
-<input type="file" id="csvRestoreInput" accept=".csv" style="display:none" onchange="restoreFromCSV(this)">
-      <button class="btn-export" onclick="document.getElementById('csvRestoreInput').click()" title="Restaure les numéros attribués depuis le CSV anonymisé exporté">📥 Restaurer depuis CSV</button>
       <button class="btn-print" onclick="saveDossardsPNG()" id="btnExport">💾 Exporter les dossards</button>
-      <button class="btn-export" onclick="checkMissingDossards()" title="Vérifier quels dossards PNG sont manquants dans un dossier local">🔍 Dossards manquants</button>
+      <button class="btn-print" onclick="openExportListModal()" id="btnExportList">⬇️ Exporter la liste</button>
     </div>
 
     <!-- Grille des dossards -->
@@ -158,25 +150,15 @@
       </div>
     </div>
 
-  </div><!-- /panel-dossards -->
-
-  <!-- ═══ ONGLET LISTE ═══ -->
-  <div class="tab-panel" id="panel-liste">
-    <div class="list-controls">
-      <input class="list-search" type="text" id="listSearch"
-             placeholder="🔍 Rechercher un participant…" oninput="filterList(this.value)">
-      <div class="spacer"></div>
-      <button class="btn-export" onclick="exportCSV()">⬇️ Exporter CSV</button>
-      <button class="btn-export" onclick="exportCSVAnonymized()" title="Export anonymisé RGPD : ID, initiales et email masqué">🔒 Exporter CSV anonymisé</button>
-      <button class="btn-print"  onclick="printList()">🖨️ Imprimer la liste</button>
-    </div>
+    <!-- Liste des participants -->
     <div id="listContent">
       <div class="empty-state">
         <h2>Aucun participant chargé</h2>
         <p>Importe ton fichier Excel pour voir la liste.</p>
       </div>
     </div>
-  </div><!-- /panel-liste -->
+
+  </div><!-- /panel-dossards -->
 
   <!-- ═══ ONGLET STATISTIQUES ═══ -->
   <div class="tab-panel" id="panel-stats">
@@ -278,9 +260,10 @@
     </div>
 
     <div class="settings-section">
-      <label class="settings-label">🐙 Token GitHub <span style="font-size:11px;font-weight:400;color:var(--muted)">(Personal Access Token — scope <code>contents:write</code>)</span></label>
-      <input type="password" class="settings-input" id="settingsGithubPat" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-      <div style="font-size:11px;color:var(--muted);margin-top:4px">Permet de pousser les dossards manquants automatiquement vers GitHub. Stocké uniquement dans ce navigateur.</div>
+      <label class="settings-label">📥 Restaurer depuis CSV</label>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Restaure les numéros attribués depuis le CSV anonymisé exporté.</div>
+      <input type="file" id="csvRestoreInput" accept=".csv" style="display:none" onchange="restoreFromCSV(this)">
+      <button class="btn-export" onclick="document.getElementById('csvRestoreInput').click()">📥 Choisir un CSV</button>
     </div>
 
     <div class="settings-actions">
@@ -304,9 +287,26 @@
     <div class="export-modal-icon">💾</div>
     <div class="export-modal-title">Exporter les dossards</div>
     <div class="export-modal-sub" id="exportSelectSub">Choisissez la sélection à exporter</div>
+
+    <!-- Bouton trame intégré (état dynamique) -->
+    <div class="export-trame-block">
+      <button class="btn-trame" id="btnTrame" onclick="document.getElementById('trameUpload').click()">
+        <span id="btnTrameIcon">🖼️</span>
+        <span id="btnTrameLabel">Insérer la trame</span>
+      </button>
+    </div>
+
     <div class="export-select-options">
       <label class="export-select-opt">
-        <input type="radio" name="exportScope" value="all" id="exportScopeAll" checked>
+        <input type="radio" name="exportScope" value="missing" id="exportScopeMissing" checked>
+        🔍 Uniquement les dossards manquants
+        <div style="font-size:11px;color:var(--muted);width:100%;margin-left:24px">
+          → vous choisirez le dossier où vos dossards déjà générés sont stockés.<br>
+          Une confirmation s'affichera avant la génération. Le CSV anonymisé sera déposé dans le même dossier.
+        </div>
+      </label>
+      <label class="export-select-opt">
+        <input type="radio" name="exportScope" value="all" id="exportScopeAll">
         Tout exporter
       </label>
       <label class="export-select-opt">
@@ -319,18 +319,46 @@
                onclick="document.getElementById('exportScopeRange').checked=true">
       </label>
     </div>
-    <div class="export-github-option">
-      <label class="export-select-opt">
-        <input type="checkbox" id="exportPushGithub">
-        📤 Écrire dans les sous-dossiers du repo &amp; pousser sur GitHub
-      </label>
-      <div id="exportGithubWarn" style="display:none;font-size:11px;color:#e67e22;margin-top:4px">
-        ⚠️ Token GitHub non configuré — configure-le dans les Paramètres.
-      </div>
-    </div>
     <div class="export-select-actions">
       <button class="export-btn-confirm" onclick="confirmExportSelection()">Exporter</button>
       <button class="export-btn-cancel" onclick="document.getElementById('exportSelectOverlay').classList.add('hidden')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmation : dossards manquants détectés -->
+<div class="export-overlay hidden" id="missingConfirmOverlay">
+  <div class="export-modal">
+    <div class="export-modal-icon">🔍</div>
+    <div class="export-modal-title">Dossards manquants détectés</div>
+    <div class="export-modal-sub" id="missingConfirmSub"></div>
+    <div id="missingConfirmDetails" style="margin:12px 0;font-size:13px;color:var(--text);text-align:left;max-height:180px;overflow-y:auto;padding:10px 14px;background:var(--surface2);border-radius:8px"></div>
+    <div class="export-select-actions">
+      <button class="export-btn-confirm" onclick="confirmMissingExport()">💾 Générer + déposer CSV</button>
+      <button class="export-btn-cancel" onclick="cancelMissingExport()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de sélection export liste participants -->
+<div class="export-overlay hidden" id="exportListOverlay">
+  <div class="export-modal">
+    <div class="export-modal-icon">⬇️</div>
+    <div class="export-modal-title">Exporter la liste</div>
+    <div class="export-modal-sub">Choisissez le format d'export CSV</div>
+    <div class="export-select-options">
+      <label class="export-select-opt">
+        <input type="radio" name="exportListScope" value="anon" id="exportListAnon" checked>
+        🔒 Liste anonymisée <span style="font-size:11px;color:var(--muted)">(ID, initiales, email masqué — RGPD)</span>
+      </label>
+      <label class="export-select-opt">
+        <input type="radio" name="exportListScope" value="full" id="exportListFull">
+        📋 Liste complète <span style="font-size:11px;color:var(--muted)">(NOM, PRÉNOM, EMAIL réels)</span>
+      </label>
+    </div>
+    <div class="export-select-actions">
+      <button class="export-btn-confirm" onclick="confirmExportListSelection()">Exporter</button>
+      <button class="export-btn-cancel" onclick="document.getElementById('exportListOverlay').classList.add('hidden')">Annuler</button>
     </div>
   </div>
 </div>
@@ -346,18 +374,6 @@
     </div>
     <div class="export-progress-label" id="exportProgressLabel">0 / 0</div>
     <button class="export-btn-cancel" onclick="cancelExport()">✕ Annuler</button>
-  </div>
-</div>
-
-<!-- Modal dossards manquants -->
-<div class="export-overlay hidden" id="missingOverlay">
-  <div class="export-modal" style="max-width:600px;width:90vw">
-    <div class="export-modal-icon">🔍</div>
-    <div class="export-modal-title">Dossards manquants</div>
-    <div id="missingContent" style="margin-top:12px"></div>
-    <div style="margin-top:16px">
-      <button class="export-btn-cancel" onclick="document.getElementById('missingOverlay').classList.add('hidden')">Fermer</button>
-    </div>
   </div>
 </div>
 

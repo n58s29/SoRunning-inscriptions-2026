@@ -682,6 +682,9 @@ header {
 .list-search:focus { border-color: var(--accent); }
 .list-search::placeholder { color: var(--muted); }
 
+/* Sépare la liste des participants de la grille des dossards (panneau fusionné) */
+#panel-dossards #listContent { margin-top: 36px; }
+
 .list-section { margin-bottom: 36px; }
 .list-section-header {
   display: flex; align-items: center; gap: 14px;
@@ -762,6 +765,13 @@ header {
 }
 .export-btn-cancel:hover { color: var(--accent); border-color: var(--accent); }
 
+.export-trame-block {
+  display: flex; justify-content: center;
+  margin-bottom: 18px;
+}
+.export-trame-block .btn-trame {
+  margin: 0;
+}
 .export-select-options {
   display: flex; flex-direction: column; gap: 12px;
   text-align: left; margin-bottom: 24px;
@@ -873,18 +883,6 @@ header {
   .cut-label.right  { right: -38px;  top: 50%;  transform: translateY(-50%) rotate(90deg); }
 
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-  /* Mode impression liste */
-  .print-list-mode #panel-dossards { display: none !important; }
-  .print-list-mode #panel-liste    { display: block !important; }
-  .print-list-mode .list-controls,
-  .print-list-mode .tabs-nav       { display: none !important; }
-  .print-list-mode .list-table tbody tr:hover { background: transparent !important; }
-  .print-list-mode .list-table td,
-  .print-list-mode .list-table th  { color: #000 !important; }
-  .print-list-mode .list-section-title  { color: #000 !important; }
-  .print-list-mode .list-section-count  { color: #555 !important; }
-  .print-list-mode body { background: white !important; color: #000 !important; }
 }
 
 /* ═══════════════════════════════════════════

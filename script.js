@@ -201,17 +201,12 @@ const TRAME_RES_MIN   = '1240 × 874 px';   // A4 @ ~107 DPI — aperçu correct
 // ─────────────────────────────────────────────
 const STORAGE_KEY    = 'challenge2026_assignments';
 const COUNTER_KEY    = 'challenge2026_counters';
-const GITHUB_PAT_KEY = 'challenge2026_github_pat';
-const GITHUB_OWNER   = 'n58s29';
-const GITHUB_REPO    = 'SoRunning-inscriptions-2026';
-const GITHUB_BRANCH  = 'main';
 
 // ─────────────────────────────────────────────
 // ÉTAT GLOBAL
 // ─────────────────────────────────────────────
 let allDossards        = [];        // liste complète des dossards générés
 let currentFilter      = 'all';     // filtre catégorie actif
-let missingDossardsList = [];       // dossards manquants détectés (pour génération ciblée)
 let trameSrc           = null;      // data-URL de la trame PNG (null = non chargée)
 let trameFilename      = null;      // nom du fichier trame
 let exportCancelled    = false;     // flag annulation export
@@ -604,8 +599,7 @@ function updateStats() {
   const parts = new Set(allDossards.map(d => d.id)).size;
   bar.innerHTML = `<span><strong>${allDossards.length}</strong> dossards</span>
                    <span><strong>${parts}</strong> participants</span>`;
-  document.getElementById('tabCountDossards').textContent = allDossards.length;
-  document.getElementById('tabCountListe').textContent    = parts;
+  document.getElementById('tabCountDossards').textContent = parts;
   renderList();
 }
 
@@ -726,6 +720,22 @@ function renderList(search = '') {
 
 function filterList(val) { renderList(val); }
 
+function openExportListModal() {
+  if (!allDossards || allDossards.length === 0) {
+    showToast('⚠️ Aucun participant à exporter.');
+    return;
+  }
+  document.getElementById('exportListAnon').checked = true;
+  document.getElementById('exportListOverlay').classList.remove('hidden');
+}
+
+function confirmExportListSelection() {
+  const scope = document.querySelector('input[name="exportListScope"]:checked').value;
+  document.getElementById('exportListOverlay').classList.add('hidden');
+  if (scope === 'anon') exportCSVAnonymized();
+  else exportCSV();
+}
+
 function exportCSV() {
   const participants = groupByParticipant();
   const rows = [
@@ -772,7 +782,7 @@ function anonymizeEmail(email) {
   return anonLocal + '@' + anonDomainFull;
 }
 
-function exportCSVAnonymized() {
+function buildAnonymizedCSV() {
   const participants = groupByParticipant();
   const rows = [['ID', 'NOM', 'PRÉNOM', 'EMAIL', ...CAT_COLS]];
   participants.forEach(p => {
@@ -788,7 +798,11 @@ function exportCSVAnonymized() {
     });
     rows.push(row);
   });
-  const csv  = rows.map(r => r.map(c => `"${c}"`).join(';')).join('\n');
+  return rows.map(r => r.map(c => `"${c}"`).join(';')).join('\n');
+}
+
+function exportCSVAnonymized() {
+  const csv  = buildAnonymizedCSV();
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
   const a    = Object.assign(document.createElement('a'), {
@@ -798,12 +812,6 @@ function exportCSVAnonymized() {
   a.click();
   URL.revokeObjectURL(url);
   showToast('🔒 Export CSV anonymisé téléchargé !');
-}
-
-function printList() {
-  document.body.classList.add('print-list-mode');
-  window.print();
-  document.body.classList.remove('print-list-mode');
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -921,26 +929,9 @@ function editDossardNumber(inscriptionId, cat, currentNumber) {
   showToast(`✅ Numéro corrigé : ${formatNumber(newNum)} pour ${label}`);
 }
 
-async function checkMissingDossards() {
-  if (!allDossards || allDossards.length === 0) {
-    showToast('⚠️ Charge d\'abord le fichier Excel des inscriptions.');
-    return;
-  }
-
-  if (!window.showDirectoryPicker) {
-    showToast('⚠️ Fonctionnalité non supportée par ce navigateur. Utilise Chrome ou Edge.');
-    return;
-  }
-
-  let dirHandle;
-  try {
-    dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-  } catch (e) {
-    if (e.name !== 'AbortError') showToast('⚠️ Impossible d\'accéder au dossier : ' + e.message);
-    return;
-  }
-
-  // Collecter les PNG existants dans les 6 sous-dossiers
+// Scanne un dossier (et ses sous-dossiers de catégorie) et renvoie la liste
+// des dossards dont le PNG est manquant.
+async function scanDirForMissingDossards(dirHandle) {
   const existing = new Set();
   for (const sub of DOSSARD_FOLDERS) {
     try {
@@ -950,80 +941,19 @@ async function checkMissingDossards() {
       }
     } catch {}
   }
-  // Compatibilité dossier plat
-  for await (const [name, handle] of dirHandle.entries()) {
+  for await (const [name] of dirHandle.entries()) {
     if (name.endsWith('.png')) existing.add(name);
   }
 
-  // Trouver les manquants
   const missing = [];
-  missingDossardsList = [];
   for (const d of allDossards) {
     if (!d.number) continue;
     const filename = formatNumber(d.number) + '.png';
     const folder   = getDossardFolder(d.number);
     const path     = folder ? folder + '/' + filename : filename;
-    if (!existing.has(path)) {
-      missing.push({ id: parseInt(d.id), nom: d.nom, prenom: d.prenom, cat: d.cat, path });
-      missingDossardsList.push(d);
-    }
+    if (!existing.has(path)) missing.push(d);
   }
-
-  missing.sort((a, b) => a.id - b.id);
-
-  const overlay = document.getElementById('missingOverlay');
-  const content = document.getElementById('missingContent');
-
-  if (missing.length === 0) {
-    content.innerHTML = `<div style="text-align:center;padding:16px 0;color:var(--accent);font-size:15px">✅ Tous les dossards sont présents !</div>`;
-    overlay.classList.remove('hidden');
-    return;
-  }
-
-  const firstId = missing[0].id;
-
-  // Grouper par ID inscription
-  const byId = {};
-  missing.forEach(m => { (byId[m.id] = byId[m.id] || []).push(m); });
-
-  const rows = Object.entries(byId)
-    .sort(([a], [b]) => +a - +b)
-    .map(([id, entries]) => `
-      <tr>
-        <td style="padding:6px 10px;font-weight:600">${id}</td>
-        <td style="padding:6px 10px">${entries[0].prenom} ${(entries[0].nom || '')[0] || ''}*</td>
-        <td style="padding:6px 10px">${entries.map(e => e.cat).join(', ')}</td>
-        <td style="padding:6px 10px;color:var(--muted);font-size:11px">${entries.map(e => e.path).join('<br>')}</td>
-      </tr>`)
-    .join('');
-
-  content.innerHTML = `
-    <div style="margin-bottom:14px;font-size:13px;color:var(--muted)">
-      <strong style="color:var(--text)">${missing.length}</strong> dossard(s) manquant(s) pour
-      <strong style="color:var(--text)">${Object.keys(byId).length}</strong> inscription(s) —
-      premier ID manquant : <strong style="color:var(--accent);font-size:15px">#${firstId}</strong>
-    </div>
-    <div style="overflow-y:auto;max-height:340px;border:1px solid var(--border);border-radius:8px">
-      <table style="width:100%;font-size:12px;border-collapse:collapse">
-        <thead>
-          <tr style="background:var(--surface2)">
-            <th style="padding:7px 10px;text-align:left;position:sticky;top:0;background:var(--surface2)">ID inscr.</th>
-            <th style="padding:7px 10px;text-align:left;position:sticky;top:0;background:var(--surface2)">Participant</th>
-            <th style="padding:7px 10px;text-align:left;position:sticky;top:0;background:var(--surface2)">Catégorie</th>
-            <th style="padding:7px 10px;text-align:left;position:sticky;top:0;background:var(--surface2)">Fichier attendu</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-    <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-      <button class="btn-print" onclick="generateMissingDossards()">💾 Générer + Pousser GitHub</button>
-      ${!localStorage.getItem(GITHUB_PAT_KEY)
-        ? `<span style="font-size:11px;color:#f59e0b">⚠️ Token GitHub non configuré (voir Paramètres).</span>`
-        : ''}
-    </div>`;
-
-  overlay.classList.remove('hidden');
+  return missing;
 }
 
 function cancelExport() {
@@ -1325,10 +1255,6 @@ function downloadBlankTemplate() {
 
 // ── Export PNG — modal de sélection ──────────────────────────────
 function saveDossardsPNG() {
-  if (!trameSrc) {
-    showToast('⚠️ Charge d\'abord la trame PNG avant d\'exporter.');
-    return;
-  }
   if (allDossards.length === 0) {
     showToast('⚠️ Aucun dossard à enregistrer.');
     return;
@@ -1344,35 +1270,122 @@ function saveDossardsPNG() {
     ? `${visible.length} dossard(s) · IDs ${ids[0]} → ${ids[ids.length - 1]}`
     : `${visible.length} dossard(s)`;
 
-  document.getElementById('exportScopeAll').checked = true;
+  document.getElementById('exportScopeMissing').checked = true;
   document.getElementById('exportIdFrom').value = '';
   document.getElementById('exportIdTo').value = '';
+  updateTrameBtn();
   document.getElementById('exportSelectOverlay').classList.remove('hidden');
 }
 
-function confirmExportSelection() {
+// État du flow "manquants" (entre le scan et la confirmation)
+let _pendingMissingExport = null;  // { dirHandle, missing }
+
+async function confirmExportSelection() {
   const scope  = document.querySelector('input[name="exportScope"]:checked').value;
   const fromId = parseInt(document.getElementById('exportIdFrom').value);
   const toId   = parseInt(document.getElementById('exportIdTo').value);
 
+  if (!trameSrc) {
+    showToast('⚠️ Insère d\'abord la trame PNG.');
+    return;
+  }
   if (scope === 'range' && (isNaN(fromId) || isNaN(toId) || fromId > toId)) {
     showToast('⚠️ Plage d\'IDs invalide.');
     return;
   }
 
   document.getElementById('exportSelectOverlay').classList.add('hidden');
-  _runExportPNG(scope === 'range' ? { from: fromId, to: toId } : null);
-}
 
-// ── Export PNG vers dossier choisi ───────────────────────────────
-async function _runExportPNG(idRange, explicitList = null, pushToGitHub = false) {
-  // idRange = null (tout) ou { from, to } pour filtrer par ID d'inscription
-  // explicitList = tableau de dossards à générer directement (prioritaire sur idRange)
+  if (scope === 'missing') {
+    showToast('📂 Sélectionne le dossier où tes dossards sont stockés…');
+  }
+
   let dirHandle;
   try {
     dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
   } catch { return; }
 
+  if (scope === 'missing') {
+    showToast('🔍 Scan du dossier en cours…');
+    const missing = await scanDirForMissingDossards(dirHandle);
+    if (missing.length === 0) {
+      showToast('✅ Tous les dossards sont déjà présents dans ce dossier !');
+      return;
+    }
+    _pendingMissingExport = { dirHandle, missing };
+    showMissingConfirmModal(missing);
+    return;
+  }
+
+  await _runExportPNG(dirHandle, scope === 'range' ? { from: fromId, to: toId } : null);
+}
+
+function showMissingConfirmModal(missing) {
+  const byId = {};
+  missing.forEach(d => {
+    const id = d.id;
+    (byId[id] = byId[id] || []).push(d);
+  });
+  const inscriptionCount = Object.keys(byId).length;
+  const firstId = missing.map(d => parseInt(d.id)).filter(n => !isNaN(n)).sort((a, b) => a - b)[0];
+
+  document.getElementById('missingConfirmSub').innerHTML =
+    `<strong>${missing.length}</strong> dossard(s) manquant(s) pour ` +
+    `<strong>${inscriptionCount}</strong> inscription(s)` +
+    (firstId ? ` — premier ID manquant : <strong style="color:var(--accent)">#${firstId}</strong>` : '');
+
+  const details = Object.entries(byId)
+    .sort(([a], [b]) => (parseInt(a) || 0) - (parseInt(b) || 0))
+    .slice(0, 30)
+    .map(([id, entries]) => {
+      const initiales = `${entries[0].prenom} ${(entries[0].nom || '')[0] || ''}*`;
+      const cats = entries.map(e => e.cat).join(', ');
+      return `<div style="padding:3px 0">#${id} · ${initiales} · ${cats}</div>`;
+    })
+    .join('');
+  const remaining = inscriptionCount - 30;
+  document.getElementById('missingConfirmDetails').innerHTML =
+    details + (remaining > 0 ? `<div style="padding:6px 0;color:var(--muted);font-size:12px">… et ${remaining} autre(s)</div>` : '');
+
+  document.getElementById('missingConfirmOverlay').classList.remove('hidden');
+}
+
+async function confirmMissingExport() {
+  if (!_pendingMissingExport) return;
+  const { dirHandle, missing } = _pendingMissingExport;
+  _pendingMissingExport = null;
+  document.getElementById('missingConfirmOverlay').classList.add('hidden');
+  await _runExportPNG(dirHandle, null, missing);
+  await writeAnonymizedCSVToDir(dirHandle);
+}
+
+function cancelMissingExport() {
+  _pendingMissingExport = null;
+  document.getElementById('missingConfirmOverlay').classList.add('hidden');
+  showToast('⛔ Export annulé.');
+}
+
+// Écrit le CSV anonymisé dans le dossier choisi (compagnon de l'export "manquants")
+async function writeAnonymizedCSVToDir(dirHandle) {
+  try {
+    const csv = buildAnonymizedCSV();
+    const filename = `participants_anonymises_${currentConfig.eventName.replace(/\s+/g, '_')}.csv`;
+    const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write('﻿' + csv);
+    await writable.close();
+    showToast(`🔒 ${filename} déposé dans le dossier`);
+  } catch (err) {
+    console.error('Écriture CSV anonymisé :', err);
+    showToast('⚠️ Impossible d\'écrire le CSV anonymisé : ' + (err.message || err));
+  }
+}
+
+// ── Export PNG vers dossier déjà choisi ──────────────────────────
+async function _runExportPNG(dirHandle, idRange, explicitList = null) {
+  // dirHandle = handle du dossier de destination (déjà obtenu via showDirectoryPicker)
+  // idRange = null (tout) ou { from, to } pour filtrer par ID d'inscription
+  // explicitList = tableau de dossards à générer directement (prioritaire sur idRange)
   const toGenerate = explicitList
     ? [...explicitList].sort((a, b) => a.number - b.number)
     : [...allDossards]
@@ -1402,7 +1415,6 @@ async function _runExportPNG(idRange, explicitList = null, pushToGitHub = false)
 
   let done = 0, skipped = 0, errors = 0;
   const total = toGenerate.length;
-  const generatedBlobs = pushToGitHub ? [] : null;
 
   // Conteneur de rendu caché
   const renderContainer = document.createElement('div');
@@ -1456,11 +1468,6 @@ async function _runExportPNG(idRange, explicitList = null, pushToGitHub = false)
       await writable.write(pngBlob);
       await writable.close();
 
-      if (generatedBlobs) {
-        const f = getDossardFolder(d.number);
-        generatedBlobs.push({ path: `dossards/${f ? f + '/' : ''}${filename}`, blob: pngBlob });
-      }
-
       done++;
       progressFill.style.width = Math.round((done / total) * 100) + '%';
       progressLabel.innerHTML  = `<strong>${done}</strong> / ${total}` +
@@ -1484,106 +1491,6 @@ async function _runExportPNG(idRange, explicitList = null, pushToGitHub = false)
   if (skipped) msg += ` · ${skipped} ignoré(s) (déjà existants)`;
   if (errors)  msg += ` · ⚠️ ${errors} erreur(s)`;
   showToast(msg);
-
-  if (pushToGitHub && generatedBlobs && generatedBlobs.length > 0) {
-    const pat = localStorage.getItem(GITHUB_PAT_KEY);
-    if (!pat) { showToast('⚠️ Token GitHub non configuré (voir Paramètres).'); return; }
-    document.getElementById('exportModalTitle').textContent = '🐙 Envoi vers GitHub…';
-    progressFill.style.width = '0%';
-    progressLabel.innerHTML  = `0 / ${generatedBlobs.length}`;
-    modalSub.textContent     = 'Connexion à l\'API GitHub…';
-    overlay.classList.remove('hidden');
-    try {
-      await pushBlobsToGitHub(generatedBlobs, pat, (i, total, name) => {
-        progressFill.style.width = Math.round((i / total) * 100) + '%';
-        progressLabel.innerHTML  = `<strong>${i}</strong> / ${total}`;
-        modalSub.textContent     = `${name} envoyé…`;
-      });
-      overlay.classList.add('hidden');
-      showToast(`🐙 ${generatedBlobs.length} dossard(s) poussé(s) sur GitHub`);
-    } catch (err) {
-      overlay.classList.add('hidden');
-      showToast(`❌ Erreur GitHub : ${err.message}`);
-    }
-  }
-}
-
-// ─────────────────────────────────────────────
-// Génération ciblée des dossards manquants
-// ─────────────────────────────────────────────
-async function generateMissingDossards() {
-  if (!trameSrc) {
-    showToast('⚠️ Charge d\'abord la trame PNG avant de générer.');
-    return;
-  }
-  if (missingDossardsList.length === 0) return;
-  document.getElementById('missingOverlay').classList.add('hidden');
-  await _runExportPNG(null, missingDossardsList, true);
-}
-
-// ─────────────────────────────────────────────
-// GitHub API — push blobs en un commit
-// ─────────────────────────────────────────────
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload  = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
-async function pushBlobsToGitHub(blobs, token, onProgress = null) {
-  const base    = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`;
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-    'X-GitHub-Api-Version': '2022-11-28'
-  };
-
-  const branchRes = await fetch(`${base}/branches/${GITHUB_BRANCH}`, { headers });
-  if (!branchRes.ok) throw new Error(`Auth GitHub échouée (${branchRes.status})`);
-  const branchData = await branchRes.json();
-  const baseCommit = branchData.commit.sha;
-  const baseTree   = branchData.commit.commit.tree.sha;
-
-  const treeItems = [];
-  for (let i = 0; i < blobs.length; i++) {
-    const { path, blob } = blobs[i];
-    const content = await blobToBase64(blob);
-    const res = await fetch(`${base}/git/blobs`, {
-      method: 'POST', headers,
-      body: JSON.stringify({ content, encoding: 'base64' })
-    });
-    if (!res.ok) throw new Error(`Blob échoué pour ${path} (${res.status})`);
-    const { sha } = await res.json();
-    treeItems.push({ path, mode: '100644', type: 'blob', sha });
-    if (onProgress) onProgress(i + 1, blobs.length, path.split('/').pop());
-  }
-
-  const treeRes = await fetch(`${base}/git/trees`, {
-    method: 'POST', headers,
-    body: JSON.stringify({ base_tree: baseTree, tree: treeItems })
-  });
-  if (!treeRes.ok) throw new Error(`Création de l'arbre échouée (${treeRes.status})`);
-  const { sha: newTree } = await treeRes.json();
-
-  const commitRes = await fetch(`${base}/git/commits`, {
-    method: 'POST', headers,
-    body: JSON.stringify({
-      message: `chore(dossards): ajout de ${blobs.length} dossard(s) manquant(s)`,
-      tree: newTree,
-      parents: [baseCommit]
-    })
-  });
-  if (!commitRes.ok) throw new Error(`Création du commit échouée (${commitRes.status})`);
-  const { sha: newCommit } = await commitRes.json();
-
-  const refRes = await fetch(`${base}/git/refs/heads/${GITHUB_BRANCH}`, {
-    method: 'PATCH', headers,
-    body: JSON.stringify({ sha: newCommit })
-  });
-  if (!refRes.ok) throw new Error(`Mise à jour de la branche échouée (${refRes.status})`);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -2688,9 +2595,6 @@ function renderSettingsPanel() {
   const nameInput = document.getElementById('settingsEventName');
   if (nameInput) nameInput.value = currentConfig.eventName;
 
-  const patInput = document.getElementById('settingsGithubPat');
-  if (patInput) patInput.value = localStorage.getItem(GITHUB_PAT_KEY) || '';
-
   const list = document.getElementById('settingsCatsList');
   if (!list) return;
 
@@ -2775,13 +2679,6 @@ function saveSettings() {
   renderGrid();
   if (allDossards.length > 0) {
     updateStats();
-  }
-
-  const patInput = document.getElementById('settingsGithubPat');
-  if (patInput) {
-    const pat = patInput.value.trim();
-    if (pat) localStorage.setItem(GITHUB_PAT_KEY, pat);
-    else localStorage.removeItem(GITHUB_PAT_KEY);
   }
 
   showToast('✅ Configuration sauvegardée !');
