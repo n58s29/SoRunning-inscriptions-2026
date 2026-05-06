@@ -772,6 +772,15 @@ header {
 .export-trame-block .btn-trame {
   margin: 0;
 }
+
+/* Modale d'aperçu d'un dossard — plus large pour la grille */
+.export-modal.apercu-modal {
+  width: min(1100px, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.apercu-modal .legend { justify-content: center; }
+.apercu-modal .dossards-grid { margin: 0 auto; }
 .export-select-options {
   display: flex; flex-direction: column; gap: 12px;
   text-align: left; margin-bottom: 24px;

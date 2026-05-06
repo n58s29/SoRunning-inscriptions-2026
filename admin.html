@@ -121,33 +121,16 @@
   <!-- ═══ ONGLET DOSSARDS & PARTICIPANTS ═══ -->
   <div class="tab-panel active" id="panel-dossards">
 
-    <!-- Légende couleurs -->
-    <div class="legend" id="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--c5)"></div> Course 5 km (0001–0999)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--c10)"></div> Course 10 km (1001–1999)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--c21)"></div> Course 21,1 km (2001–2999)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--m5)"></div> Marche 5 km (3001–3999)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--m10)"></div> Marche 10 km (4001–4999)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--m21)"></div> Marche 21,1 km (5001–5999)</div>
-    </div>
-
     <!-- Barre d'outils unifiée -->
     <div class="controls" id="controls">
       <input type="file" id="trameUpload" accept="image/png" style="display:none">
       <input class="list-search" type="text" id="listSearch"
              placeholder="🔍 Rechercher un participant…" oninput="filterList(this.value)">
       <div class="spacer" style="flex:1"></div>
+      <button class="btn-export" onclick="openApercuModal()" title="Aperçu d'un dossard avec la trame">🏅 Aperçu d'un dossard</button>
       <button class="btn-export" onclick="downloadBlankTemplate()" title="Télécharger une trame vierge annotée">📐 Trame vierge</button>
       <button class="btn-print" onclick="saveDossardsPNG()" id="btnExport">💾 Exporter les dossards</button>
       <button class="btn-print" onclick="openExportListModal()" id="btnExportList">⬇️ Exporter la liste</button>
-    </div>
-
-    <!-- Grille des dossards -->
-    <div class="dossards-grid" id="grid">
-      <div class="empty-state">
-        <h2>Aucun participant chargé</h2>
-        <p>Importe la liste des inscriptions pour visualiser les dossards.</p>
-      </div>
     </div>
 
     <!-- Liste des participants -->
@@ -322,6 +305,37 @@
     <div class="export-select-actions">
       <button class="export-btn-confirm" onclick="confirmExportSelection()">Exporter</button>
       <button class="export-btn-cancel" onclick="document.getElementById('exportSelectOverlay').classList.add('hidden')">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal aperçu d'un dossard -->
+<div class="export-overlay hidden" id="apercuOverlay">
+  <div class="export-modal apercu-modal">
+    <div class="export-modal-icon">🏅</div>
+    <div class="export-modal-title">Aperçu d'un dossard</div>
+    <div class="export-modal-sub">Rendu démo (1 dossard factice par catégorie)</div>
+
+    <!-- Légende couleurs -->
+    <div class="legend" id="legend" style="margin-top:14px">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c5)"></div> Course 5 km (0001–0999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c10)"></div> Course 10 km (1001–1999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--c21)"></div> Course 21,1 km (2001–2999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--m5)"></div> Marche 5 km (3001–3999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--m10)"></div> Marche 10 km (4001–4999)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--m21)"></div> Marche 21,1 km (5001–5999)</div>
+    </div>
+
+    <!-- Grille des dossards -->
+    <div class="dossards-grid" id="grid" style="margin-top:18px">
+      <div class="empty-state">
+        <h2>Aucun participant chargé</h2>
+        <p>Importe la liste des inscriptions pour visualiser les dossards.</p>
+      </div>
+    </div>
+
+    <div class="export-select-actions" style="margin-top:18px">
+      <button class="export-btn-cancel" onclick="document.getElementById('apercuOverlay').classList.add('hidden')">Fermer</button>
     </div>
   </div>
 </div>

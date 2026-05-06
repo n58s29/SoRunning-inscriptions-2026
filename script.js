@@ -720,6 +720,12 @@ function renderList(search = '') {
 
 function filterList(val) { renderList(val); }
 
+function openApercuModal() {
+  rebuildLegend();
+  renderGrid();
+  document.getElementById('apercuOverlay').classList.remove('hidden');
+}
+
 function openExportListModal() {
   if (!allDossards || allDossards.length === 0) {
     showToast('⚠️ Aucun participant à exporter.');
