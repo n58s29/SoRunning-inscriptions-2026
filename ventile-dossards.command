@@ -72,12 +72,15 @@ fi
 ventile_word="dossard"; [ "$moved" -ne 1 ] && ventile_word="dossards"
 orphan_word="orphelin"; [ "$orphans" -ne 1 ] && orphan_word="orphelins"
 
-parts=()
-[ "$moved" -gt 0 ] && parts+=("ventile $moved $ventile_word")
-[ "$orphans" -gt 0 ] && parts+=("supprime $orphans $orphan_word")
-[ "$csv_updated" = true ] && parts+=("met à jour CSV anonymisé")
+msg_body=""
+add_part() {
+    [ -n "$msg_body" ] && msg_body="$msg_body + "
+    msg_body="${msg_body}$1"
+}
+[ "$moved" -gt 0 ] && add_part "ventile $moved $ventile_word"
+[ "$orphans" -gt 0 ] && add_part "supprime $orphans $orphan_word"
+[ "$csv_updated" = true ] && add_part "met à jour CSV anonymisé"
 
-msg_body=$(IFS=" + "; echo "${parts[*]}")
 msg="feat(dossards): $msg_body"
 
 git add -A
