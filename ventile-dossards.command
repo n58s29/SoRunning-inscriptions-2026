@@ -85,6 +85,20 @@ msg="feat(dossards): $msg_body"
 
 git add -A
 git commit -m "$msg"
+
+echo "→ Synchronisation avec origin (pull --rebase)..."
+if ! git pull --rebase origin main; then
+    echo ""
+    echo "❌ Conflit lors du pull --rebase. Résous-le manuellement avec :"
+    echo "   git status   # voir les fichiers en conflit"
+    echo "   # éditer les fichiers"
+    echo "   git add <fichier>"
+    echo "   git rebase --continue"
+    echo "   git push"
+    read -p "Appuyez sur Entrée pour fermer..."
+    exit 1
+fi
+
 git push
 
 echo ""
