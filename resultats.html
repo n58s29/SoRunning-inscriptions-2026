@@ -38,6 +38,45 @@
       color: #fff;
     }
 
+    /* ─── Barre de recherche ─── */
+    .search-bar {
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-sizing: border-box;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(247, 115, 180, 0.15);
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .search-count {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      padding-left: 4px;
+    }
+
     /* ─── Table classement ─── */
     .table-wrap { overflow-x: auto; }
     table {
@@ -137,6 +176,18 @@
       font-size: 13px;
     }
     .recap-row-text { flex: 1; min-width: 0; }
+    .recap-dossard {
+      display: inline-block;
+      background: var(--surface2);
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 1px 8px;
+      border-radius: 99px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
 
     /* ─── Récap courses : 2 colonnes H/F ─── */
     .recap-courses-grid {
@@ -346,25 +397,62 @@ const COURSES = [
 ];
 
 const datasets = {};      // { '5km': [...], '10km': [...], '21km': [...], 'recap': [...] }
+const searchTerms = { '5km': '', '10km': '', '21km': '' };
+const dossardLookup = {}; // { 'prenom|nom' (lowercase) : 'dossard' }
 let currentTab = null;
 
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function anonymizeName(prenom, nom) {
+  const initial = (nom || '').trim().charAt(0).toUpperCase();
+  return `<strong>${prenom || ''}</strong>${initial ? ' ' + initial + '.' : ''}`;
+}
+
+function buildDossardLookup() {
+  ['5km', '10km', '21km'].forEach(key => {
+    (datasets[key] || []).forEach(r => {
+      const k = `${(r.prenom || '').toLowerCase().trim()}|${(r.nom || '').toLowerCase().trim()}`;
+      if (k !== '|') dossardLookup[k] = r.dossard;
+    });
+  });
+}
+
 /* ─── Rendu ─── */
-function renderClassement(rows) {
+function renderClassement(rows, term) {
   if (!rows || !rows.length) {
     return '<div class="empty">Aucun résultat pour cette épreuve</div>';
   }
-  let html = `<div class="table-wrap"><table>
+  const q = (term || '').trim().toLowerCase();
+  const filtered = q
+    ? rows.filter(r =>
+        (r.prenom || '').toLowerCase().includes(q) ||
+        String(r.dossard || '').toLowerCase().includes(q)
+      )
+    : rows;
+
+  const countHTML = q
+    ? `<div class="search-count">${filtered.length} résultat${filtered.length > 1 ? 's' : ''} pour « ${escapeHtml(term)} »</div>`
+    : '';
+
+  if (!filtered.length) {
+    return countHTML + '<div class="empty">Aucun coureur ne correspond à la recherche</div>';
+  }
+
+  let html = countHTML + `<div class="table-wrap"><table>
     <thead>
       <tr>
         <th>#</th>
         <th>Doss.</th>
-        <th>Nom</th>
+        <th>Coureur.se</th>
         <th>Temps</th>
-        <th>Cat.</th>
       </tr>
     </thead>
     <tbody>`;
-  rows.forEach((r, i) => {
+  filtered.forEach((r, i) => {
     const pos = r.position || (i + 1);
     const rankClass = pos <= 3 ? ` rank-${pos}` : '';
     const sx = (r.sexe || '').trim().toUpperCase();
@@ -372,9 +460,8 @@ function renderClassement(rows) {
     html += `<tr>
       <td class="rank${rankClass}">${pos}</td>
       <td>${r.dossard || ''}</td>
-      <td>${genderTag}${r.prenom || ''} ${r.nom || ''}</td>
+      <td>${genderTag}${anonymizeName(r.prenom, r.nom)}</td>
       <td><strong>${r.temps || ''}</strong></td>
-      <td>${r.categorie || ''}</td>
     </tr>`;
   });
   html += `</tbody></table></div>`;
@@ -388,10 +475,13 @@ function recapItemHTML(r) {
   else if (pos === 2) posClass = ' silver';
   else if (pos === 3) posClass = ' bronze';
   const posLabel = pos ? '#' + pos : '';
+  const k = `${(r.prenom || '').toLowerCase().trim()}|${(r.nom || '').toLowerCase().trim()}`;
+  const dossard = dossardLookup[k];
+  const dossardTag = dossard ? `<span class="recap-dossard">N° ${dossard}</span> ` : '';
   return `<li>
     <div class="recap-pos${posClass}">${posLabel}</div>
     <div class="recap-row-text">
-      <div class="recap-name">${r.prenom || ''} ${r.nom || ''}</div>
+      <div class="recap-name">${dossardTag}${anonymizeName(r.prenom, r.nom)}</div>
       ${r.detail ? `<div class="recap-detail">${r.detail}</div>` : ''}
     </div>
   </li>`;
@@ -457,6 +547,12 @@ function renderRecap(rows) {
   return html || '<div class="empty">Aucun gagnant à afficher</div>';
 }
 
+function renderTableOnly() {
+  const tableEl = document.getElementById('tableContainer');
+  if (!tableEl) return;
+  tableEl.innerHTML = renderClassement(datasets[currentTab], searchTerms[currentTab]);
+}
+
 function render() {
   const tabsEl    = document.getElementById('tabs');
   const contentEl = document.getElementById('content');
@@ -482,7 +578,22 @@ function render() {
   if (currentTab === 'recap') {
     contentEl.innerHTML = renderRecap(datasets.recap);
   } else {
-    contentEl.innerHTML = renderClassement(datasets[currentTab]);
+    const term = searchTerms[currentTab] || '';
+    contentEl.innerHTML = `
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput"
+               placeholder="Rechercher par prénom ou n° de dossard..."
+               value="${escapeHtml(term)}"
+               autocomplete="off">
+      </div>
+      <div id="tableContainer">${renderClassement(datasets[currentTab], term)}</div>
+    `;
+    const input = document.getElementById('searchInput');
+    input.addEventListener('input', e => {
+      searchTerms[currentTab] = e.target.value;
+      renderTableOnly();
+    });
   }
   return true;
 }
@@ -509,6 +620,8 @@ const isUnlocked  = forceUnlock || Date.now() >= UNLOCK_TIME;
   if (r10   && r10.length)   datasets['10km'] = r10;
   if (r21   && r21.length)   datasets['21km'] = r21;
   if (recap && recap.length) datasets.recap   = recap;
+
+  buildDossardLookup();
 
   const hasData = render();
   document.getElementById(hasData ? 'resultsView' : 'waitView').style.display = 'block';
