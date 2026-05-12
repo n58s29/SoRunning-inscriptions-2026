@@ -487,8 +487,18 @@ function render() {
   return true;
 }
 
+/* ─── Bascule midi 12 mai 2026 (heure de Paris, CEST = UTC+2) ─── */
+const UNLOCK_TIME = new Date('2026-05-12T12:00:00+02:00').getTime();
+const forceUnlock = new URLSearchParams(window.location.search).get('unlock') === '1';
+const isUnlocked  = forceUnlock || Date.now() >= UNLOCK_TIME;
+
 /* ─── Init ─── */
 (async function init() {
+  if (!isUnlocked) {
+    document.getElementById('waitView').style.display = 'block';
+    return;
+  }
+
   const [r5, r10, r21, recap] = await Promise.all([
     fetchCSV('data/resultats_course_5km.csv'),
     fetchCSV('data/resultats_course_10km.csv'),

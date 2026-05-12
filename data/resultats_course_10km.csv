@@ -1,0 +1,374 @@
+﻿position;dossard;prenom;nom;sexe;categorie;societe;temps
+1;1361;Vincent;ANDRIEUX;H;M1 H;SNCF Réseau;00:33:50
+2;1218;Frédéric;GRAND;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:35:04
+3;1371;Michaël;HERNANDEZ;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:35:42
+4;1322;Yohan;HOSPITAL;H;M1 H;SNCF SA (Holding);00:36:08
+5;1188;Jérôme;GAILLARD;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:37:25
+6;1583;fabien;SOLANILLA;H;M3 H;SNCF Réseau;00:38:10
+7;1030;Cédric;MAURIN;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:38:36
+8;1596;Cyrille;LE NOURICIER;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:38:58
+9;1199;Elodie;BELLETTRE;F;M0 F;SNCF Réseau;00:39:15
+10;1061;Arnaud;JOUFFROY;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:39:28
+11;1151;Emmanuel;MATHIEU;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:39:43
+12;1182;mathieu;DHAINE;H;M2 H;SNCF Réseau;00:40:51
+13;1100;Thomas;MOREAU;H;M1 H;SNCF Réseau;00:42:24
+14;1502;Julien;LECLERE;H;M1 H;SNCF SA (Holding);00:42:54
+15;1185;Alexandre;VASSY;H;M2 H;SNCF Réseau;00:43:26
+16;1483;Jérôme;CURÉ;H;M0 H;SNCF Réseau;00:43:33
+17;1244;Jean-Marie;HOFMAN;H;M1 H;SNCF Réseau;00:43:36
+18;1455;Michaël;LAVENU;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:44:08
+19;1106;Michael;DRAN;H;M2 H;Rail Logistics Europe;00:44:12
+20;1309;Philippe;STEIB;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:44:20
+21;1119;Julien;MOINARD;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:44:43
+22;1007;Jean-Daniel;AUZOU;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:44:45
+23;1495;Tangui;RAVIER;H;ESP H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:44:47
+24;1351;romain;LEO;H;M1 H;SNCF Réseau;00:44:48
+25;1544;Romain;MEUNIER;H;SEN H;SNCF Réseau;00:44:55
+26;1620;HATIM;ABDELMOUMEN;H;M0 H;SNCF Réseau;00:44:57
+27;1042;David;BOUJOT;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:45:14
+28;1001;Mathieu;RIBOURG;H;M1 H;SNCF SA (Holding);00:45:38
+29;1052;Arnaud;SALINGUE;H;M1 H;SNCF Réseau;00:45:40
+30;1120;Lamya;ABBOUD;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:45:42
+31;1480;Sebastien;GRIT;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:45:42
+32;1186;Olivier;AUBE;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:45:44
+33;1044;Maxime;PENON;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:45:48
+34;1430;Romain;RUSSIER;H;M0 H;SNCF SA (Holding);00:45:50
+35;1026;KATHY;GRARE;F;M4 F;SNCF Réseau;00:45:53
+36;1226;Olivier;TATARD;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:45:56
+37;1592;FABIEN;BANCHEREAU;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:46:00
+38;1448;Michael;BOULLE;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:46:07
+39;1546;SERGIO;LARANJEIRA;H;M2 H;SNCF Gares&Connexions;00:46:17
+40;1359;Louis;PONGE;H;SEN H;SNCF Réseau;00:46:40
+41;1524;Théo;BAYOUMEU;H;SEN H;SNCF Réseau;00:46:40
+42;1138;JOHAN;MAUSSION;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:46:44
+43;1023;LOIC;QUEUDRUE;H;M3 H;SNCF SA (Holding);00:46:46
+44;1180;Stéphane;BELLETRE;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:46:51
+45;1214;Théophile;SÉNÉCHAL;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:47:11
+46;1038;Ophélie;HANQUEZ;F;SEN F;SNCF Réseau;00:47:13
+47;1149;Romain;ALADENISE;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:47:13
+48;1250;Dimitri;CAVILLON;H;M1 H;SNCF Réseau;00:47:29
+49;1559;Arnaud;LANGLET;H;M2 H;SNCF SA (Holding);00:47:37
+50;1600;Pascal;PAGES;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:47:48
+51;1392;Dorian;BAILLARD;H;ESP H;SNCF Réseau;00:47:58
+52;1603;Fabien;BORROT;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:48:10
+53;1067;Thierry;SAVEAN;H;M2 H;SNCF Réseau;00:48:11
+54;1093;Carine;DORÉ;F;M3 F;SNCF SA (Holding);00:48:11
+55;1602;Erwan;QUINTIN;H;ESP H;CAPTRAIN France // Rail Logistics Europe;00:48:13
+56;1293;Jerome;BURGAUD;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:48:23
+57;1532;baptiste;PIERROT;H;M0 H;SNCF Réseau;00:48:28
+58;1551;Anthony;LAMBERT;H;M1 H;SNCF Réseau;00:48:32
+59;1335;Méline;KROMMIDAS;F;M0 F;SNCF SA (Holding);00:48:41
+60;1439;Benjamin;CHAUPRADE;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:49:10
+61;1338;Benjamin;LONGEVILLE;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:49:22
+62;1321;FREDDY;DODRE;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:49:22
+63;1058;Laurent;MURGIA;H;M4 H;SNCF Réseau;00:49:23
+64;1580;Laurent;FORGET;H;M4 H;SNCF Réseau;00:49:42
+65;1647;JEAN;BLANQUART;H;M0 H;SNCF Réseau;00:49:42
+66;1477;Marine;RATIÉ;F;M0 F;SNCF Réseau;00:49:47
+67;1488;William;TRINQUART;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:49:50
+68;1191;Yoann;VAUTRAIN;H;M3 H;SNCF Réseau;00:50:05
+69;1357;Lucas;LIMOUSIN;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:50:06
+70;1353;Julien;AUDOUARD;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:50:09
+71;1197;Stéphane;FER;H;M3 H;SNCF Réseau;00:50:10
+72;1160;Nicolas;LETERRIER;H;M3 H;SNCF SA (Holding);00:50:11
+73;1063;Adelin;PIEL;H;M0 H;SNCF Réseau;00:50:13
+74;1676;Julien;LAVIGNE;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:50:18
+75;1623;Romain;BARATTE;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:50:19
+76;1306;Remi;FERRAZZA;H;M0 H;SNCF Réseau;00:50:30
+77;1048;Sylvain;GOUTTENEGRE;H;?;SNCF SA (Holding);00:50:41
+78;1548;Marilyn;VANDEVILLE;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:50:54
+79;1339;Cédric;CHAPOULIE;H;M0 H;SNCF Réseau;00:51:16
+80;1172;rénald;LOUCHART;H;M2 H;SNCF Réseau;00:51:18
+81;1511;Matéo;THIBAUDIN;H;SEN H;SNCF Réseau;00:51:27
+82;1396;Frédéric;CORNEILLE;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:51:34
+83;1330;Sylvain;MORAND;H;SEN H;SNCF Réseau;00:51:38
+84;1020;Sergeï;GAUTIER;H;M1 H;SNCF SA (Holding);00:51:39
+85;1085;Julien;CORNU;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:51:45
+86;1624;Benjamin;MARTINS;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:51:45
+87;1444;FLORENT;CHUARD;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:51:46
+88;1102;Guilhem;DUMAY;H;M2 H;SNCF Réseau;00:51:46
+89;1514;Christophe;MAZOYER;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:51:48
+90;1290;Jean rene;MEAUDRE;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:51:50
+91;1021;Geoffrey;VIDAL;H;M2 H;SNCF Réseau;00:51:57
+92;1660;François;GUDIN;H;M2 H;SNCF SA (Holding);00:52:10
+93;1256;Ellio;MARTIN;F;SEN F;SNCF SA (Holding);00:52:11
+94;1005;Magalie;NAULEAU;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:52:23
+95;1133;Christophe;TIGNOL;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:52:31
+96;1017;Abdelaziz;BELKHIR;H;M0 H;SNCF Réseau;00:52:31
+97;1176;Michaël;ROUX;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:52:35
+98;1670;Julie;JOUARD;F;M0 F;SNCF Réseau;00:52:35
+99;1510;Anthony;RENAUDET;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:52:36
+100;1271;Richard;RIN;H;M2 H;SNCF Réseau;00:52:42
+101;1362;Mélanie;HAVARD;F;ESP F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:52:59
+102;1328;Sylvain;MARCEL;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:53:05
+103;1680;Kim;BOURGET;H;M2 H;SNCF SA (Holding);0:53:17
+104;1431;Stéphane;CALOUDIS;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:53:22
+105;1570;Nicolas;AUNEAU;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:53:22
+106;1245;Jerome;LE PARC;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:53:28
+107;1269;Jean-Baptiste;HUBER;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:53:35
+108;1033;Denis;HEIT;H;M3 H;SNCF SA (Holding);00:53:36
+109;1499;Tony;PIMENTO;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:53:37
+110;1108;Benjamin;LIDON;H;M2 H;SNCF Réseau;00:53:45
+111;1111;Anne-Emmanuelle;HENKE;F;M1 F;SNCF SA (Holding);00:53:46
+112;1358;Jean-Francois;HOMO;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:53:50
+113;1682;Hassan;GUERDA;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:53:56
+114;1414;Sabri;SACI;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:54:02
+115;1565;Maxime;CHAUBARD;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:54:04
+116;1671;Stéphan;RENOU;H;M2 H;SNCF Réseau;00:54:05
+117;1008;Frédéric;DOZIAS;H;M4 H;SNCF Gares&Connexions;00:54:08
+118;1166;Hervé;TURON;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:54:21
+119;1193;Mélissa;ARAGUI;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:54:30
+120;1202;Stéphane;MARIE;H;M3 H;SNCF Réseau;00:54:39
+121;1222;Brice;PENISSON;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:54:42
+122;1068;Gildas;MADORÉ;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:54:46
+123;1086;Christophe;DJEBIRI;H;M2 H;SNCF Gares&Connexions;00:54:50
+124;1415;Thomas;SCHREVERE;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:00
+125;1594;Elodie;HERRY;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:03
+126;1323;Benjamin;BOUTLEUX;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:04
+127;1224;Elodie;BIANE;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:07
+128;1541;Armand;CARANOBE;H;SEN H;SNCF Réseau;00:55:23
+129;1643;Laurent;BEAUFORT;H;M4 H;SNCF Réseau;00:55:23
+130;1341;Sylvain;JONNET;H;M3 H;Rail Logistics Europe;00:55:29
+131;1625;Alain;SORIN;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:31
+132;1636;Greg;LE BERRE;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:37
+133;1461;Sébastien;LEPOURTOIS;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:42
+134;1010;Frédéric;BRUNEAUX;H;M4 H;SNCF Optim'Services;00:55:43
+135;1363;Joanne;CHAMPEAUX;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:53
+136;1663;Jérémy;DENJEAN;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:55:54
+137;1105;Gaelle;CASALINI;F;SEN F;SNCF Réseau;00:55:59
+138;1206;Christophe;BIDEL;H;M4 H;SNCF SA (Holding);00:56:09
+139;1508;Philippe;AVIZOU;H;M3 H;TSEE;00:56:18
+140;1051;Jérémy;FLAUSS;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:56:22
+141;1513;Alexandre;CANARD;H;M1 H;Keolis;00:56:27
+142;1053;Rodrigue;CHAUVEL;H;M5 H;SNCF Réseau;00:56:35
+143;1281;David;LEFEVRE;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:56:45
+144;1470;Benoît;PRIEU;H;M0 H;SNCF Réseau;00:56:49
+145;1305;Eric;PLATEAUX;H;M4 H;SNCF SA (Holding);0:56:50
+146;1216;Marion;RÉMUSAT;F;SEN F;SNCF Gares&Connexions;00:56:50
+147;1035;Frédéric;SOUZA;H;M3 H;SNCF Réseau;00:56:58
+148;1163;CHRISTOPHE;GIRAUD;H;M4 H;SNCF Réseau;00:57:02
+149;1442;Yannick;DUFOUR;H;M2 H;SNCF Réseau;00:57:07
+150;1092;Aude;GONDRAN-TELLIER;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:57:17
+151;1675;Charlène;TOULMÉ;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:57:19
+152;1298;Olivier;TRAVAUX;H;M4 H;SNCF Réseau;00:57:20
+153;1386;Laureen;HILLION;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:57:28
+154;1009;Rozenn;TOMA;F;M3 F;SNCF Réseau;00:57:29
+155;1501;Christine;CHAUVIN;F;M4 F;Keolis;00:57:35
+156;1184;vinh;PHAM;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:57:35
+157;1447;Quentin;LAMBOLEY-MICALE;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:57:37
+158;1377;karl;LHEUREUX;H;M1 H;SNCF Réseau;00:57:39
+159;1649;HAKIM;MAAFA;H;M1 H;SNCF Réseau;00:57:40
+160;1122;Frédéric;DE MARTIN;H;M2 H;SNCF Réseau;00:57:42
+161;1355;jean paul;RAISENNE;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:57:43
+162;1018;Thibaud;IRDEL;H;M0 H;SNCF Réseau;00:57:55
+163;1586;Christophe;GIRARD;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:58:02
+164;1659;Solène;HERVÉ;F;SEN F;SNCF Réseau;00:58:07
+165;1567;Aurélien;FALLETTA;H;M0 H;SNCF Réseau;00:58:20
+166;1308;ARMAND;FERNANDEZ;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:58:22
+167;1234;arnaud;AUBRY;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:58:27
+168;1022;Giovanni;MENGONI;H;SEN H;SNCF Réseau;00:58:36
+169;1641;Yvanh;D'AGRAIN;H;M2 H;SNCF Réseau;00:58:44
+170;1591;Bertrand;OLANIER;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:58:46
+171;1413;Celia;GUILLAUMIN;F;SEN F;SNCF Gares&Connexions;00:58:46
+172;1542;sophie;CAREME;F;M4 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:58:46
+173;1087;Caroline;IMMER;F;M1 F;SNCF Optim'Services;00:58:53
+174;1428;ANNA;TY;F;M1 F;SNCF Réseau;00:58:55
+175;1066;Angélique;GALPIN;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:58:57
+176;1633;Julie;BERNAT;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:59:04
+177;1376;Laëtitia;ANDRE;F;M1 F;SNCF SA (Holding);00:59:05
+178;1557;Nicolas;PRIGENT;H;M0 H;SNCF Réseau;00:59:10
+179;1318;Stephanie;LECAMUS;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:59:19
+180;1468;Juliette;AIRIAUD;F;SEN F;SNCF Optim'Services;00:59:23
+181;1574;Alexandre;AUBRION;H;M3 H;SNCF Réseau;00:59:23
+182;1516;Steven;RAMIER;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:59:24
+183;1146;Barthelemy;LEVEQUE;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:59:24
+184;1678;Julien;BEGAUD;H;M2 H;SNCF Réseau;00:59:25
+185;1456;Thomas;KIELTYKA;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:59:33
+186;1665;Julien;BEREAUX;H;M1 H;SNCF Réseau;00:59:37
+187;1310;Anthony;MARTIN;H;SEN H;SNCF SA (Holding);00:59:38
+188;1578;Sullivan;LEMARCHAND;H;M0 H;SNCF Réseau;00:59:38
+189;1652;Yannick;FABRE-GARCIA;H;M1 H;SNCF Réseau;00:59:38
+190;1114;virginie;ROGER;F;M1 F;SNCF Réseau;00:59:43
+191;1129;Christophe;DEMULDER;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);00:59:49
+192;1228;Agnès;SAUVAGET;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:59:54
+193;1287;Jennifer;BONNET;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);00:59:57
+194;1304;YOANN;LE QUINTREC;H;M2 H;SNCF Réseau;01:00:00
+195;1069;charles;BACHELIER;H;M1 H;SNCF Voyageurs Océan;01:00:01
+196;1348;Aurélie;LECOQ;F;M2 F;SNCF Réseau;01:00:02
+197;1617;Diane;PINSON;F;M2 F;Keolis;01:00:16
+198;1579;Sébastien;LEPAGE;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);1:00:16
+199;1398;Stéphanie;TERRATS;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:00:17
+200;1572;Marion;YPREEUW;F;ESP F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:00:23
+201;1543;DAHAMNI;MERIEM;F;SEN F;SNCF Réseau;01:00:28
+202;1175;Eric;FOUILLIT;H;M4 H;SNCF Réseau;01:00:35
+203;1177;Alain;ZAFRA;H;M2 H;SNCF Réseau;01:00:37
+204;1425;Christelle;MICHARD;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:00:43
+205;1124;Roxane;SCELLIER;F;M2 F;SNCF SA (Holding);1:00:44
+206;1558;Frédéric;RAMIRES;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:00:55
+207;1239;Mathilde;BLOT;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:01:00
+208;1360;Philippe;LAMBERT;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:01:00
+209;1039;Anne-Charlotte;AUGOYARD;F;M1 F;SNCF Réseau;01:01:04
+210;1141;Stanislas;TABOUREAU;H;M0 H;AREP;01:01:11
+211;1090;Laurent;SCHAUDEL;H;M4 H;SNCF Réseau;01:01:17
+212;1025;Olivia;NOUVEL;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:01:20
+213;1639;Aymeric;GAGNEROT;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:01:23
+214;1071;Anthony;POIRIER;H;M2 H;SNCF Réseau;01:01:27
+215;1622;Stéphane;LARTISANT;H;M3 H;SNCF Réseau;01:01:27
+216;1134;FRANCOISE;BOULARD;F;M4 F;SNCF Réseau;01:01:29
+217;1148;Lise-Marie;DERAY;F;M1 F;SNCF Réseau;01:01:36
+218;1677;Cyril;GUIBERT;H;M0 H;SNCF Réseau;01:01:37
+219;1207;Loic;LIEN;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:01:37
+220;1393;EMMANUELLE;CHAILLEY;F;M3 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:01:38
+221;1139;Yohann;POURRAGEAU;H;M2 H;SNCF Réseau;01:01:50
+222;1418;Geoffroy;SUDRES;H;SEN H;SNCF Réseau;01:01:54
+223;1588;Tom;MORTIER;H;M0 H;SNCF Réseau;01:02:02
+224;1584;Vincent;CAILLAUD;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:02:07
+225;1407;Stéphane;HAUDECOEUR;H;M3 H;SNCF Réseau;01:02:08
+226;1336;Sébastien;LOIZEAU;H;M1 H;SNCF Réseau;01:02:10
+227;1395;David;DURAND;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:02:14
+228;1423;Séverine;WILHELM;F;M2 F;SNCF Réseau;01:02:19
+229;1267;Marina;VILLALON;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:02:25
+230;1089;alice;RAYMOND;F;M0 F;SNCF Optim'Services;01:02:32
+231;1576;Pierre;ROCA;H;M2 H;SNCF Réseau;01:02:51
+232;1478;Morgane;ZAMORA;F;SEN F;SNCF Réseau;1:03:01
+233;1012;Laurence;PERDEREAU;F;M3 F;SNCF Réseau;01:03:01
+234;1331;Florence;ALIAGA;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:03:05
+235;1078;florent;DANLOUX;H;SEN H;SNCF Réseau;01:03:08
+236;1043;NICOLAS;BONNIN;H;M2 H;SNCF SA (Holding);01:03:17
+237;1204;Baptiste;ANDURAND;H;M2 H;SNCF Réseau;01:03:20
+238;1247;franck;LEX_OMS;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:03:22
+239;1640;Samuel;TERRIEN;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:03:22
+240;1379;Céline;MORIN;F;M2 F;SNCF Optim'Services;01:03:28
+241;1459;Aline;CLERC;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:03:31
+242;1257;Aurore;LEJEUNE;F;M2 F;SNCF SA (Holding);01:03:36
+243;1153;Dario;AGUIRRE GODOY;H;M2 H;SNCF Gares&Connexions;01:03:47
+244;1024;Pauline;DERUMIERE;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:03:57
+245;1209;Aurelien;JOLY;H;M0 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:03:59
+246;1650;Isabelle;PAUMIER;F;M3 F;SNCF Gares&Connexions;01:04:00
+247;1264;Sophie;COZ;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:04:00
+248;1556;Johann;LE GUIADER;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:04:03
+249;1127;Emmanuel;HENRY;H;M5 H;SNCF SA (Holding);01:04:05
+250;1210;Claire;SOISSONS;F;M0 F;SNCF Réseau;01:04:06
+251;1212;Danyel;DI MARCO;H;M2 H;SNCF Gares&Connexions;01:04:20
+252;1168;Sophie;GONDOIN BONNEVILLE;F;M0 F;SNCF Réseau;01:04:21
+253;1319;Céline;DACEIX;F;M1 F;SNCF Réseau;01:04:22
+254;1016;Sylvain;MILET;H;M2 H;SNCF Réseau;01:04:33
+255;1517;Louise;DELBARRE;F;SEN F;Keolis;01:04:47
+256;1537;Yann;CHEYNET;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:04:47
+257;1372;Dalil;BENSALEM;H;M2 H;SNCF Réseau;01:05:00
+258;1416;CHANTAL;PETIT;F;M3 F;SNCF SA (Holding);01:05:00
+259;1535;Bruno;DELAPORTE;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:00
+260;1054;Marie;ROSAZ-FRANCONNET;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:06
+261;1421;Sarah;LE THOMAS;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:06
+262;1655;Fabien;TRONI;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:13
+263;1112;Guillaume;PROTIN;H;M1 H;SNCF Réseau;01:05:15
+264;1135;Pierre-Baptiste;VERGER;H;M1 H;SNCF Réseau;01:05:22
+265;1469;WIJDENE;GUEDICHE;F;SEN F;SNCF Réseau;01:05:25
+266;1034;PATRICK;BRETON;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:30
+267;1389;Lucille;COURAUD;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:36
+268;1403;Axel;MAURIN;H;M4 H;SNCF SA (Holding);01:05:36
+269;1577;romain;BIRRIEN;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:42
+270;1065;didier;YDRAC;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:49
+271;1251;claude;STREF;H;M5 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:05:49
+272;1333;Benoît;SNCF;H;M1 H;SNCF SA (Holding);01:06:00
+273;1658;Opaline;BLANCHARD;F;ESP F;SNCF Réseau;01:06:00
+274;1249;Jean-Gabriel;LEVEQUE;H;M2 H;SNCF Réseau;01:06:14
+275;1674;Alexandre;LECLAIRE;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:06:21
+276;1241;STEPHANE;LEGROS;H;M3 H;SNCF Réseau;01:06:34
+277;1618;Arnaud;LEBRET;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:06:39
+278;1136;Hervé;MAHUET;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:06:39
+279;1140;SOPHIE;SOMVEILLE;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:06:54
+280;1419;Pascal;TALBOT;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:07:08
+281;1213;Marion;JANNAUD;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:07:25
+282;1073;Jehan;GOUNELLE;H;SEN H;SNCF Réseau;01:07:25
+283;1464;Bruno;CIULLI;H;M3 H;SNCF Gares&Connexions;01:07:32
+284;1029;CYRIL;MOREAU;H;M0 H;SNCF SA (Holding);01:07:33
+285;1536;pascal;HAMONIC;H;M4 H;SNCF SA (Holding);01:07:33
+286;1064;Florian;MONGAILLARD;H;SEN H;SNCF SA (Holding);01:07:34
+287;1554;Ségolene;LE REST;F;M0 F;SNCF Réseau;01:07:35
+288;1346;Béatrice;GUIMBRETIÈRE;F;M2 F;SNCF Réseau;01:07:58
+289;1036;Victoria;BARON;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:08:33
+290;1491;Sophie;MARCHAL;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:08:34
+291;1489;Mélanie;MONTOCCHIO;F;M3 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:08:34
+292;1276;David;BIEHLER;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:08:39
+293;1410;Damien;LOTHE;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:09:01
+294;1533;elisa;JAMME;F;ESP F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:09:19
+295;1002;Constance;EHRET;F;ESP F;SNCF SA (Holding);1:09:22
+296;1402;CEDRIC;LE CHEVILLER;H;M1 H;SNCF Réseau;01:09:23
+297;1564;Stephane;VANACKER;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:09:51
+298;1520;EMILIE;BOUGUET;F;M0 F;SNCF Optim'Services;01:10:13
+299;1486;ADELINE;AUBERT;F;M2 F;SNCF Réseau;01:10:34
+300;1050;Stéphane;GRALL;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:10:34
+301;1295;Stéphane;BOTTERO;H;SEN H;SNCF Réseau;01:10:39
+302;1661;Christelle;SERRANO;F;M3 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:10:40
+303;1060;Cédric;LEVREL;H;M2 H;SNCF Réseau;01:10:51
+304;1484;Christophe;ROYER;H;M3 H;SNCF Réseau;01:10:57
+305;1493;PIERRICK;DOREAU;H;M3 H;SNCF Réseau;01:11:00
+306;1614;Christophe;DE SMET;H;M3 H;SNCF Réseau;01:11:24
+307;1642;Vanina;THION;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);1:11:28
+308;1445;STEPHANE;TARCY;H;M4 H;SNCF Réseau;01:11:31
+309;1610;LAURENT;CHAUVEL;H;M4 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:11:46
+310;1526;Jules;DEPAUW;H;ESP H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:12:07
+311;1441;Laetitia;DUBOIS;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:12:11
+312;1587;anais;THOMAS;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:12:11
+313;1329;michael;BOUCHERON;H;M2 H;SNCF Réseau;01:12:12
+314;1482;Quentin;RAMBOUT;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:12:12
+315;1540;Donato;MARENGO;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);1:12:14
+316;1320;Mélanie;FONTAINE;F;M2 F;SNCF Réseau;01:12:15
+317;1316;Isabelle;PASQUIER;F;M4 F;SNCF SA (Holding);01:12:17
+318;1313;Juliette;FRETY;F;M1 F;SNCF SA (Holding);01:12:19
+319;1645;Nicolas;LEX_PASQUET;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:12:26
+320;1638;Eric;LE BAIL;H;M2 H;SNCF Réseau;01:12:42
+321;1525;Aurélie;DUCHENE;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:12:46
+322;1607;Nathalie;LLAVORI;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:12:47
+323;1681;BRUNO;LLAVORI;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:12:51
+324;1057;Antoine;PATIN;H;M0 H;SNCF Réseau;01:13:10
+325;1627;Mickael;LANDERO;H;M1 H;SNCF Réseau;1:13:38
+326;1666;Romain;BESANA;H;SEN H;SNCF Gares&Connexions;01:13:39
+327;1667;Philippe;LAVIER;H;M2 H;SNCF Gares&Connexions;01:13:39
+328;1487;Laurent;FRANCOIS;H;?;SNCF Réseau;01:13:51
+329;1453;Auréline;CORTESI;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:14:25
+330;1538;Alexandra;DALBIN;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:14:27
+331;1380;laetitia;MOREAU;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:14:30
+332;1585;Soumia;MITIC;F;M1 F;SNCF Gares&Connexions;01:14:30
+333;1601;Richard;CRETON;H;M2 H;SNCF SA (Holding);01:14:49
+334;1131;sebastien;GUILLEMARD;H;M3 H;SNCF Réseau;01:14:50
+335;1344;Emma;BRETAGNOLLES;F;SEN F;SNCF Réseau;01:14:53
+336;1231;Gilles;PERDEREAU;H;M3 H;SNCF Réseau;01:15:32
+337;1490;MARYLINE;HOUZELLE;F;SEN F;SNCF Réseau;01:16:00
+338;1147;THIERRY;DELLUPO;H;M3 H;SNCF Gares&Connexions;01:16:00
+339;1497;Lucia;TOUPIN;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:17:14
+340;1654;Jonathan;CLAIN;H;SEN H;SNCF Réseau;01:18:11
+341;1595;Marion;MOULIN;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:18:54
+342;1612;Sébastien;CASANAS;H;M2 H;SNCF Gares&Connexions;01:18:54
+343;1101;Cédric;ZEMMOURI;H;M2 H;SNCF SA (Holding);01:19:04
+344;1326;Jérôme;MERCIER;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:20:00
+345;1196;Sebastien;BLONDEAU;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:20:12
+346;1381;Tewfik;BELABBES;H;M2 H;SNCF Gares&Connexions;01:20:13
+347;1555;Louise;GOINARD;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:20:33
+348;1159;Sebastien;HAHN;H;M3 H;SNCF Réseau;01:21:26
+349;1446;Olivier;FOUCHER;H;M1 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:21:27
+350;1571;Marine;MENARD;F;SEN F;SNCF Réseau;01:21:48
+351;1056;LAURENCE;MASCRÉ;F;M1 F;SNCF Réseau;01:24:23
+352;1527;Jimmy;JACQUART;H;M0 H;SNCF Réseau;01:24:45
+353;1454;Céline;RODRIGUES;F;SEN F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:25:05
+354;1027;Christelle;PANASSIER;F;M3 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:27:48
+355;1651;Florent;ALLIBERT;H;M2 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:30:11
+356;1590;Céline;BESSONNET;F;M1 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:32:38
+357;1460;Vincent;MERCY-FÉVRIER;H;SEN H;ICF Habitat;01:32:42
+358;1117;Elisa;MINAUD;F;M0 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:33:48
+359;1263;Nicolas;BILLON;H;M0 H;SNCF SA (Holding);01:34:47
+360;1662;Richard;LOURDOU;H;M2 H;SNCF Gares&Connexions;01:38:26
+361;1467;MARIE CHRISTINE;PEYROULET;F;M4 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:39:25
+362;1174;Jean-Christophe;POEY;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);01:39:57
+363;1637;Sylviane;DE VILLECOURT;F;M3 F;SNCF Voyageurs (dont Connect&Tech et Avancial);01:40:07
+364;1656;Jérôme;MONNIER;H;M3 H;SNCF Gares&Connexions;01:45:44
+365;1123;François;BRECHET;H;M1 H;SNCF Réseau;01:51:47
+366;1032;Olivier;MICHELI;H;M3 H;SNCF Réseau;02:00:00
+367;1137;Cédric;BERNARD-REYMOND;H;M3 H;SNCF Réseau;02:00:40
+368;1278;Nelly;LEMARCHAND;F;M2 F;SNCF Voyageurs (dont Connect&Tech et Avancial);02:09:52
+369;1299;Nicolas;PLASSE;H;M1 H;SNCF SA (Holding);02:13:53
+370;1317;David;MALOCHET;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);02:20:53
+371;1522;Sylvain;LEGOUGE;H;M3 H;SNCF Voyageurs (dont Connect&Tech et Avancial);02:46:55
+372;1496;Marc;BARBEAU;H;SEN H;SNCF Voyageurs (dont Connect&Tech et Avancial);02:59:15
+373;1098;Stéphane;QUIBLIER;H;M3 H;SNCF Réseau;03:00:00
