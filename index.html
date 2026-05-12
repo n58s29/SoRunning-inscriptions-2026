@@ -335,6 +335,47 @@
       .confirm-box { padding: 32px 20px 28px; }
     }
 
+    /* ─── Carte remerciement ─── */
+    .thanks-card {
+      position: relative;
+      padding: 32px 28px;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, var(--surface)) 0%, color-mix(in srgb, var(--accent) 8%, var(--surface)) 100%);
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+      border-radius: 16px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .thanks-card-icon {
+      font-size: 40px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .thanks-card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+    .thanks-card-title span { color: var(--accent); }
+    .thanks-card-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .thanks-card-text strong { color: var(--text); }
+    .thanks-card-signoff {
+      margin-top: 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+    }
+
     /* ─── Pill compteur dans le header ─── */
     .header-stat {
       display: inline-flex;
@@ -444,41 +485,56 @@
 <!-- ═══ CONTENU ═══ -->
 <div class="home-page">
 
-  <!-- Carte inscription (pleine largeur) -->
-  <a href="inscription.html" class="user-card user-card--primary">
-    <span class="step-num">Étape 1</span>
-    <div class="user-card-icon">📝</div>
-    <div class="user-card-title">S'inscrire au Challenge</div>
-    <div class="user-card-desc">Rejoignez le Challenge Connecté 2026 en remplissant le formulaire d'inscription</div>
-  </a>
-
-  <!-- Cartes participants -->
-  <div class="user-grid">
-
-    <a href="dossard.html" class="user-card">
-      <span class="step-num">Étape 2</span>
-      <div class="user-card-icon">🔍</div>
-      <div class="user-card-title">Vérifier mon inscription + télécharger mon dossard</div>
-      <div class="user-card-desc">Retrouvez vos informations d'inscription et téléchargez votre dossard — données mises à jour toutes les 24h, patience si vous venez de vous inscrire !</div>
-    </a>
-
-    <a href="depot.html" class="user-card" id="card-depot">
-      <span class="step-num">Étape 3</span>
-      <div class="user-card-icon">📤</div>
-      <div class="user-card-title">Déposer ma preuve</div>
-      <div class="user-card-desc">Disponible dès le 8 mai, au lancement du challenge — revenez déposer votre preuve après votre course !</div>
-    </a>
-
-  </div>
-
-  <!-- Carte résultats (pleine largeur, accessible à tous) -->
-  <a href="resultats.html" class="user-card user-card--row">
+  <!-- Carte résultats (pleine largeur, mise en avant) -->
+  <a href="resultats.html" class="user-card user-card--primary">
     <div class="user-card-icon">🏆</div>
     <div>
       <div class="user-card-title">Résultats du Challenge</div>
-      <div class="user-card-desc">Classements officiels des courses 5/10/21,1 km et récap des gagnant.e.s — disponibles après le direct Teams du 12 mai à 12h00.</div>
+      <div class="user-card-desc">Classements officiels des courses 5/10/21,1 km et récap des gagnant.e.s — c'est par ici !</div>
     </div>
   </a>
+
+  <!-- Mot de remerciement -->
+  <div class="thanks-card">
+    <div class="thanks-card-icon">🎉</div>
+    <div class="thanks-card-title">C'était <span>fou !</span></div>
+    <p class="thanks-card-text">
+      <strong>Bravo à toutes et tous</strong> pour ce Challenge Connecté 2026 absolument incroyable !
+      Merci aux participant.e.s, aux bénévoles, aux organisateurs, à la communauté SoRunning SNCF
+      et à toutes les personnes qui ont fait vivre cette édition. Vous avez été <strong>extraordinaires</strong>.
+    </p>
+    <div class="thanks-card-signoff">🏃‍♀️ On se retrouve en 2027 ! 🏃‍♂️</div>
+  </div>
+
+  <!-- Carte inscription (verrouillée) -->
+  <div class="user-card user-card--primary user-card--locked">
+    <div class="user-card-badge">🔒</div>
+    <span class="step-num">Étape 1</span>
+    <div class="user-card-icon">📝</div>
+    <div class="user-card-title">S'inscrire au Challenge</div>
+    <div class="user-card-desc">Les inscriptions sont désormais clôturées — rendez-vous en 2027 !</div>
+  </div>
+
+  <!-- Cartes participants (verrouillées) -->
+  <div class="user-grid">
+
+    <div class="user-card user-card--locked">
+      <div class="user-card-badge">🔒</div>
+      <span class="step-num">Étape 2</span>
+      <div class="user-card-icon">🔍</div>
+      <div class="user-card-title">Vérifier mon inscription + télécharger mon dossard</div>
+      <div class="user-card-desc">Le challenge est terminé — les dossards ne sont plus disponibles au téléchargement.</div>
+    </div>
+
+    <div class="user-card user-card--locked">
+      <div class="user-card-badge">🔒</div>
+      <span class="step-num">Étape 3</span>
+      <div class="user-card-icon">📤</div>
+      <div class="user-card-title">Déposer ma preuve</div>
+      <div class="user-card-desc">Les dépôts de preuves sont clôturés — merci à toutes et tous pour vos participations !</div>
+    </div>
+
+  </div>
 
   <!-- Séparateur -->
   <div class="admin-separator">🔒 Espace organisateurs</div>
@@ -596,25 +652,6 @@ function toggleTheme() {
   }, 250);
 })();
 
-/* ─── CONFIG ─── */
-(async function() {
-  let cfg;
-  try {
-    const res = await fetch('./config.json?t=' + Date.now());
-    if (!res.ok) return;
-    cfg = await res.json();
-  } catch { return; }
-
-  if (!cfg.depotOpen) {
-    const card = document.getElementById('card-depot');
-    card.removeAttribute('href');
-    card.classList.add('user-card--locked');
-    const badge = document.createElement('div');
-    badge.className = 'user-card-badge';
-    badge.textContent = '🔒';
-    card.insertBefore(badge, card.firstChild);
-  }
-})();
 </script>
 
 </body>
