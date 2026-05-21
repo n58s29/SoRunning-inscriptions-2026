@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Podcast — Challenge Connecté 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .podcast-page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ─── En-tête de page ─── */
+    .pod-header {
+      text-align: center;
+      padding: 24px 0 8px;
+    }
+    .pod-header-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .pod-header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      line-height: 1.05;
+      margin-bottom: 12px;
+    }
+    .pod-header-title span { color: var(--accent); }
+    .pod-header-sub {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ─── Carte lecteur ─── */
+    .pod-player {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, var(--surface)) 0%, color-mix(in srgb, var(--accent) 6%, var(--surface)) 100%);
+      border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--border));
+      border-radius: 20px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .pod-cover {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .pod-cover-art {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      flex-shrink: 0;
+      box-shadow: 0 8px 24px rgba(247, 115, 180, 0.28);
+    }
+    .pod-cover-info {
+      min-width: 0;
+    }
+    .pod-cover-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .pod-cover-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    /* ─── Barre de progression ─── */
+    .pod-progress {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .pod-bar {
+      position: relative;
+      height: 8px;
+      background: color-mix(in srgb, var(--text) 14%, transparent);
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .pod-bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      pointer-events: none;
+    }
+    .pod-bar-knob {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .pod-times {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── Contrôles ─── */
+    .pod-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+    }
+    .pod-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s, color 0.15s;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .pod-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .pod-btn:active { transform: translateY(0); }
+    .pod-btn-skip {
+      width: 48px;
+      height: 48px;
+      font-size: 12px;
+      font-weight: 700;
+      flex-direction: column;
+      gap: 1px;
+      line-height: 1;
+    }
+    .pod-btn-skip-icon { font-size: 16px; }
+    .pod-btn-play {
+      width: 68px;
+      height: 68px;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-size: 26px;
+    }
+    .pod-btn-play:hover {
+      background: var(--accent);
+      color: #fff;
+      opacity: 0.9;
+    }
+
+    .pod-extra {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+    .pod-speed {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .pod-speed:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .pod-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .pod-download:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ─── État indisponible ─── */
+    .pod-unavailable {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      padding: 24px 16px 8px;
+      color: var(--muted);
+    }
+    .pod-unavailable-icon { font-size: 38px; }
+    .pod-unavailable-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .pod-unavailable p { font-size: 14px; line-height: 1.6; }
+
+    .pod-player.is-unavailable .pod-progress,
+    .pod-player.is-unavailable .pod-controls,
+    .pod-player.is-unavailable .pod-extra { display: none; }
+    .pod-player.is-unavailable .pod-unavailable { display: flex; }
+
+    /* ─── Texte d'intro sous le lecteur ─── */
+    .pod-about {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+    }
+    .pod-about-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .pod-about p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    @media (max-width: 480px) {
+      .pod-header-title { font-size: 32px; }
+      .pod-player { padding: 26px 18px; }
+      .pod-controls { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img class="logo-img" src="logo.png" alt="CC"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="logo-badge" style="display:none;">CC</div>
+    <div class="logo-text">Challenge <span>Connecté</span> 2026</div>
+  </div>
+  <div class="header-right">
+    <a href="index.html" class="btn-back">← Accueil</a>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"
+            title="Basculer mode clair / sombre">
+      <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+    </button>
+  </div>
+</header>
+
+<div class="podcast-page">
+
+  <div class="pod-header">
+    <div class="pod-header-label">🎙️ Le podcast</div>
+    <h1 class="pod-header-title">L'histoire du <span>Challenge Connecté</span></h1>
+    <p class="pod-header-sub">
+      En attendant l'édition 2027, plonge dans les coulisses : la genèse du projet,
+      les défis relevés et les plus beaux moments de la communauté SoRunning SNCF.
+    </p>
+  </div>
+
+  <div class="pod-player" id="player">
+
+    <div class="pod-cover">
+      <div class="pod-cover-art">🎙️</div>
+      <div class="pod-cover-info">
+        <div class="pod-cover-eyebrow">Podcast · Challenge Connecté</div>
+        <div class="pod-cover-title">L'histoire du Challenge Connecté</div>
+      </div>
+    </div>
+
+    <div class="pod-progress">
+      <div class="pod-bar" id="bar">
+        <div class="pod-bar-fill" id="barFill"></div>
+        <div class="pod-bar-knob" id="barKnob"></div>
+      </div>
+      <div class="pod-times">
+        <span id="timeCurrent">0:00</span>
+        <span id="timeDuration">--:--</span>
+      </div>
+    </div>
+
+    <div class="pod-controls">
+      <button class="pod-btn pod-btn-skip" id="btnBack" title="Reculer de 15 s">
+        <span class="pod-btn-skip-icon">⟲</span>
+        <span>15</span>
+      </button>
+      <button class="pod-btn pod-btn-play" id="btnPlay" title="Lecture / Pause">▶</button>
+      <button class="pod-btn pod-btn-skip" id="btnFwd" title="Avancer de 15 s">
+        <span class="pod-btn-skip-icon">⟳</span>
+        <span>15</span>
+      </button>
+    </div>
+
+    <div class="pod-extra">
+      <button class="pod-speed" id="btnSpeed" title="Vitesse de lecture">1×</button>
+      <a class="pod-download" href="data/podcast.mp3" download title="Télécharger l'épisode">
+        ⬇ Télécharger
+      </a>
+    </div>
+
+    <div class="pod-unavailable">
+      <div class="pod-unavailable-icon">⏳</div>
+      <div class="pod-unavailable-title">Épisode bientôt disponible</div>
+      <p>Le podcast est en cours de préparation.<br>Reviens très vite pour l'écouter !</p>
+    </div>
+
+  </div>
+
+  <div class="pod-about">
+    <div class="pod-about-title">À propos de cet épisode</div>
+    <p>
+      Un format court pour comprendre comment est né le Challenge Connecté, comment
+      la communauté SoRunning SNCF s'est mobilisée, et ce qui attend les coureuses
+      et coureurs pour l'édition 2027.
+    </p>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <span>© 2026 Challenge Connecté — SoRunning SNCF</span>
+  <span class="site-footer-sep">|</span>
+  <a href="reglement.html">Règlement</a>
+  <span class="site-footer-sep">|</span>
+  <a href="cgu.html">CGU & Confidentialité</a>
+  <span class="site-footer-sep">|</span>
+  <a href="mailto:sorunningsncf@sncf.fr">sorunningsncf@sncf.fr</a>
+</footer>
+
+<!-- Source audio : déposer le fichier dans data/podcast.mp3 -->
+<audio id="audio" src="data/podcast.mp3" preload="metadata"></audio>
+
+<script>
+/* ─── THÈME ─── */
+const THEME_KEY = 'challenge2026_theme';
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem(THEME_KEY, t);
+}
+function toggleTheme() {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) applyTheme('light');
+  else applyTheme('dark');
+})();
+
+/* ─── LECTEUR PODCAST ─── */
+(function() {
+  const audio    = document.getElementById('audio');
+  const player   = document.getElementById('player');
+  const btnPlay  = document.getElementById('btnPlay');
+  const btnBack  = document.getElementById('btnBack');
+  const btnFwd   = document.getElementById('btnFwd');
+  const btnSpeed = document.getElementById('btnSpeed');
+  const bar      = document.getElementById('bar');
+  const barFill  = document.getElementById('barFill');
+  const barKnob  = document.getElementById('barKnob');
+  const tCur     = document.getElementById('timeCurrent');
+  const tDur     = document.getElementById('timeDuration');
+
+  const SKIP    = 15;
+  const SPEEDS  = [1, 1.25, 1.5, 2, 0.75];
+  let   speedIx = 0;
+
+  function fmt(sec) {
+    if (!isFinite(sec) || sec < 0) return '0:00';
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function render() {
+    const dur = audio.duration || 0;
+    const pct = dur ? (audio.currentTime / dur) * 100 : 0;
+    barFill.style.width = pct + '%';
+    barKnob.style.left  = pct + '%';
+    tCur.textContent = fmt(audio.currentTime);
+  }
+
+  /* Lecture / Pause */
+  btnPlay.addEventListener('click', function() {
+    if (audio.paused) audio.play(); else audio.pause();
+  });
+  audio.addEventListener('play',  function() { btnPlay.textContent = '❚❚'; });
+  audio.addEventListener('pause', function() { btnPlay.textContent = '▶'; });
+  audio.addEventListener('ended', function() { btnPlay.textContent = '▶'; });
+
+  /* Avance / Recul */
+  btnBack.addEventListener('click', function() {
+    audio.currentTime = Math.max(0, audio.currentTime - SKIP);
+  });
+  btnFwd.addEventListener('click', function() {
+    audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + SKIP);
+  });
+
+  /* Vitesse */
+  btnSpeed.addEventListener('click', function() {
+    speedIx = (speedIx + 1) % SPEEDS.length;
+    audio.playbackRate = SPEEDS[speedIx];
+    btnSpeed.textContent = SPEEDS[speedIx] + '×';
+  });
+
+  /* Métadonnées + progression */
+  audio.addEventListener('loadedmetadata', function() {
+    tDur.textContent = fmt(audio.duration);
+  });
+  audio.addEventListener('timeupdate', render);
+
+  /* Barre cliquable / glissable */
+  function seekFromEvent(e) {
+    const rect = bar.getBoundingClientRect();
+    const x    = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const pct  = Math.min(1, Math.max(0, x / rect.width));
+    if (audio.duration) audio.currentTime = pct * audio.duration;
+  }
+  let dragging = false;
+  bar.addEventListener('mousedown', function(e) { dragging = true; seekFromEvent(e); });
+  document.addEventListener('mousemove', function(e) { if (dragging) seekFromEvent(e); });
+  document.addEventListener('mouseup',   function() { dragging = false; });
+  bar.addEventListener('touchstart', function(e) { seekFromEvent(e); }, { passive: true });
+  bar.addEventListener('touchmove',  function(e) { seekFromEvent(e); }, { passive: true });
+
+  /* Fichier audio absent ou illisible → message "bientôt disponible" */
+  audio.addEventListener('error', function() {
+    player.classList.add('is-unavailable');
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
